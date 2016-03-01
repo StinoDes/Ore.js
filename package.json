@@ -1,0 +1,23 @@
+{
+  "name": "ezi-script",
+  "version": "0.1.0",
+  "description": "A javascript library to simplify small, ui-related scripting and build your interface beautifully.",
+  "main": "ezi-script.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/StinoDes/ezi-script.git"
+  },
+  "keywords": [
+    "javascript",
+    "library"
+  ],
+  "author": "Stijn Tytgat",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/StinoDes/ezi-script/issues"
+  },
+  "homepage": "https://github.com/StinoDes/ezi-script#readme"
+}

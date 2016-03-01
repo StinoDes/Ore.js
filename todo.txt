@@ -1,0 +1,35 @@
+
+Variations:
+
+    One-page applications VS scripting library
+
+
+
+    Scripting:
+
+        Rework Animations
+        Directives:
+            State-Refresh?
+            Json?
+            States from json?
+        Moduling
+
+
+
+
+
+
+
+    One-page:
+
+
+
+
+
+
+
+
+
+
+
+
