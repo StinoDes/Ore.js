@@ -105,6 +105,6 @@ var AniManager = Object.create({
     }
 
 
-}).init();
+});
 
 module.exports = AniManager;

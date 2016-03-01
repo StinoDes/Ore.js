@@ -1,7 +1,7 @@
 /**
  * Created by Stijn on 01/03/16.
  */
-var AnimationStep = Object.create(EZI.AnimatedProperty, {
+var AnimationStep = Object.create(require('./AnimatedProperty'), {
 
     startTime: {
         writable: true,
@@ -16,7 +16,7 @@ var AnimationStep = Object.create(EZI.AnimatedProperty, {
 
 });
 
-EZI.AnimationStep.init = function (propertyName) {
+AnimationStep.init = function (propertyName) {
 
     if (arguments.length == 2) {
 
@@ -62,7 +62,7 @@ EZI.AnimationStep.init = function (propertyName) {
 
 };
 
-EZI.AnimationStep.getStyleString = function (t) {
+AnimationStep.getStyleString = function (t) {
 
     t = this.remapProgress(t);
 
@@ -84,7 +84,7 @@ EZI.AnimationStep.getStyleString = function (t) {
 
     }
 };
-EZI.AnimationStep.remapProgress = function (t) {
+AnimationStep.remapProgress = function (t) {
 
     t -= this.startTime;
     deltaT = this.endTime - this.startTime;
@@ -93,7 +93,7 @@ EZI.AnimationStep.remapProgress = function (t) {
     return t;
 
 };
-EZI.AnimationStep.switchValues = function () {
+AnimationStep.switchValues = function () {
     var end = this.startValue;
     var st = this.endValue;
     this.endValue = end;

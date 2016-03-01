@@ -13,7 +13,7 @@ var Elemental = Object.create({
     init: function () {
 
         var self = this;
-        if (!this.loaded && !EZI.Elemental) {
+        if (!this.loaded) {
             Object.defineProperty(window.Element.prototype, 'ezi', {
                get: function () {
                    //console.log(this);
@@ -37,6 +37,6 @@ var Elemental = Object.create({
 
     }
 
-}).init();
+});
 
 module.exports = Elemental;

@@ -1,3 +1,4 @@
+var EZI =
 /******/ (function(modules) { // webpackBootstrap
 /******/ 	// The module cache
 /******/ 	var installedModules = {};
@@ -64,6 +65,9 @@
 	    filesLoaded: 0,
 
 	    init: function () {
+	        EZI.Elemental = EZI.Elemental.init();
+	        EZI.AniManager = EZI.AniManager.init();
+	        EZI.Interacter = EZI.Interacter.init();
 
 	        document.onkeyup = document.onkeydown = function (e) {
 	            e = e || event;
@@ -80,6 +84,7 @@
 	                    return el.ezi;
 	                }
 	            }
+	        return this;
 
 	    },
 
@@ -226,6 +231,7 @@
 	EZI.Map = __webpack_require__(13);
 	EZI.Range = __webpack_require__(14);
 
+
 	module.exports = EZI;
 
 /***/ },
@@ -247,7 +253,7 @@
 	    init: function () {
 
 	        var self = this;
-	        if (!this.loaded && !EZI.Elemental) {
+	        if (!this.loaded) {
 	            Object.defineProperty(window.Element.prototype, 'ezi', {
 	               get: function () {
 	                   //console.log(this);
@@ -271,7 +277,7 @@
 
 	    }
 
-	}).init();
+	});
 
 	module.exports = Elemental;
 
@@ -741,7 +747,7 @@
 	    }
 
 
-	}).init();
+	});
 
 	module.exports = AniManager;
 
@@ -1041,12 +1047,12 @@
 
 /***/ },
 /* 8 */
-/***/ function(module, exports) {
+/***/ function(module, exports, __webpack_require__) {
 
 	/**
 	 * Created by Stijn on 01/03/16.
 	 */
-	var AnimationStep = Object.create(EZI.AnimatedProperty, {
+	var AnimationStep = Object.create(__webpack_require__(7), {
 
 	    startTime: {
 	        writable: true,
@@ -1061,7 +1067,7 @@
 
 	});
 
-	EZI.AnimationStep.init = function (propertyName) {
+	AnimationStep.init = function (propertyName) {
 
 	    if (arguments.length == 2) {
 
@@ -1107,7 +1113,7 @@
 
 	};
 
-	EZI.AnimationStep.getStyleString = function (t) {
+	AnimationStep.getStyleString = function (t) {
 
 	    t = this.remapProgress(t);
 
@@ -1129,7 +1135,7 @@
 
 	    }
 	};
-	EZI.AnimationStep.remapProgress = function (t) {
+	AnimationStep.remapProgress = function (t) {
 
 	    t -= this.startTime;
 	    deltaT = this.endTime - this.startTime;
@@ -1138,7 +1144,7 @@
 	    return t;
 
 	};
-	EZI.AnimationStep.switchValues = function () {
+	AnimationStep.switchValues = function () {
 	    var end = this.startValue;
 	    var st = this.endValue;
 	    this.endValue = end;
@@ -1339,7 +1345,7 @@
 
 	    }
 
-	}).init();
+	});
 
 	module.exports = Interacter;
 

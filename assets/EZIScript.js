@@ -9,6 +9,9 @@ var EZI = Object.create({
     filesLoaded: 0,
 
     init: function () {
+        EZI.Elemental = EZI.Elemental.init();
+        EZI.AniManager = EZI.AniManager.init();
+        EZI.Interacter = EZI.Interacter.init();
 
         document.onkeyup = document.onkeydown = function (e) {
             e = e || event;
@@ -25,6 +28,7 @@ var EZI = Object.create({
                     return el.ezi;
                 }
             }
+        return this;
 
     },
 
@@ -170,5 +174,6 @@ EZI.Interaction = require('./Interacter/Interaction');
 
 EZI.Map = require('./Util/Map');
 EZI.Range = require('./Util/Range');
+
 
 module.exports = EZI;

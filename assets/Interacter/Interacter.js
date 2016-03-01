@@ -17,7 +17,7 @@ var Interacter = Object.create({
 
     }
 
-}).init();
+});
 
 module.exports = Interacter;
 
