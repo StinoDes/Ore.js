@@ -201,7 +201,7 @@ var EziElement = Object.create({
             this.element.appendChild(EZI.make(obj).element);
         }
         else if (typeof obj.element == 'undefined') {
-            this.element.appendChild(obj);
+            console.error('The object you\'re appending is undefined. Please define an element or EZIObject.');
         }
         else {
             this.element.appendChild(obj.element);

@@ -151,8 +151,9 @@ var EZI = Object.create({
     },
 
     bootApp: function (app) {
-        app = app();
-        console.log(app);
+        if (typeof app == 'function') {
+            app = app();
+        }
         app._renderApp();
     }
 
@@ -175,5 +176,6 @@ EZI.Interaction = require('./Interacter/Interaction');
 EZI.Map = require('./Util/Map');
 EZI.Range = require('./Util/Range');
 
+EZI.Builder = require('./Builder/Builder');
 
 module.exports = EZI;

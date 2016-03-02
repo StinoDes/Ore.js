@@ -207,8 +207,9 @@ var EZI =
 	    },
 
 	    bootApp: function (app) {
-	        app = app();
-	        console.log(app);
+	        if (typeof app == 'function') {
+	            app = app();
+	        }
 	        app._renderApp();
 	    }
 
@@ -231,6 +232,7 @@ var EZI =
 	EZI.Map = __webpack_require__(13);
 	EZI.Range = __webpack_require__(14);
 
+	EZI.Builder = __webpack_require__(15);
 
 	module.exports = EZI;
 
@@ -488,7 +490,7 @@ var EZI =
 	            this.element.appendChild(EZI.make(obj).element);
 	        }
 	        else if (typeof obj.element == 'undefined') {
-	            this.element.appendChild(obj);
+	            console.error('The object you\'re appending is undefined. Please define an element or EZIObject.');
 	        }
 	        else {
 	            this.element.appendChild(obj.element);
@@ -1468,6 +1470,259 @@ var EZI =
 	});
 
 	module.exports = Range;
+
+/***/ },
+/* 15 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 * Created by Stijn on 28/02/16.
+	 */
+
+	//BUILDER OBJECT
+	//APP'S BASE
+	var Builder = Object.create({
+
+	    _baseComponents: {},
+
+	    init: function (appName, initialData) {
+	        this.setAppName(appName);
+	        this._dataBank = Object.create(__webpack_require__(16)).init(initialData);
+	        this._registeredComponents = this._baseComponents;
+	        return this;
+	    },
+
+
+	    setAppName: function (appName) {
+	        this._appName = appName;
+	    },
+	    getAppName: function () {
+	        return this._appName;
+	    },
+
+	    getDataBank: function () {
+	        return this._dataBank;
+	    },
+
+	    _getRenderedApp: function () {
+	        return this._rootComponent.init().render();
+	    },
+	    _renderApp: function () {
+	        EZ('body').append(this._getRenderedApp());
+	    },
+
+	    setRootComponent: function (component) {
+	        this._rootComponent = this.getRegisteredComponent(component);
+	    },
+	    defineComponent: function (parentComponent, objToApply) {
+	        var newComponent = Object.create(this.getRegisteredComponent(parentComponent));
+	        for (var k in objToApply) {
+	            newComponent[k] = objToApply[k];
+	        }
+	        return newComponent;
+	    },
+	    registerComponent: function (componentName, component) {
+	        if (this._registeredComponents[componentName] === undefined)
+	            this._registeredComponents[componentName] = component;
+	        else
+	            console.error('Could not define component. "' + componentName + '" already exists.');
+	    },
+	    getRegisteredComponent: function (componentName) {
+	        return this._registeredComponents[componentName];
+	    },
+
+	    createComponent: function (componentName, properties) {
+	        return this.getRegisteredComponent(componentName).init(properties, this);
+	    }
+
+
+	});
+
+	Builder._baseComponents.Component = __webpack_require__(18);
+	Builder._baseComponents.Button = __webpack_require__(19);
+
+	module.exports = Builder;
+
+/***/ },
+/* 16 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 * Created by Stijn on 01/03/16.
+	 */
+
+	//DATABANK OBJECT
+	//HOLDS VARIABLES, REFRESHES LISTENING COMPONENTS ON VAR UPDATe
+	var DataBank = Object.create({
+
+	    //Initial Data: Array of {name: value} objects
+	    init: function (initialData) {
+	        this._data = {};
+	        (typeof initialData == 'object')?this._dataFromObject(initialData):null;
+	        return this;
+	    },
+	    _dataFromObject: function (object) {
+	        var dataObject = {};
+	        for (var k in object) {
+	            dataObject[k] =  this.createDataVar(k, object[k], typeof object[k]);
+	        }
+	    },
+	    createDataVar: function (name, value, type, listeners) {
+	        this._data[name] = Object.create(__webpack_require__(17)).init(name, value, type, listeners);
+	        return this.getDataVar(name);
+	    },
+	    setDataVar: function (name, value) {
+	        this._data[name].setValue(value);
+	    },
+	    getDataVar: function (name, getWholeObject) {
+	        return (getWholeObject)?this._data[name]:this._data[name].getValue();
+	    },
+	    addAsListenerTo: function (object, nameArray) {
+	        for (var k in nameArray) {
+	            this.getDataVar(nameArray[k], true).addListener(object);
+	        }
+	    }
+
+	});
+
+	module.exports = DataBank;
+
+/***/ },
+/* 17 */
+/***/ function(module, exports) {
+
+	/**
+	 * Created by Stijn on 01/03/16.
+	 */
+
+	var DataBankVariable = Object.create({
+
+	    init: function (name, value, type, listeners) {
+	        this.setName(name);
+	        this.setType(type);
+	        this.setValue(value);
+	        this._listeners = (listeners == undefined)?[]:listeners;
+	        return this;
+	    },
+	    callToListeners: function () {
+	        for (var k in this._listeners) {
+	            this._listeners[k]._dataVarChanged();
+	        }
+	    },
+	    addListener: function (listener) {
+	        this._listeners.push(listener);
+	    },
+	    removeListener: function (listener) {
+	        var i = this._listeners.getIndexOf(listener);
+	        this._listeners.splice(i, 1);
+	    },
+	    setName: function (name) {
+	        this._name = name;
+	    },
+	    getName: function () {
+	        return this._name;
+	    },
+	    setType: function (type) {
+	        this._type = type;
+	        this.callToListeners();
+	    },
+	    getType: function () {
+	        return this._type;
+	    },
+	    setValue: function (value) {
+	        if (typeof value === this.getType() || value == null) {
+	            this._value = value;
+	            this.callToListeners();
+	        }
+	        else
+	            console.error('Value is not of the type specified.');
+	    },
+	    getValue: function () {
+	        return this._value;
+	    }
+	});
+	module.exports = DataBankVariable;
+
+
+/***/ },
+/* 18 */
+/***/ function(module, exports) {
+
+	/**
+	 * Created by Stijn on 02/03/16.
+	 */
+	//COMPONENT
+	//BASIC ELEMENT
+	var Component = Object.create({
+
+	    init: function (properties, builder) {
+	        this.properties = properties;
+	        this._builder = builder;
+	        this._children = {};
+	        this.componentWillMount();
+	        return this;
+	    },
+	    _dataVarChanged: function () {
+	        this.dataVarsHaveUpdated();
+	        this.willUpdate();
+	        this.render();
+	    },
+	    componentWillMount: function () {
+
+	    },
+	    dataVarsHaveUpdated: function () {
+
+	    },
+	    willUpdate: function () {
+
+	    },
+	    //keyed array of {name: child, name: child}
+	    addMultipleChildComponents: function(keyedChildrenArray) {
+	        for (var k in keyedChildrenArray) {
+	            this.addChildComponent(keyedChildrenArray[k]);
+	        }
+	    },
+	    addChildComponent: function (name, component) {
+	        this._children[name] = component;
+	    },
+	    removeChildComponent: function (name) {
+	        this._children[name] = undefined;
+	    },
+	    renderChildComponent: function (name) {
+	        return this._children[name].render();
+	    },
+	    render: function () {
+	        return EZI.make('div');
+	    }
+	});
+
+	module.exports = Component;
+
+
+/***/ },
+/* 19 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 * Created by Stijn on 02/03/16.
+	 */
+	/**
+	 * Created by Stijn on 02/03/16.
+	 */
+	//COMPONENT
+	//BASIC ELEMENT
+	var Button = Object.create(__webpack_require__(18));
+
+	Button.render = function () {
+	    var btn = EZI.make('a', {class: 'button', href: this.properties.link, style: this.properties.style});
+	    btn.text(this.properties.text);
+	    return btn;
+	};
+
+
+	module.exports = Button;
+
+
 
 /***/ }
 /******/ ]);
