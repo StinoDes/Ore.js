@@ -119,11 +119,39 @@ var EZI = Object.create({
 
     //ELEMENTAL
     make: function (elstring, obj) {
+        if (/[A-Z][a-z]{0,}/.test(elstring)) {
+            //INIT COMPONENT IF ELSTRING STARTS WITH CAPITAL LETTER
+
+            //CHILD FROM RENDERING COMPONENT IN APP IF APP IS DEFINED
+            if (this.getApp())
+                return this.getApp()._getRenderingComponent().renderChildComponent(elstring);
+        }
         var element = document.createElement(elstring);
-        (typeof obj != 'undefined') ? EZI.addAttr(EZ(element), obj) : null;
+        (typeof obj != 'undefined') ? EZI.addAttrFromObj(EZ(element), obj) : null;
         return EZ(element);
     },
-    addAttr: function (element, obj) {
+    //EXAMPLE:
+    // 'div': { text: 'textNode\'s text', on: {click: onClickHandler}, children: [ {'div': { #ANOTHER OBJECT }} ] }
+    addAttrFromObj: function (element, obj) {
+        if (!obj)
+            obj = {};
+        if (obj.text) {
+            element.text(obj.text);
+            obj.text = undefined;
+        }
+        if (obj.on) {
+            for (var k in obj.on) {
+                element.on(k, obj.on[k]);
+            }
+            element.on = undefined;
+        }
+        if (obj.children) {
+            for (var k in obj.children) {
+                var tag = Object.keys(obj.children[k])[0];
+                element.append(EZI.make(tag, obj.children[k][tag]));
+            }
+            obj.children = undefined;
+        }
         for (var k in obj) {
             element.attr(k, obj[k]);
         }
@@ -150,11 +178,17 @@ var EZI = Object.create({
         return b;
     },
 
+
+    //BUILDER
     bootApp: function (app) {
         if (typeof app == 'function') {
             app = app();
         }
+        this._app = app;
         app._renderApp();
+    },
+    getApp: function () {
+        return this._app;
     }
 
 });

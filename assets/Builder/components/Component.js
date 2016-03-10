@@ -8,6 +8,7 @@ var Component = Object.create({
     init: function (properties, builder) {
         this.properties = properties;
         this._builder = builder;
+        console.log(this._builder);
         this._children = {};
         this.componentWillMount();
         return this;
@@ -15,7 +16,7 @@ var Component = Object.create({
     _dataVarChanged: function () {
         this.dataVarsHaveUpdated();
         this.willUpdate();
-        this.render();
+        this._startRender();
     },
     componentWillMount: function () {
 
@@ -38,12 +39,21 @@ var Component = Object.create({
     removeChildComponent: function (name) {
         this._children[name] = undefined;
     },
-    renderChildComponent: function (name) {
-        return this._children[name].render();
+
+    //RENDERING
+    _startRender: function () {
+        var returnvalue;
+        this._builder._setRenderingComponent(this);
+        returnvalue = this.render();
+        this._builder._clearRenderingComponent();
+        return returnvalue;
     },
     render: function () {
         return EZI.make('div');
-    }
+    },
+    renderChildComponent: function (name) {
+        return this._children[name]._startRender();
+    },
 });
 
 module.exports = Component;

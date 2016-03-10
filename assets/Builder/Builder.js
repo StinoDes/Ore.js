@@ -10,11 +10,11 @@ var Builder = Object.create({
 
     init: function (appName, initialData) {
         this.setAppName(appName);
-        this._dataBank = Object.create(require('./DataBank.js')).init(initialData);
+        this._router = Object.create(require('./utilities/Router.js')).init();
+        this._dataBank = Object.create(require('./utilities/DataBank.js')).init(initialData);
         this._registeredComponents = this._baseComponents;
         return this;
     },
-
 
     setAppName: function (appName) {
         this._appName = appName;
@@ -26,16 +26,19 @@ var Builder = Object.create({
     getDataBank: function () {
         return this._dataBank;
     },
+    getRouter: function () {
+        return this._router;
+    },
 
     _getRenderedApp: function () {
-        return this._rootComponent.init().render();
+        return this.createComponent(this._rootComponent)._startRender();
     },
     _renderApp: function () {
         EZ('body').append(this._getRenderedApp());
     },
 
     setRootComponent: function (component) {
-        this._rootComponent = this.getRegisteredComponent(component);
+        this._rootComponent = component;
     },
     defineComponent: function (parentComponent, objToApply) {
         var newComponent = Object.create(this.getRegisteredComponent(parentComponent));
@@ -53,9 +56,17 @@ var Builder = Object.create({
     getRegisteredComponent: function (componentName) {
         return this._registeredComponents[componentName];
     },
-
     createComponent: function (componentName, properties) {
         return this.getRegisteredComponent(componentName).init(properties, this);
+    },
+    _setRenderingComponent: function (component) {
+        this._renderingComponent = component;
+    },
+    _getRenderingComponent: function () {
+        return this._renderingComponent;
+    },
+    _clearRenderingComponent: function () {
+        this._renderingComponent = undefined;
     }
 
 

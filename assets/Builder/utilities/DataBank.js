@@ -19,7 +19,7 @@ var DataBank = Object.create({
         }
     },
     createDataVar: function (name, value, type, listeners) {
-        this._data[name] = Object.create(require('./../DataBankVariable')).init(name, value, type, listeners);
+        this._data[name] = Object.create(require('./DataBankVariable')).init(name, value, type, listeners);
         return this.getDataVar(name);
     },
     setDataVar: function (name, value) {

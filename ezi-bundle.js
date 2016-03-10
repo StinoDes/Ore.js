@@ -175,11 +175,39 @@ var EZI =
 
 	    //ELEMENTAL
 	    make: function (elstring, obj) {
+	        if (/[A-Z][a-z]{0,}/.test(elstring)) {
+	            //INIT COMPONENT IF ELSTRING STARTS WITH CAPITAL LETTER
+
+	            //CHILD FROM RENDERING COMPONENT IN APP IF APP IS DEFINED
+	            if (this.getApp())
+	                return this.getApp()._getRenderingComponent().renderChildComponent(elstring);
+	        }
 	        var element = document.createElement(elstring);
-	        (typeof obj != 'undefined') ? EZI.addAttr(EZ(element), obj) : null;
+	        (typeof obj != 'undefined') ? EZI.addAttrFromObj(EZ(element), obj) : null;
 	        return EZ(element);
 	    },
-	    addAttr: function (element, obj) {
+	    //EXAMPLE:
+	    // 'div': { text: 'textNode\'s text', on: {click: onClickHandler}, children: [ {'div': { #ANOTHER OBJECT }} ] }
+	    addAttrFromObj: function (element, obj) {
+	        if (!obj)
+	            obj = {};
+	        if (obj.text) {
+	            element.text(obj.text);
+	            obj.text = undefined;
+	        }
+	        if (obj.on) {
+	            for (var k in obj.on) {
+	                element.on(k, obj.on[k]);
+	            }
+	            element.on = undefined;
+	        }
+	        if (obj.children) {
+	            for (var k in obj.children) {
+	                var tag = Object.keys(obj.children[k])[0];
+	                element.append(EZI.make(tag, obj.children[k][tag]));
+	            }
+	            obj.children = undefined;
+	        }
 	        for (var k in obj) {
 	            element.attr(k, obj[k]);
 	        }
@@ -206,11 +234,17 @@ var EZI =
 	        return b;
 	    },
 
+
+	    //BUILDER
 	    bootApp: function (app) {
 	        if (typeof app == 'function') {
 	            app = app();
 	        }
+	        this._app = app;
 	        app._renderApp();
+	    },
+	    getApp: function () {
+	        return this._app;
 	    }
 
 	});
@@ -1487,11 +1521,11 @@ var EZI =
 
 	    init: function (appName, initialData) {
 	        this.setAppName(appName);
-	        this._dataBank = Object.create(__webpack_require__(16)).init(initialData);
+	        this._router = Object.create(__webpack_require__(16)).init();
+	        this._dataBank = Object.create(__webpack_require__(18)).init(initialData);
 	        this._registeredComponents = this._baseComponents;
 	        return this;
 	    },
-
 
 	    setAppName: function (appName) {
 	        this._appName = appName;
@@ -1503,16 +1537,19 @@ var EZI =
 	    getDataBank: function () {
 	        return this._dataBank;
 	    },
+	    getRouter: function () {
+	        return this._router;
+	    },
 
 	    _getRenderedApp: function () {
-	        return this._rootComponent.init().render();
+	        return this.createComponent(this._rootComponent)._startRender();
 	    },
 	    _renderApp: function () {
 	        EZ('body').append(this._getRenderedApp());
 	    },
 
 	    setRootComponent: function (component) {
-	        this._rootComponent = this.getRegisteredComponent(component);
+	        this._rootComponent = component;
 	    },
 	    defineComponent: function (parentComponent, objToApply) {
 	        var newComponent = Object.create(this.getRegisteredComponent(parentComponent));
@@ -1530,21 +1567,127 @@ var EZI =
 	    getRegisteredComponent: function (componentName) {
 	        return this._registeredComponents[componentName];
 	    },
-
 	    createComponent: function (componentName, properties) {
 	        return this.getRegisteredComponent(componentName).init(properties, this);
+	    },
+	    _setRenderingComponent: function (component) {
+	        this._renderingComponent = component;
+	    },
+	    _getRenderingComponent: function () {
+	        return this._renderingComponent;
+	    },
+	    _clearRenderingComponent: function () {
+	        this._renderingComponent = undefined;
 	    }
 
 
 	});
 
-	Builder._baseComponents.Component = __webpack_require__(18);
-	Builder._baseComponents.Button = __webpack_require__(19);
+	Builder._baseComponents.Component = __webpack_require__(20);
+	Builder._baseComponents.Button = __webpack_require__(21);
 
 	module.exports = Builder;
 
 /***/ },
 /* 16 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 * Created by Stijn on 03/03/16.
+	 */
+
+	var Router = Object.create({
+	    init: function () {
+	        this._appBaseUrl = this.getBaseUrl();
+	        this._isSinglePage = false;
+	        this._routes = {};
+	        return this;
+	    },
+
+	    getBaseUrl: function () {
+	        var url = window.location.href;
+	        url.split('#');
+	        return url[0];
+	    },
+
+	    setIsSinglePage: function (bool) {
+	        this._isSinglePage = bool;
+	    },
+	    getIsSinglePage: function () {
+	        return this._isSinglePage;
+	    },
+
+	    getRoute: function (identifier) {
+	        return this._routes[identifier];
+	    },
+	    createRoute: function (identifier, urlString, page) {
+	        var route = Object.create(__webpack_require__(17)).init(identifier, urlString, page);
+	    },
+	    addRoute: function (route) {
+	        if (this._routes[route.getIdentifier()] == undefined)
+	            this._routes[route.getIdentifier()] = route;
+	        else
+	            console.error('A route with this identifier already exists.');
+	    },
+	    createAndAddRoute: function (identifier, urlString, page) {
+	        this.addRoute(this.createRoute(identifier, urlString, page));
+	    },
+	    getRouteWithData: function (routeIdentifier, dataObject) {
+	        return this.getRoute(routeIdentifier).getUrlWithPassedData(dataObject);
+	    },
+	    goToPage: function (routeIdentifier, dataObject) {
+	        if (this.getIsSinglePage()) {
+
+	        }
+	        else {
+	            window.location.href = this.getBaseUrl() + this.getRouteWithData(routeIdentifier, dataObject);
+	        }
+	    }
+	});
+
+	module.exports = Router;
+
+
+/***/ },
+/* 17 */
+/***/ function(module, exports) {
+
+	/**
+	 * Created by Stijn on 03/03/16.
+	 */
+	var Route = Object.create({
+
+	    //Need identifier, 'URL' and page-component to init route
+	    //identifier is used to find and use the correct route ('HomePage' for example)
+	    //routeString is the appendix of the url (if url is 'mysite.com/StinoDes/feed', routestring is ':user:/feed'
+	    init: function (identifier, routeString, page) {
+	        this._identifier = identifier;
+	        this._routeString = routeString;
+	        this._page = page;
+	    },
+	    getIdentifier: function () {
+	        return this._identifier;
+	    },
+	    getRouteString: function () {
+	        return this._routeString;
+	    },
+	    getPage: function () {
+	        return this._page;
+	    },
+	    //if url is like 'users/:user:/posts', dataobj will contain an identifying string for user
+	    //like {user: 'user1'}
+	    getUrlWithPassedData: function (dataObj) {
+	        var urlString = this.getRouteString();
+	        for(var k in dataObj) {
+	            urlString.replace(':'+k+':', dataObj[k]);
+	        }
+	        return urlString;
+	    }
+	});
+
+
+/***/ },
+/* 18 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -1568,7 +1711,7 @@ var EZI =
 	        }
 	    },
 	    createDataVar: function (name, value, type, listeners) {
-	        this._data[name] = Object.create(__webpack_require__(17)).init(name, value, type, listeners);
+	        this._data[name] = Object.create(__webpack_require__(19)).init(name, value, type, listeners);
 	        return this.getDataVar(name);
 	    },
 	    setDataVar: function (name, value) {
@@ -1588,7 +1731,7 @@ var EZI =
 	module.exports = DataBank;
 
 /***/ },
-/* 17 */
+/* 19 */
 /***/ function(module, exports) {
 
 	/**
@@ -1645,7 +1788,7 @@ var EZI =
 
 
 /***/ },
-/* 18 */
+/* 20 */
 /***/ function(module, exports) {
 
 	/**
@@ -1658,6 +1801,7 @@ var EZI =
 	    init: function (properties, builder) {
 	        this.properties = properties;
 	        this._builder = builder;
+	        console.log(this._builder);
 	        this._children = {};
 	        this.componentWillMount();
 	        return this;
@@ -1665,7 +1809,7 @@ var EZI =
 	    _dataVarChanged: function () {
 	        this.dataVarsHaveUpdated();
 	        this.willUpdate();
-	        this.render();
+	        this._startRender();
 	    },
 	    componentWillMount: function () {
 
@@ -1688,19 +1832,28 @@ var EZI =
 	    removeChildComponent: function (name) {
 	        this._children[name] = undefined;
 	    },
-	    renderChildComponent: function (name) {
-	        return this._children[name].render();
+
+	    //RENDERING
+	    _startRender: function () {
+	        var returnvalue;
+	        this._builder._setRenderingComponent(this);
+	        returnvalue = this.render();
+	        this._builder._clearRenderingComponent();
+	        return returnvalue;
 	    },
 	    render: function () {
 	        return EZI.make('div');
-	    }
+	    },
+	    renderChildComponent: function (name) {
+	        return this._children[name]._startRender();
+	    },
 	});
 
 	module.exports = Component;
 
 
 /***/ },
-/* 19 */
+/* 21 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -1711,7 +1864,7 @@ var EZI =
 	 */
 	//COMPONENT
 	//BASIC ELEMENT
-	var Button = Object.create(__webpack_require__(18));
+	var Button = Object.create(__webpack_require__(20));
 
 	Button.render = function () {
 	    var btn = EZI.make('a', {class: 'button', href: this.properties.link, style: this.properties.style});
