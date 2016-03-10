@@ -9,8 +9,13 @@
 var Button = Object.create(require('./Component'));
 
 Button.render = function () {
-    var btn = EZI.make('a', {class: 'button', href: this.properties.link, style: this.properties.style});
-    btn.text(this.properties.text);
+    var btn = EZI.make('a', {
+        class: 'button',
+        href: (this.properties.link)?this.properties.link:undefined,
+        style: this.properties.style,
+        text: this.properties.text,
+        on: this.properties.on
+    });
     return btn;
 };
 

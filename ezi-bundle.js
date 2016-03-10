@@ -209,7 +209,8 @@ var EZI =
 	            obj.children = undefined;
 	        }
 	        for (var k in obj) {
-	            element.attr(k, obj[k]);
+	            if (obj[k] !== undefined)
+	                element.attr(k, obj[k]);
 	        }
 	    },
 
@@ -241,7 +242,8 @@ var EZI =
 	            app = app();
 	        }
 	        this._app = app;
-	        app._renderApp();
+	        app.fireApp();
+	        //app._renderApp();
 	    },
 	    getApp: function () {
 	        return this._app;
@@ -1527,6 +1529,10 @@ var EZI =
 	        return this;
 	    },
 
+	    fireApp: function () {
+	        this._renderApp();
+	    },
+
 	    setAppName: function (appName) {
 	        this._appName = appName;
 	    },
@@ -1542,14 +1548,11 @@ var EZI =
 	    },
 
 	    _getRenderedApp: function () {
-	        return this.createComponent(this._rootComponent)._startRender();
+	        return this.getRouter().getCurrentPage()._startRender();
 	    },
 	    _renderApp: function () {
+	        EZ('body').clear();
 	        EZ('body').append(this._getRenderedApp());
-	    },
-
-	    setRootComponent: function (component) {
-	        this._rootComponent = component;
 	    },
 	    defineComponent: function (parentComponent, objToApply) {
 	        var newComponent = Object.create(this.getRegisteredComponent(parentComponent));
@@ -1568,7 +1571,13 @@ var EZI =
 	        return this._registeredComponents[componentName];
 	    },
 	    createComponent: function (componentName, properties) {
-	        return this.getRegisteredComponent(componentName).init(properties, this);
+	        return Object.create(this.getRegisteredComponent(componentName)).init(properties, this);
+	    },
+	    createPage: function (title, properties, rootComponent) {
+	        var page = Object.create(__webpack_require__(20)).init(title, properties, this);
+	        if (rootComponent)
+	            page.setRootComponent(rootComponent);
+	        return page;
 	    },
 	    _setRenderingComponent: function (component) {
 	        this._renderingComponent = component;
@@ -1583,8 +1592,8 @@ var EZI =
 
 	});
 
-	Builder._baseComponents.Component = __webpack_require__(20);
-	Builder._baseComponents.Button = __webpack_require__(21);
+	Builder._baseComponents.Component = __webpack_require__(21);
+	Builder._baseComponents.Button = __webpack_require__(22);
 
 	module.exports = Builder;
 
@@ -1601,15 +1610,18 @@ var EZI =
 	        this._appBaseUrl = this.getBaseUrl();
 	        this._isSinglePage = false;
 	        this._routes = {};
+	        this._splitChar = '#';
 	        return this;
 	    },
 
 	    getBaseUrl: function () {
-	        var url = window.location.href;
-	        url.split('#');
-	        return url[0];
+	        var url = window.location.href.split(this._splitChar)[0];
+	        return url;
 	    },
-
+	    getRouteString: function () {
+	        var url = window.location.href.split(this._splitChar)[1];
+	        return url;
+	    },
 	    setIsSinglePage: function (bool) {
 	        this._isSinglePage = bool;
 	    },
@@ -1617,17 +1629,35 @@ var EZI =
 	        return this._isSinglePage;
 	    },
 
+	    getCurrentRoute: function () {
+	        var routeString = this.getRouteString();
+	        if (routeString[0] === '/')
+	            routeString = routeString.substr(1, routeString.length-1);
+	        for (var k in this._routes) {
+	            if (this._routes[k].getRouteString() === routeString) {
+	                return this._routes[k];
+	            }
+	        }
+	        this.goToPage(this._rootRoute);
+	    },
+	    getCurrentPage: function () {
+	        return this.getCurrentRoute()._page;
+	    },
 	    getRoute: function (identifier) {
 	        return this._routes[identifier];
 	    },
 	    createRoute: function (identifier, urlString, page) {
 	        var route = Object.create(__webpack_require__(17)).init(identifier, urlString, page);
+	        return route;
 	    },
 	    addRoute: function (route) {
 	        if (this._routes[route.getIdentifier()] == undefined)
 	            this._routes[route.getIdentifier()] = route;
 	        else
 	            console.error('A route with this identifier already exists.');
+	    },
+	    setRootRoute: function (identifier) {
+	        this._rootRoute = identifier;
 	    },
 	    createAndAddRoute: function (identifier, urlString, page) {
 	        this.addRoute(this.createRoute(identifier, urlString, page));
@@ -1636,11 +1666,19 @@ var EZI =
 	        return this.getRoute(routeIdentifier).getUrlWithPassedData(dataObject);
 	    },
 	    goToPage: function (routeIdentifier, dataObject) {
+	        console.log('going to' + routeIdentifier);
 	        if (this.getIsSinglePage()) {
 
 	        }
 	        else {
-	            window.location.href = this.getBaseUrl() + this.getRouteWithData(routeIdentifier, dataObject);
+	            var splitPart = '';
+	            if (this.getBaseUrl()[this.getBaseUrl().length-1] !== '/' )
+	                splitPart += '';
+	            splitPart += this._splitChar;
+	            if (this.getRouteWithData(routeIdentifier, dataObject)[0] !== '/')
+	                splitPart += '/';
+	            window.location.href = this.getBaseUrl() + splitPart + this.getRouteWithData(routeIdentifier, dataObject);
+	            EZI.getApp()._renderApp();
 	        }
 	    }
 	});
@@ -1664,6 +1702,7 @@ var EZI =
 	        this._identifier = identifier;
 	        this._routeString = routeString;
 	        this._page = page;
+	        return this;
 	    },
 	    getIdentifier: function () {
 	        return this._identifier;
@@ -1685,6 +1724,7 @@ var EZI =
 	    }
 	});
 
+	module.exports = Route;
 
 /***/ },
 /* 18 */
@@ -1789,6 +1829,39 @@ var EZI =
 
 /***/ },
 /* 20 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 * Created by Stijn on 03/03/16.
+	 */
+	var Page = Object.create(__webpack_require__(21));
+
+	Page.init = function (title, properties, builder) {
+	    this.properties = properties;
+	    this._builder = builder;
+	    this._children = {};
+	    this.componentWillMount();
+	    this.setTitle(title);
+	    return this;
+	};
+	Page.setTitle = function (title) {
+	    this._title = title;
+	};
+	Page.getTitle = function () {
+	    return this._title;
+	};
+	Page.setRootComponent = function (component) {
+	    this.addChildComponent('ROOT', component);
+	};
+	Page.render = function () {
+	    EZ('head title').text(this.getTitle());
+	    return this.renderChildComponent('ROOT');
+	};
+
+	module.exports = Page;
+
+/***/ },
+/* 21 */
 /***/ function(module, exports) {
 
 	/**
@@ -1801,7 +1874,6 @@ var EZI =
 	    init: function (properties, builder) {
 	        this.properties = properties;
 	        this._builder = builder;
-	        console.log(this._builder);
 	        this._children = {};
 	        this.componentWillMount();
 	        return this;
@@ -1853,7 +1925,7 @@ var EZI =
 
 
 /***/ },
-/* 21 */
+/* 22 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -1864,11 +1936,16 @@ var EZI =
 	 */
 	//COMPONENT
 	//BASIC ELEMENT
-	var Button = Object.create(__webpack_require__(20));
+	var Button = Object.create(__webpack_require__(21));
 
 	Button.render = function () {
-	    var btn = EZI.make('a', {class: 'button', href: this.properties.link, style: this.properties.style});
-	    btn.text(this.properties.text);
+	    var btn = EZI.make('a', {
+	        class: 'button',
+	        href: (this.properties.link)?this.properties.link:undefined,
+	        style: this.properties.style,
+	        text: this.properties.text,
+	        on: this.properties.on
+	    });
 	    return btn;
 	};
 

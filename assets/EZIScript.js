@@ -153,7 +153,8 @@ var EZI = Object.create({
             obj.children = undefined;
         }
         for (var k in obj) {
-            element.attr(k, obj[k]);
+            if (obj[k] !== undefined)
+                element.attr(k, obj[k]);
         }
     },
 
@@ -185,7 +186,8 @@ var EZI = Object.create({
             app = app();
         }
         this._app = app;
-        app._renderApp();
+        app.fireApp();
+        //app._renderApp();
     },
     getApp: function () {
         return this._app;

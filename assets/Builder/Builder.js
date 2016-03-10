@@ -16,6 +16,10 @@ var Builder = Object.create({
         return this;
     },
 
+    fireApp: function () {
+        this._renderApp();
+    },
+
     setAppName: function (appName) {
         this._appName = appName;
     },
@@ -31,14 +35,11 @@ var Builder = Object.create({
     },
 
     _getRenderedApp: function () {
-        return this.createComponent(this._rootComponent)._startRender();
+        return this.getRouter().getCurrentPage()._startRender();
     },
     _renderApp: function () {
+        EZ('body').clear();
         EZ('body').append(this._getRenderedApp());
-    },
-
-    setRootComponent: function (component) {
-        this._rootComponent = component;
     },
     defineComponent: function (parentComponent, objToApply) {
         var newComponent = Object.create(this.getRegisteredComponent(parentComponent));
@@ -57,7 +58,13 @@ var Builder = Object.create({
         return this._registeredComponents[componentName];
     },
     createComponent: function (componentName, properties) {
-        return this.getRegisteredComponent(componentName).init(properties, this);
+        return Object.create(this.getRegisteredComponent(componentName)).init(properties, this);
+    },
+    createPage: function (title, properties, rootComponent) {
+        var page = Object.create(require('./components/Page')).init(title, properties, this);
+        if (rootComponent)
+            page.setRootComponent(rootComponent);
+        return page;
     },
     _setRenderingComponent: function (component) {
         this._renderingComponent = component;

@@ -8,7 +8,6 @@ var Component = Object.create({
     init: function (properties, builder) {
         this.properties = properties;
         this._builder = builder;
-        console.log(this._builder);
         this._children = {};
         this.componentWillMount();
         return this;

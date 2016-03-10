@@ -10,6 +10,7 @@ var Route = Object.create({
         this._identifier = identifier;
         this._routeString = routeString;
         this._page = page;
+        return this;
     },
     getIdentifier: function () {
         return this._identifier;
@@ -30,3 +31,5 @@ var Route = Object.create({
         return urlString;
     }
 });
+
+module.exports = Route;
