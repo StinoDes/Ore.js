@@ -35,6 +35,10 @@ var Elemental = Object.create({
         }
         return this.cache[el._eziId];
 
+    },
+
+    getElementByEziId: function (id) {
+        return this.cache[id];
     }
 
 });

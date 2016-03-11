@@ -53,19 +53,18 @@ var AnimatedProperty = Object.create({
         if (this.isTransform()) {
 
             if (this.propertyName != this.TRANSFORMS[1] && this.propertyName != this.TRANSFORMS[2]) {
-                return this.propertyName+"("+ (this.startValue + this.deltaValue() * EZI.Easing[this.easing](t)) + this.unit+")";
+                return this.propertyName+"("+ (this.startValue + this.deltaValue() * EZI.Easings[this.easing](t)) + this.unit+")";
             }
             else if (this.propertyName == this.TRANSFORMS[1]) {
-                return "translate("+(this.startValue + this.deltaValue() * EZI.Easing[this.easing](t)) + this.unit+",0)";
+                return "translate("+(this.startValue + this.deltaValue() * EZI.Easings[this.easing](t)) + this.unit+",0)";
             }
             else if (this.propertyName == this.TRANSFORMS[2]) {
-                return "translate(0,"+(this.startValue + this.deltaValue() * EZI.Easing[this.easing](t)) + this.unit+")";
+                return "translate(0,"+(this.startValue + this.deltaValue() * EZI.Easings[this.easing](t)) + this.unit+")";
             }
 
         }
         else {
-
-            return this.startValue + this.deltaValue() * EZI.Easing[this.easing](t) + this.unit;
+            return this.startValue + this.deltaValue() * EZI.Easings[this.easing](t) + this.unit;
 
         }
 

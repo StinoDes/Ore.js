@@ -123,8 +123,9 @@ var EZI = Object.create({
             //INIT COMPONENT IF ELSTRING STARTS WITH CAPITAL LETTER
 
             //CHILD FROM RENDERING COMPONENT IN APP IF APP IS DEFINED
-            if (this.getApp())
+            if (this.getApp()) {
                 return this.getApp()._getRenderingComponent().renderChildComponent(elstring);
+            }
         }
         var element = document.createElement(elstring);
         (typeof obj != 'undefined') ? EZI.addAttrFromObj(EZ(element), obj) : null;

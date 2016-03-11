@@ -28,6 +28,11 @@ var DataBank = Object.create({
     getDataVar: function (name, getWholeObject) {
         return (getWholeObject)?this._data[name]:this._data[name].getValue();
     },
+    dataVarExists: function (name) {
+        if (this.getDataVar(name, true))
+            return true;
+        return false;
+    },
     addAsListenerTo: function (object, nameArray) {
         for (var k in nameArray) {
             this.getDataVar(nameArray[k], true).addListener(object);

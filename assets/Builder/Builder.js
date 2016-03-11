@@ -66,14 +66,16 @@ var Builder = Object.create({
             page.setRootComponent(rootComponent);
         return page;
     },
-    _setRenderingComponent: function (component) {
-        this._renderingComponent = component;
+    _addRenderingComponent: function (component) {
+        if (!this._renderingComponents)
+            this._renderingComponents = [];
+        this._renderingComponents.push(component);
     },
     _getRenderingComponent: function () {
-        return this._renderingComponent;
+        return this._renderingComponents[this._renderingComponents.length-1];
     },
-    _clearRenderingComponent: function () {
-        this._renderingComponent = undefined;
+    _removeRenderingComponent: function () {
+        this._renderingComponents = this._renderingComponents.slice(0, -1);
     }
 
 

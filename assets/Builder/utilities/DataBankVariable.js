@@ -5,15 +5,17 @@
 var DataBankVariable = Object.create({
 
     init: function (name, value, type, listeners) {
+        listeners = (Array.isArray(listeners))?listeners:[listeners];
         this.setName(name);
         this.setType(type);
         this.setValue(value);
         this._listeners = (listeners == undefined)?[]:listeners;
+        this._triggersRerender = true;
         return this;
     },
     callToListeners: function () {
         for (var k in this._listeners) {
-            this._listeners[k]._dataVarChanged();
+            this._listeners[k]._dataVarChanged(this._triggersRerender);
         }
     },
     addListener: function (listener) {
@@ -37,7 +39,7 @@ var DataBankVariable = Object.create({
         return this._type;
     },
     setValue: function (value) {
-        if (typeof value === this.getType() || value == null) {
+        if ((this.getType() && typeof value === this.getType()) || value == null) {
             this._value = value;
             this.callToListeners();
         }
@@ -46,6 +48,9 @@ var DataBankVariable = Object.create({
     },
     getValue: function () {
         return this._value;
-    }
+    },
+    triggersRerender: function (bool) {
+        this._triggersRerender = bool;
+    },
 });
 module.exports = DataBankVariable;

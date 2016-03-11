@@ -10,7 +10,7 @@ var Button = Object.create(require('./Component'));
 
 Button.render = function () {
     var btn = EZI.make('a', {
-        class: 'button',
+        class: 'button ' + this.properties.class,
         href: (this.properties.link)?this.properties.link:undefined,
         style: this.properties.style,
         text: this.properties.text,

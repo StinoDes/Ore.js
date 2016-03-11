@@ -179,8 +179,9 @@ var EZI =
 	            //INIT COMPONENT IF ELSTRING STARTS WITH CAPITAL LETTER
 
 	            //CHILD FROM RENDERING COMPONENT IN APP IF APP IS DEFINED
-	            if (this.getApp())
+	            if (this.getApp()) {
 	                return this.getApp()._getRenderingComponent().renderChildComponent(elstring);
+	            }
 	        }
 	        var element = document.createElement(elstring);
 	        (typeof obj != 'undefined') ? EZI.addAttrFromObj(EZ(element), obj) : null;
@@ -313,6 +314,10 @@ var EZI =
 	        }
 	        return this.cache[el._eziId];
 
+	    },
+
+	    getElementByEziId: function (id) {
+	        return this.cache[id];
 	    }
 
 	});
@@ -337,6 +342,23 @@ var EZI =
 
 	        return this;
 	    },
+	    _getEziId: function () {
+	        return this.element._eziId;
+	    },
+
+	    parent: function () {
+	        return EZ(this.element.parentElement);
+	    },
+	    index: function () {
+	        var index = 0,
+	            node = this.element;
+	        while ((node = node.previousElementSibling )) {
+	            index++;
+	        }
+	        return index;
+
+	    },
+
 
 	    //HIDING ELEMENT
 	    isHidden: function () {
@@ -394,10 +416,10 @@ var EZI =
 	        autoStart = (typeof autoStart == 'undefined') ? true: autoStart;
 	        var prop = EZI.CSSProps.getPropertyObject(name);
 
-	        if (!value && value != 0) {
+	        if (!value && value !== 0) {
 
-	            var value = 0;
-	            value += getComputedStyle(this.element, null).getPropertyValue(prop.name);
+	            //var value = 0;
+	            var value = getComputedStyle(this.element, null).getPropertyValue(prop.name);
 	            if (value.match(/\d+/g) != null) value = parseFloat(value);
 	            return value;
 
@@ -409,7 +431,7 @@ var EZI =
 	            }
 	            else {
 	                var anim = EZI.createAnimation(this.element._eziId + prop.id, this.element, duration);
-	                EZI.createAnimProperty(this.element._eziId + prop.id, prop.name, this.property(prop.name), value, (!easing)?EZI.Easing.DEFAULT: easing);
+	                EZI.createAnimProperty(this.element._eziId + prop.id, prop.name, this.property(prop.name), value, (!easing)?EZI.Easings.DEFAULT: easing);
 	                if (autoStart) anim.start();
 	                return anim;
 	            }
@@ -522,15 +544,32 @@ var EZI =
 
 	    append: function (obj) {
 
-	        if (typeof obj == 'string') {
-	            this.element.appendChild(EZI.make(obj).element);
+	        if (obj === undefined) {
+	            console.error('The object you\'re trying to append is undefined. Please pass a tag-string, EZI-element or DOM-element.');
 	        }
-	        else if (typeof obj.element == 'undefined') {
-	            console.error('The object you\'re appending is undefined. Please define an element or EZIObject.');
+	        else if (typeof obj == 'string') {
+	            this.element.appendChild(EZI.make(obj, arguments[1]).element);
 	        }
 	        else {
-	            this.element.appendChild(obj.element);
+	            this.element.appendChild(obj.element || obj);
 	        }
+	    },
+	    appendAtIndex: function (obj, index) {
+	        var insertBefore = this.element.children[index];
+	        if (!insertBefore) {
+	            var insertAfter = this.element.children[this.element.children.length-1];
+	            insertAfter.insertAdjecentElement('afterEnd', obj.element);
+	        }
+	        else
+	            this.element.insertBefore(obj.element, insertBefore);
+	    },
+	    remove: function () {
+	        this.element.parentNode.removeChild(this.element);
+	    },
+	    replace: function (elToReplace) {
+	        var index = elToReplace.index();
+	        elToReplace.parent().appendAtIndex(this, index);
+	        elToReplace.remove();
 
 	    },
 	    clear: function () {
@@ -1051,19 +1090,18 @@ var EZI =
 	        if (this.isTransform()) {
 
 	            if (this.propertyName != this.TRANSFORMS[1] && this.propertyName != this.TRANSFORMS[2]) {
-	                return this.propertyName+"("+ (this.startValue + this.deltaValue() * EZI.Easing[this.easing](t)) + this.unit+")";
+	                return this.propertyName+"("+ (this.startValue + this.deltaValue() * EZI.Easings[this.easing](t)) + this.unit+")";
 	            }
 	            else if (this.propertyName == this.TRANSFORMS[1]) {
-	                return "translate("+(this.startValue + this.deltaValue() * EZI.Easing[this.easing](t)) + this.unit+",0)";
+	                return "translate("+(this.startValue + this.deltaValue() * EZI.Easings[this.easing](t)) + this.unit+",0)";
 	            }
 	            else if (this.propertyName == this.TRANSFORMS[2]) {
-	                return "translate(0,"+(this.startValue + this.deltaValue() * EZI.Easing[this.easing](t)) + this.unit+")";
+	                return "translate(0,"+(this.startValue + this.deltaValue() * EZI.Easings[this.easing](t)) + this.unit+")";
 	            }
 
 	        }
 	        else {
-
-	            return this.startValue + this.deltaValue() * EZI.Easing[this.easing](t) + this.unit;
+	            return this.startValue + this.deltaValue() * EZI.Easings[this.easing](t) + this.unit;
 
 	        }
 
@@ -1158,18 +1196,18 @@ var EZI =
 	    if (this.isTransform()) {
 
 	        if (this.propertyName != this.TRANSFORMS[1] && this.propertyName != this.TRANSFORMS[2]) {
-	            return this.propertyName+"("+ (this.startValue + this.deltaValue() * EZI.Easing[this.easing](t)) + this.unit+")";
+	            return this.propertyName+"("+ (this.startValue + this.deltaValue() * EZI.Easings[this.easing](t)) + this.unit+")";
 	        }
 	        else if (this.propertyName == this.TRANSFORMS[1]) {
-	            return "translate("+(this.startValue + this.deltaValue() * EZI.Easing[this.easing](t)) + this.unit+",0)";
+	            return "translate("+(this.startValue + this.deltaValue() * EZI.Easings[this.easing](t)) + this.unit+",0)";
 	        }
 	        else if (this.propertyName == this.TRANSFORMS[2]) {
-	            return "translate(0,"+(this.startValue + this.deltaValue() * EZI.Easing[this.easing](t)) + this.unit+")";
+	            return "translate(0,"+(this.startValue + this.deltaValue() * EZI.Easings[this.easing](t)) + this.unit+")";
 	        }
 
 	    }
 	    else {
-	        return (this.startValue + this.deltaValue() * EZI.Easing[this.easing](t)) + this.unit;
+	        return (this.startValue + this.deltaValue() * EZI.Easings[this.easing](t)) + this.unit;
 
 	    }
 	};
@@ -1579,14 +1617,16 @@ var EZI =
 	            page.setRootComponent(rootComponent);
 	        return page;
 	    },
-	    _setRenderingComponent: function (component) {
-	        this._renderingComponent = component;
+	    _addRenderingComponent: function (component) {
+	        if (!this._renderingComponents)
+	            this._renderingComponents = [];
+	        this._renderingComponents.push(component);
 	    },
 	    _getRenderingComponent: function () {
-	        return this._renderingComponent;
+	        return this._renderingComponents[this._renderingComponents.length-1];
 	    },
-	    _clearRenderingComponent: function () {
-	        this._renderingComponent = undefined;
+	    _removeRenderingComponent: function () {
+	        this._renderingComponents = this._renderingComponents.slice(0, -1);
 	    }
 
 
@@ -1760,6 +1800,11 @@ var EZI =
 	    getDataVar: function (name, getWholeObject) {
 	        return (getWholeObject)?this._data[name]:this._data[name].getValue();
 	    },
+	    dataVarExists: function (name) {
+	        if (this.getDataVar(name, true))
+	            return true;
+	        return false;
+	    },
 	    addAsListenerTo: function (object, nameArray) {
 	        for (var k in nameArray) {
 	            this.getDataVar(nameArray[k], true).addListener(object);
@@ -1781,15 +1826,17 @@ var EZI =
 	var DataBankVariable = Object.create({
 
 	    init: function (name, value, type, listeners) {
+	        listeners = (Array.isArray(listeners))?listeners:[listeners];
 	        this.setName(name);
 	        this.setType(type);
 	        this.setValue(value);
 	        this._listeners = (listeners == undefined)?[]:listeners;
+	        this._triggersRerender = true;
 	        return this;
 	    },
 	    callToListeners: function () {
 	        for (var k in this._listeners) {
-	            this._listeners[k]._dataVarChanged();
+	            this._listeners[k]._dataVarChanged(this._triggersRerender);
 	        }
 	    },
 	    addListener: function (listener) {
@@ -1813,7 +1860,7 @@ var EZI =
 	        return this._type;
 	    },
 	    setValue: function (value) {
-	        if (typeof value === this.getType() || value == null) {
+	        if ((this.getType() && typeof value === this.getType()) || value == null) {
 	            this._value = value;
 	            this.callToListeners();
 	        }
@@ -1822,7 +1869,10 @@ var EZI =
 	    },
 	    getValue: function () {
 	        return this._value;
-	    }
+	    },
+	    triggersRerender: function (bool) {
+	        this._triggersRerender = bool;
+	    },
 	});
 	module.exports = DataBankVariable;
 
@@ -1875,13 +1925,21 @@ var EZI =
 	        this.properties = properties;
 	        this._builder = builder;
 	        this._children = {};
+	        this._dataVarChangedHandlers = [];
 	        this.componentWillMount();
 	        return this;
 	    },
-	    _dataVarChanged: function () {
+	    _dataVarChanged: function (rerender) {
 	        this.dataVarsHaveUpdated();
 	        this.willUpdate();
-	        this._startRender();
+	        for (var k in this._dataVarChangedHandlers) {
+	            this._dataVarChangedHandlers[k]();
+	        }
+	        if (rerender)
+	            this._startRender();
+	    },
+	    addDataVarChangedHandler: function (handler) {
+	        this._dataVarChangedHandlers.push(handler);
 	    },
 	    componentWillMount: function () {
 
@@ -1907,10 +1965,19 @@ var EZI =
 
 	    //RENDERING
 	    _startRender: function () {
+	        console.log('rerendering');
 	        var returnvalue;
-	        this._builder._setRenderingComponent(this);
+	        this._builder._addRenderingComponent(this);
 	        returnvalue = this.render();
-	        this._builder._clearRenderingComponent();
+	        this._builder._removeRenderingComponent();
+
+	        //REPLACING IN DOM TREE IF NEEDED
+	        var prevEl = EZI.Elemental.getElementByEziId(this._elementId);
+	        if (prevEl) {
+	            console.log('replacing element');
+	            returnvalue.replace(prevEl);
+	        }
+	        this._elementId = returnvalue._getEziId();
 	        return returnvalue;
 	    },
 	    render: function () {
@@ -1940,7 +2007,7 @@ var EZI =
 
 	Button.render = function () {
 	    var btn = EZI.make('a', {
-	        class: 'button',
+	        class: 'button ' + this.properties.class,
 	        href: (this.properties.link)?this.properties.link:undefined,
 	        style: this.properties.style,
 	        text: this.properties.text,

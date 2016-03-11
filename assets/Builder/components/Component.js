@@ -9,13 +9,21 @@ var Component = Object.create({
         this.properties = properties;
         this._builder = builder;
         this._children = {};
+        this._dataVarChangedHandlers = [];
         this.componentWillMount();
         return this;
     },
-    _dataVarChanged: function () {
+    _dataVarChanged: function (rerender) {
         this.dataVarsHaveUpdated();
         this.willUpdate();
-        this._startRender();
+        for (var k in this._dataVarChangedHandlers) {
+            this._dataVarChangedHandlers[k]();
+        }
+        if (rerender)
+            this._startRender();
+    },
+    addDataVarChangedHandler: function (handler) {
+        this._dataVarChangedHandlers.push(handler);
     },
     componentWillMount: function () {
 
@@ -41,10 +49,19 @@ var Component = Object.create({
 
     //RENDERING
     _startRender: function () {
+        console.log('rerendering');
         var returnvalue;
-        this._builder._setRenderingComponent(this);
+        this._builder._addRenderingComponent(this);
         returnvalue = this.render();
-        this._builder._clearRenderingComponent();
+        this._builder._removeRenderingComponent();
+
+        //REPLACING IN DOM TREE IF NEEDED
+        var prevEl = EZI.Elemental.getElementByEziId(this._elementId);
+        if (prevEl) {
+            console.log('replacing element');
+            returnvalue.replace(prevEl);
+        }
+        this._elementId = returnvalue._getEziId();
         return returnvalue;
     },
     render: function () {

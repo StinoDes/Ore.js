@@ -12,6 +12,23 @@ var EziElement = Object.create({
 
         return this;
     },
+    _getEziId: function () {
+        return this.element._eziId;
+    },
+
+    parent: function () {
+        return EZ(this.element.parentElement);
+    },
+    index: function () {
+        var index = 0,
+            node = this.element;
+        while ((node = node.previousElementSibling )) {
+            index++;
+        }
+        return index;
+
+    },
+
 
     //HIDING ELEMENT
     isHidden: function () {
@@ -69,10 +86,10 @@ var EziElement = Object.create({
         autoStart = (typeof autoStart == 'undefined') ? true: autoStart;
         var prop = EZI.CSSProps.getPropertyObject(name);
 
-        if (!value && value != 0) {
+        if (!value && value !== 0) {
 
-            var value = 0;
-            value += getComputedStyle(this.element, null).getPropertyValue(prop.name);
+            //var value = 0;
+            var value = getComputedStyle(this.element, null).getPropertyValue(prop.name);
             if (value.match(/\d+/g) != null) value = parseFloat(value);
             return value;
 
@@ -84,7 +101,7 @@ var EziElement = Object.create({
             }
             else {
                 var anim = EZI.createAnimation(this.element._eziId + prop.id, this.element, duration);
-                EZI.createAnimProperty(this.element._eziId + prop.id, prop.name, this.property(prop.name), value, (!easing)?EZI.Easing.DEFAULT: easing);
+                EZI.createAnimProperty(this.element._eziId + prop.id, prop.name, this.property(prop.name), value, (!easing)?EZI.Easings.DEFAULT: easing);
                 if (autoStart) anim.start();
                 return anim;
             }
@@ -197,15 +214,32 @@ var EziElement = Object.create({
 
     append: function (obj) {
 
-        if (typeof obj == 'string') {
-            this.element.appendChild(EZI.make(obj).element);
+        if (obj === undefined) {
+            console.error('The object you\'re trying to append is undefined. Please pass a tag-string, EZI-element or DOM-element.');
         }
-        else if (typeof obj.element == 'undefined') {
-            console.error('The object you\'re appending is undefined. Please define an element or EZIObject.');
+        else if (typeof obj == 'string') {
+            this.element.appendChild(EZI.make(obj, arguments[1]).element);
         }
         else {
-            this.element.appendChild(obj.element);
+            this.element.appendChild(obj.element || obj);
         }
+    },
+    appendAtIndex: function (obj, index) {
+        var insertBefore = this.element.children[index];
+        if (!insertBefore) {
+            var insertAfter = this.element.children[this.element.children.length-1];
+            insertAfter.insertAdjecentElement('afterEnd', obj.element);
+        }
+        else
+            this.element.insertBefore(obj.element, insertBefore);
+    },
+    remove: function () {
+        this.element.parentNode.removeChild(this.element);
+    },
+    replace: function (elToReplace) {
+        var index = elToReplace.index();
+        elToReplace.parent().appendAtIndex(this, index);
+        elToReplace.remove();
 
     },
     clear: function () {
