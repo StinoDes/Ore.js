@@ -6,12 +6,19 @@
 var Component = Object.create({
 
     init: function (properties, builder) {
-        this.properties = properties;
+        this.setProperties(properties);
         this._builder = builder;
         this._children = {};
         this._dataVarChangedHandlers = [];
         this.componentWillMount();
         return this;
+    },
+    setProperties: function (props) {
+        if (this.properties === undefined)
+            this.properties = {};
+        for (var k in props) {
+            this.properties[k] = props[k];
+        }
     },
     _dataVarChanged: function (rerender) {
         this.dataVarsHaveUpdated();
@@ -25,6 +32,8 @@ var Component = Object.create({
     addDataVarChangedHandler: function (handler) {
         this._dataVarChangedHandlers.push(handler);
     },
+
+    //HOOKS
     componentWillMount: function () {
 
     },
@@ -34,10 +43,12 @@ var Component = Object.create({
     willUpdate: function () {
 
     },
+
+
     //keyed array of {name: child, name: child}
     addMultipleChildComponents: function(keyedChildrenArray) {
         for (var k in keyedChildrenArray) {
-            this.addChildComponent(keyedChildrenArray[k]);
+            this.addChildComponent(k, keyedChildrenArray[k]);
         }
     },
     addChildComponent: function (name, component) {
@@ -48,8 +59,9 @@ var Component = Object.create({
     },
 
     //RENDERING
-    _startRender: function () {
-        console.log('rerendering');
+    _startRender: function (properties) {
+        console.log('rendering');
+        this.setProperties(properties);
         var returnvalue;
         this._builder._addRenderingComponent(this);
         returnvalue = this.render();
@@ -67,8 +79,8 @@ var Component = Object.create({
     render: function () {
         return EZI.make('div');
     },
-    renderChildComponent: function (name) {
-        return this._children[name]._startRender();
+    renderChildComponent: function (name, properties) {
+        return this._children[name]._startRender(properties);
     },
 });
 

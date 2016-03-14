@@ -235,6 +235,7 @@ var EziElement = Object.create({
     },
     remove: function () {
         this.element.parentNode.removeChild(this.element);
+        EZI.Elemental._deleteFromCache(this._getEziId());
     },
     replace: function (elToReplace) {
         var index = elToReplace.index();
@@ -243,12 +244,24 @@ var EziElement = Object.create({
 
     },
     clear: function () {
-        while (this.element.firstChild) {
-            this.element.removeChild(this.element.firstChild);
+        var children = this.children();
+        for (var k in children) {
+            console.log('removing');
+            children[k].remove();
         }
     },
     parent: function () {
+        console.log(this.element);
         return EZ(this.element.parentNode);
+    },
+    children: function () {
+        var childrenArr = [],
+            childNodes = this.element.childNodes;
+        for (var k in childNodes) {
+            if (EZ(childNodes[k]))
+                childrenArr.push(EZ(childNodes[k]))
+        }
+        return childrenArr;
     },
     clone: function (children) {
         return (typeof children =='undefined') ? EZ(this.element.cloneNode(true)) : EZ(this.element.cloneNode(children));

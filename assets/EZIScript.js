@@ -124,7 +124,7 @@ var EZI = Object.create({
 
             //CHILD FROM RENDERING COMPONENT IN APP IF APP IS DEFINED
             if (this.getApp()) {
-                return this.getApp()._getRenderingComponent().renderChildComponent(elstring);
+                return this.getApp()._getRenderingComponent().renderChildComponent(elstring, obj);
             }
         }
         var element = document.createElement(elstring);

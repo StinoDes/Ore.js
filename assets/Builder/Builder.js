@@ -41,6 +41,13 @@ var Builder = Object.create({
         EZ('body').clear();
         EZ('body').append(this._getRenderedApp());
     },
+    _defineBaseComponent: function (parentComponent, objToApply) {
+        var newComponent = Object.create(this._baseComponents[parentComponent]);
+        for (var k in objToApply) {
+            newComponent[k] = objToApply[k];
+        }
+        return newComponent;
+    },
     defineComponent: function (parentComponent, objToApply) {
         var newComponent = Object.create(this.getRegisteredComponent(parentComponent));
         for (var k in objToApply) {
@@ -81,7 +88,8 @@ var Builder = Object.create({
 
 });
 
-Builder._baseComponents.Component = require('./components/Component');
-Builder._baseComponents.Button = require('./components/Button');
+Builder._baseComponents.Component = require('./components/basecomponents/Component');
+Builder._baseComponents.Button = Builder._defineBaseComponent.apply(Builder, require('./components/basecomponents/Button'));
+Builder._baseComponents.List = Builder._defineBaseComponent.apply(Builder, require('./components/basecomponents/List'));
 
 module.exports = Builder;

@@ -39,6 +39,10 @@ var Elemental = Object.create({
 
     getElementByEziId: function (id) {
         return this.cache[id];
+    },
+
+    _deleteFromCache: function (id) {
+        delete this.cache[id];
     }
 
 });

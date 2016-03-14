@@ -180,7 +180,7 @@ var EZI =
 
 	            //CHILD FROM RENDERING COMPONENT IN APP IF APP IS DEFINED
 	            if (this.getApp()) {
-	                return this.getApp()._getRenderingComponent().renderChildComponent(elstring);
+	                return this.getApp()._getRenderingComponent().renderChildComponent(elstring, obj);
 	            }
 	        }
 	        var element = document.createElement(elstring);
@@ -318,6 +318,10 @@ var EZI =
 
 	    getElementByEziId: function (id) {
 	        return this.cache[id];
+	    },
+
+	    _deleteFromCache: function (id) {
+	        delete this.cache[id];
 	    }
 
 	});
@@ -565,6 +569,7 @@ var EZI =
 	    },
 	    remove: function () {
 	        this.element.parentNode.removeChild(this.element);
+	        EZI.Elemental._deleteFromCache(this._getEziId());
 	    },
 	    replace: function (elToReplace) {
 	        var index = elToReplace.index();
@@ -573,12 +578,24 @@ var EZI =
 
 	    },
 	    clear: function () {
-	        while (this.element.firstChild) {
-	            this.element.removeChild(this.element.firstChild);
+	        var children = this.children();
+	        for (var k in children) {
+	            console.log('removing');
+	            children[k].remove();
 	        }
 	    },
 	    parent: function () {
+	        console.log(this.element);
 	        return EZ(this.element.parentNode);
+	    },
+	    children: function () {
+	        var childrenArr = [],
+	            childNodes = this.element.childNodes;
+	        for (var k in childNodes) {
+	            if (EZ(childNodes[k]))
+	                childrenArr.push(EZ(childNodes[k]))
+	        }
+	        return childrenArr;
 	    },
 	    clone: function (children) {
 	        return (typeof children =='undefined') ? EZ(this.element.cloneNode(true)) : EZ(this.element.cloneNode(children));
@@ -1592,6 +1609,13 @@ var EZI =
 	        EZ('body').clear();
 	        EZ('body').append(this._getRenderedApp());
 	    },
+	    _defineBaseComponent: function (parentComponent, objToApply) {
+	        var newComponent = Object.create(this._baseComponents[parentComponent]);
+	        for (var k in objToApply) {
+	            newComponent[k] = objToApply[k];
+	        }
+	        return newComponent;
+	    },
 	    defineComponent: function (parentComponent, objToApply) {
 	        var newComponent = Object.create(this.getRegisteredComponent(parentComponent));
 	        for (var k in objToApply) {
@@ -1633,7 +1657,8 @@ var EZI =
 	});
 
 	Builder._baseComponents.Component = __webpack_require__(21);
-	Builder._baseComponents.Button = __webpack_require__(22);
+	Builder._baseComponents.Button = Builder._defineBaseComponent.apply(Builder, __webpack_require__(22));
+	Builder._baseComponents.List = Builder._defineBaseComponent.apply(Builder, __webpack_require__(23));
 
 	module.exports = Builder;
 
@@ -1671,7 +1696,10 @@ var EZI =
 
 	    getCurrentRoute: function () {
 	        var routeString = this.getRouteString();
-	        if (routeString[0] === '/')
+	        if (routeString === undefined || !routeString) {
+	            this.goToPage(this._rootRoute);
+	        }
+	        else if (routeString !== undefined && routeString[0] === '/')
 	            routeString = routeString.substr(1, routeString.length-1);
 	        for (var k in this._routes) {
 	            if (this._routes[k].getRouteString() === routeString) {
@@ -1922,12 +1950,19 @@ var EZI =
 	var Component = Object.create({
 
 	    init: function (properties, builder) {
-	        this.properties = properties;
+	        this.setProperties(properties);
 	        this._builder = builder;
 	        this._children = {};
 	        this._dataVarChangedHandlers = [];
 	        this.componentWillMount();
 	        return this;
+	    },
+	    setProperties: function (props) {
+	        if (this.properties === undefined)
+	            this.properties = {};
+	        for (var k in props) {
+	            this.properties[k] = props[k];
+	        }
 	    },
 	    _dataVarChanged: function (rerender) {
 	        this.dataVarsHaveUpdated();
@@ -1941,6 +1976,8 @@ var EZI =
 	    addDataVarChangedHandler: function (handler) {
 	        this._dataVarChangedHandlers.push(handler);
 	    },
+
+	    //HOOKS
 	    componentWillMount: function () {
 
 	    },
@@ -1950,10 +1987,12 @@ var EZI =
 	    willUpdate: function () {
 
 	    },
+
+
 	    //keyed array of {name: child, name: child}
 	    addMultipleChildComponents: function(keyedChildrenArray) {
 	        for (var k in keyedChildrenArray) {
-	            this.addChildComponent(keyedChildrenArray[k]);
+	            this.addChildComponent(k, keyedChildrenArray[k]);
 	        }
 	    },
 	    addChildComponent: function (name, component) {
@@ -1964,8 +2003,9 @@ var EZI =
 	    },
 
 	    //RENDERING
-	    _startRender: function () {
-	        console.log('rerendering');
+	    _startRender: function (properties) {
+	        console.log('rendering');
+	        this.setProperties(properties);
 	        var returnvalue;
 	        this._builder._addRenderingComponent(this);
 	        returnvalue = this.render();
@@ -1983,8 +2023,8 @@ var EZI =
 	    render: function () {
 	        return EZI.make('div');
 	    },
-	    renderChildComponent: function (name) {
-	        return this._children[name]._startRender();
+	    renderChildComponent: function (name, properties) {
+	        return this._children[name]._startRender(properties);
 	    },
 	});
 
@@ -1993,33 +2033,74 @@ var EZI =
 
 /***/ },
 /* 22 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ function(module, exports) {
 
 	/**
 	 * Created by Stijn on 02/03/16.
 	 */
-	/**
-	 * Created by Stijn on 02/03/16.
-	 */
-	//COMPONENT
-	//BASIC ELEMENT
-	var Button = Object.create(__webpack_require__(21));
-
-	Button.render = function () {
-	    var btn = EZI.make('a', {
-	        class: 'button ' + this.properties.class,
-	        href: (this.properties.link)?this.properties.link:undefined,
-	        style: this.properties.style,
-	        text: this.properties.text,
-	        on: this.properties.on
-	    });
-	    return btn;
-	};
+	var Button = ['Component', {
+	    render: function () {
+	        var btn = EZI.make('a', {
+	            class: 'button ' + this.properties.class,
+	            href: (this.properties.link)?this.properties.link:undefined,
+	            style: this.properties.style,
+	            text: this.properties.text,
+	            on: this.properties.on
+	        });
+	        return btn;
+	    }
+	}];
 
 
 	module.exports = Button;
 
 
+
+/***/ },
+/* 23 */
+/***/ function(module, exports) {
+
+	var List = ['Component', {
+
+	    //Give ROW component to render in list (can be whatever)
+	    //In properties:
+	    //data || what will be showed in list
+	    //rowComponent || in what data will be shown
+
+	    componentWillMount: function () {
+	        this.setData(this.properties.data);
+	        this.setRowComponent(this.properties.rowComponent);
+	    },
+
+	    setData: function (data) {
+	        this._data = data;
+	    },
+	    setRowComponent: function (component) {
+	        this.addChildComponent('Row', component);
+	    },
+
+	    _getRows: function () {
+	        var rowArray = [];
+	        if (this._children.Row === undefined || !this._children.Row) {
+	            console.error('There is no defined rowcomponent. Set one using the \'setRowComponent\' method or passing it through the properties.');
+	            return [];
+	        }
+	        for (var k in this._data) {
+	            rowArray.push({'Row': {data: this._data[k]}});
+	        }
+	        console.log(rowArray);
+	        return rowArray;
+	    },
+	    render: function () {
+	        return EZI.make('div', {
+	            class: 'list',
+	            children: this._getRows()
+	        });
+	    }
+
+	}];
+
+	module.exports = List;
 
 /***/ }
 /******/ ]);

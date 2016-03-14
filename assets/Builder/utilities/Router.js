@@ -28,7 +28,10 @@ var Router = Object.create({
 
     getCurrentRoute: function () {
         var routeString = this.getRouteString();
-        if (routeString[0] === '/')
+        if (routeString === undefined || !routeString) {
+            this.goToPage(this._rootRoute);
+        }
+        else if (routeString !== undefined && routeString[0] === '/')
             routeString = routeString.substr(1, routeString.length-1);
         for (var k in this._routes) {
             if (this._routes[k].getRouteString() === routeString) {

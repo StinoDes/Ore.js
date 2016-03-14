@@ -1,7 +1,7 @@
 /**
  * Created by Stijn on 03/03/16.
  */
-var Page = Object.create(require('./Component'));
+var Page = Object.create(require('./basecomponents/Component'));
 
 Page.init = function (title, properties, builder) {
     this.properties = properties;
