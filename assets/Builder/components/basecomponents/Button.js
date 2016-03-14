@@ -6,7 +6,7 @@
  */
 //COMPONENT
 //BASIC ELEMENT
-var Button = Object.create(require('./Component'));
+var Button = Object.create(require('./../Component'));
 
 Button.render = function () {
     var btn = EZI.make('a', {
