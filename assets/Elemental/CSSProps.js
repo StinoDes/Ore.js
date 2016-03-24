@@ -28,6 +28,14 @@ var CSSProps = Object.create({
             defaultUnit: '',
             name: 'background-color'
         },
+        backgroundImage: {
+            defaultUnit: '',
+            name: 'background-image'
+        },
+        backgroundSize: {
+            defaultUnit: '',
+            name: 'background-size'
+        },
         borderwidth: {
             defaultUnit: 'px',
             name: 'border-width',
