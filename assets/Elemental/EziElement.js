@@ -110,8 +110,8 @@ var EziElement = Object.create({
     },
 
     //EDITING NODES
-    text: function (text, andChilds) {
-        if (typeof text == 'undefined') {
+    text: function (string, andChilds) {
+        if (typeof string == 'undefined') {
             var text;
             for (var i = 0; i < this.element.childNodes.length; i++) {
                 if (this.element.childNodes[i].nodeName == '#text') {
@@ -124,7 +124,7 @@ var EziElement = Object.create({
         }
         else {
             if (andChilds) {
-                this.element.textContent = text;
+                this.element.textContent = string;
             }
             else {
                 var childTextNode;
@@ -134,20 +134,23 @@ var EziElement = Object.create({
                     }
                 }
                 if (!childTextNode) {
-                    childTextNode = document.createTextNode(text);
+                    childTextNode = document.createTextNode(string);
                     this.element.appendChild(childTextNode);
                 }
                 else {
-                    childTextNode.nodeValue = text;
+                    childTextNode.nodeValue = string;
                 }
             }
         }
     },
     value: function (value) {
-        return this.attr('value', value);
+        if (value === undefined)
+            return this.element.value;
+        else
+            this.element.value = value;
     },
     placeholder: function (value) {
-        return this.attr('value', value);
+        return this.attr('placeholder', value);
     },
     name: function (value) {
         return this.attr('name', value);
@@ -246,12 +249,10 @@ var EziElement = Object.create({
     clear: function () {
         var children = this.children();
         for (var k in children) {
-            console.log('removing');
             children[k].remove();
         }
     },
     parent: function () {
-        console.log(this.element);
         return EZ(this.element.parentNode);
     },
     children: function () {

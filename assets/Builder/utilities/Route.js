@@ -21,12 +21,23 @@ var Route = Object.create({
     getPage: function () {
         return this._page;
     },
+    urlBelongsToRoute: function (url) {
+        url = url.split('/');
+        var thisurl = this.getRouteString().split('/');
+        for (var k in url) {
+            if (thisurl[k][0] === ':' && thisurl[k][thisurl[k].length-1] === ':')
+                continue;
+            else if (thisurl[k] !== url[k])
+                return false;
+        }
+        return true;
+    },
     //if url is like 'users/:user:/posts', dataobj will contain an identifying string for user
     //like {user: 'user1'}
     getUrlWithPassedData: function (dataObj) {
         var urlString = this.getRouteString();
         for(var k in dataObj) {
-            urlString.replace(':'+k+':', dataObj[k]);
+            urlString = urlString.replace(':'+k+':', dataObj[k]);
         }
         return urlString;
     }

@@ -6,7 +6,16 @@ var List = ['Component', {
     //rowComponent || in what data will be shown
 
     componentWillMount: function () {
-        this.setData(this.properties.data);
+        //SET DATA
+        //EITHER SET ARRAY OR DATAVAR FROM BANK
+        if (typeof this.properties.data === 'string') {
+            console.log('adding as listener');
+            console.log(this);
+            this._builder.getDataBank().addAsListenerTo(this, [this.properties.data]);
+        }
+        else
+            this.setData(this.properties.data);
+
         this.setRowComponent(this.properties.rowComponent);
     },
 
@@ -16,7 +25,9 @@ var List = ['Component', {
     setRowComponent: function (component) {
         this.addChildComponent('Row', component);
     },
-
+    dataVarsHaveUpdated: function () {
+        this.setData(this._builder.getDataBank().getDataVar(this.properties.data));
+    },
     _getRows: function () {
         var rowArray = [];
         if (this._children.Row === undefined || !this._children.Row) {
@@ -24,13 +35,14 @@ var List = ['Component', {
             return [];
         }
         for (var k in this._data) {
-            rowArray.push({'Row': {data: this._data[k]}});
+            if (this._data[k])
+                rowArray.push({'Row': {data: this._data[k], _copy: true}});
         }
-        console.log(rowArray);
         return rowArray;
     },
     render: function () {
-        return EZI.make('div', {
+        console.log('rendering list');
+        return EZI.make('ul', {
             class: 'list',
             children: this._getRows()
         });

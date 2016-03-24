@@ -91,5 +91,6 @@ var Builder = Object.create({
 Builder._baseComponents.Component = require('./components/basecomponents/Component');
 Builder._baseComponents.Button = Builder._defineBaseComponent.apply(Builder, require('./components/basecomponents/Button'));
 Builder._baseComponents.List = Builder._defineBaseComponent.apply(Builder, require('./components/basecomponents/List'));
+Builder._baseComponents.Input = Builder._defineBaseComponent.apply(Builder, require('./components/basecomponents/Input'));
 
 module.exports = Builder;

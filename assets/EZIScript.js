@@ -124,7 +124,8 @@ var EZI = Object.create({
 
             //CHILD FROM RENDERING COMPONENT IN APP IF APP IS DEFINED
             if (this.getApp()) {
-                return this.getApp()._getRenderingComponent().renderChildComponent(elstring, obj);
+                var copy = (obj)?obj._copy:false;
+                return this.getApp()._getRenderingComponent().renderChildComponent(elstring, obj, copy);
             }
         }
         var element = document.createElement(elstring);
@@ -144,7 +145,7 @@ var EZI = Object.create({
             for (var k in obj.on) {
                 element.on(k, obj.on[k]);
             }
-            element.on = undefined;
+            obj.on = undefined;
         }
         if (obj.children) {
             for (var k in obj.children) {
@@ -154,7 +155,7 @@ var EZI = Object.create({
             obj.children = undefined;
         }
         for (var k in obj) {
-            if (obj[k] !== undefined)
+            if (obj[k] !== undefined && obj[k] !== null)
                 element.attr(k, obj[k]);
         }
     },

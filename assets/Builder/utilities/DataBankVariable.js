@@ -5,7 +5,12 @@
 var DataBankVariable = Object.create({
 
     init: function (name, value, type, listeners) {
-        listeners = (Array.isArray(listeners))?listeners:[listeners];
+        if (Array.isArray(listeners))
+            listeners = listeners;
+        else if (listeners === undefined || !listeners)
+            listeners = [];
+        else
+            listeners = [listeners];
         this.setName(name);
         this.setType(type);
         this.setValue(value);

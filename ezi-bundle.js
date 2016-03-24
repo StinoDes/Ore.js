@@ -180,7 +180,8 @@ var EZI =
 
 	            //CHILD FROM RENDERING COMPONENT IN APP IF APP IS DEFINED
 	            if (this.getApp()) {
-	                return this.getApp()._getRenderingComponent().renderChildComponent(elstring, obj);
+	                var copy = (obj)?obj._copy:false;
+	                return this.getApp()._getRenderingComponent().renderChildComponent(elstring, obj, copy);
 	            }
 	        }
 	        var element = document.createElement(elstring);
@@ -200,7 +201,7 @@ var EZI =
 	            for (var k in obj.on) {
 	                element.on(k, obj.on[k]);
 	            }
-	            element.on = undefined;
+	            obj.on = undefined;
 	        }
 	        if (obj.children) {
 	            for (var k in obj.children) {
@@ -210,7 +211,7 @@ var EZI =
 	            obj.children = undefined;
 	        }
 	        for (var k in obj) {
-	            if (obj[k] !== undefined)
+	            if (obj[k] !== undefined && obj[k] !== null)
 	                element.attr(k, obj[k]);
 	        }
 	    },
@@ -444,8 +445,8 @@ var EZI =
 	    },
 
 	    //EDITING NODES
-	    text: function (text, andChilds) {
-	        if (typeof text == 'undefined') {
+	    text: function (string, andChilds) {
+	        if (typeof string == 'undefined') {
 	            var text;
 	            for (var i = 0; i < this.element.childNodes.length; i++) {
 	                if (this.element.childNodes[i].nodeName == '#text') {
@@ -458,7 +459,7 @@ var EZI =
 	        }
 	        else {
 	            if (andChilds) {
-	                this.element.textContent = text;
+	                this.element.textContent = string;
 	            }
 	            else {
 	                var childTextNode;
@@ -468,20 +469,23 @@ var EZI =
 	                    }
 	                }
 	                if (!childTextNode) {
-	                    childTextNode = document.createTextNode(text);
+	                    childTextNode = document.createTextNode(string);
 	                    this.element.appendChild(childTextNode);
 	                }
 	                else {
-	                    childTextNode.nodeValue = text;
+	                    childTextNode.nodeValue = string;
 	                }
 	            }
 	        }
 	    },
 	    value: function (value) {
-	        return this.attr('value', value);
+	        if (value === undefined)
+	            return this.element.value;
+	        else
+	            this.element.value = value;
 	    },
 	    placeholder: function (value) {
-	        return this.attr('value', value);
+	        return this.attr('placeholder', value);
 	    },
 	    name: function (value) {
 	        return this.attr('name', value);
@@ -580,12 +584,10 @@ var EZI =
 	    clear: function () {
 	        var children = this.children();
 	        for (var k in children) {
-	            console.log('removing');
 	            children[k].remove();
 	        }
 	    },
 	    parent: function () {
-	        console.log(this.element);
 	        return EZ(this.element.parentNode);
 	    },
 	    children: function () {
@@ -1659,6 +1661,7 @@ var EZI =
 	Builder._baseComponents.Component = __webpack_require__(21);
 	Builder._baseComponents.Button = Builder._defineBaseComponent.apply(Builder, __webpack_require__(22));
 	Builder._baseComponents.List = Builder._defineBaseComponent.apply(Builder, __webpack_require__(23));
+	Builder._baseComponents.Input = Builder._defineBaseComponent.apply(Builder, __webpack_require__(24));
 
 	module.exports = Builder;
 
@@ -1702,7 +1705,8 @@ var EZI =
 	        else if (routeString !== undefined && routeString[0] === '/')
 	            routeString = routeString.substr(1, routeString.length-1);
 	        for (var k in this._routes) {
-	            if (this._routes[k].getRouteString() === routeString) {
+	            if (this._routes[k].urlBelongsToRoute(routeString)) {
+	                console.log(this._routes[k]);
 	                return this._routes[k];
 	            }
 	        }
@@ -1781,12 +1785,23 @@ var EZI =
 	    getPage: function () {
 	        return this._page;
 	    },
+	    urlBelongsToRoute: function (url) {
+	        url = url.split('/');
+	        var thisurl = this.getRouteString().split('/');
+	        for (var k in url) {
+	            if (thisurl[k][0] === ':' && thisurl[k][thisurl[k].length-1] === ':')
+	                continue;
+	            else if (thisurl[k] !== url[k])
+	                return false;
+	        }
+	        return true;
+	    },
 	    //if url is like 'users/:user:/posts', dataobj will contain an identifying string for user
 	    //like {user: 'user1'}
 	    getUrlWithPassedData: function (dataObj) {
 	        var urlString = this.getRouteString();
 	        for(var k in dataObj) {
-	            urlString.replace(':'+k+':', dataObj[k]);
+	            urlString = urlString.replace(':'+k+':', dataObj[k]);
 	        }
 	        return urlString;
 	    }
@@ -1854,7 +1869,12 @@ var EZI =
 	var DataBankVariable = Object.create({
 
 	    init: function (name, value, type, listeners) {
-	        listeners = (Array.isArray(listeners))?listeners:[listeners];
+	        if (Array.isArray(listeners))
+	            listeners = listeners;
+	        else if (listeners === undefined || !listeners)
+	            listeners = [];
+	        else
+	            listeners = [listeners];
 	        this.setName(name);
 	        this.setType(type);
 	        this.setValue(value);
@@ -1966,10 +1986,10 @@ var EZI =
 	    },
 	    _dataVarChanged: function (rerender) {
 	        this.dataVarsHaveUpdated();
-	        this.willUpdate();
 	        for (var k in this._dataVarChangedHandlers) {
 	            this._dataVarChangedHandlers[k]();
 	        }
+	        this.willUpdate();
 	        if (rerender)
 	            this._startRender();
 	    },
@@ -1988,10 +2008,13 @@ var EZI =
 
 	    },
 
-
+	    getChildComponent: function (name) {
+	        return this._children[name];
+	    },
 	    //keyed array of {name: child, name: child}
 	    addMultipleChildComponents: function(keyedChildrenArray) {
 	        for (var k in keyedChildrenArray) {
+	            console.log(k);
 	            this.addChildComponent(k, keyedChildrenArray[k]);
 	        }
 	    },
@@ -1999,12 +2022,27 @@ var EZI =
 	        this._children[name] = component;
 	    },
 	    removeChildComponent: function (name) {
-	        this._children[name] = undefined;
+	        delete this._children[name];
 	    },
 
 	    //RENDERING
 	    _startRender: function (properties) {
-	        console.log('rendering');
+	        this.setProperties(properties);
+	        var returnvalue;
+	        this._builder._addRenderingComponent(this);
+	        returnvalue = this.render();
+	        this._builder._removeRenderingComponent();
+	        //REPLACING IN DOM TREE IF NEEDED
+	        var prevEl = EZI.Elemental.getElementByEziId(this._elementId);
+	        if (prevEl) {
+	            console.log(returnvalue.element);
+	            console.log(prevEl.element);
+	            returnvalue.replace(prevEl);
+	        }
+	        this._elementId = returnvalue._getEziId();
+	        return returnvalue;
+	    },
+	    _startRenderCopy: function (properties) {
 	        this.setProperties(properties);
 	        var returnvalue;
 	        this._builder._addRenderingComponent(this);
@@ -2012,19 +2050,28 @@ var EZI =
 	        this._builder._removeRenderingComponent();
 
 	        //REPLACING IN DOM TREE IF NEEDED
-	        var prevEl = EZI.Elemental.getElementByEziId(this._elementId);
-	        if (prevEl) {
-	            console.log('replacing element');
-	            returnvalue.replace(prevEl);
-	        }
-	        this._elementId = returnvalue._getEziId();
+	        //var prevEl = EZI.Elemental.getElementByEziId(this._elementId);
+	        //if (prevEl) {
+	        //    console.log('replacing element');
+	        //    returnvalue.replace(prevEl);
+	        //}
+	        this._elementId = []
+	        this._elementId.push(returnvalue._getEziId());
 	        return returnvalue;
 	    },
 	    render: function () {
 	        return EZI.make('div');
 	    },
-	    renderChildComponent: function (name, properties) {
-	        return this._children[name]._startRender(properties);
+	    renderChildComponent: function (name, properties, copy) {
+	        if (this._children[name] !== undefined && this._children[name]) {
+	            if (!copy)
+	                return this._children[name]._startRender(properties);
+	            else
+	                return this._children[name]._startRenderCopy(properties);
+	        }
+	        else {
+	            console.error('Error while rendering ' + name + ' as child. Are you sure you added it as a child-component?');
+	        }
 	    },
 	});
 
@@ -2068,7 +2115,16 @@ var EZI =
 	    //rowComponent || in what data will be shown
 
 	    componentWillMount: function () {
-	        this.setData(this.properties.data);
+	        //SET DATA
+	        //EITHER SET ARRAY OR DATAVAR FROM BANK
+	        if (typeof this.properties.data === 'string') {
+	            console.log('adding as listener');
+	            console.log(this);
+	            this._builder.getDataBank().addAsListenerTo(this, [this.properties.data]);
+	        }
+	        else
+	            this.setData(this.properties.data);
+
 	        this.setRowComponent(this.properties.rowComponent);
 	    },
 
@@ -2078,7 +2134,9 @@ var EZI =
 	    setRowComponent: function (component) {
 	        this.addChildComponent('Row', component);
 	    },
-
+	    dataVarsHaveUpdated: function () {
+	        this.setData(this._builder.getDataBank().getDataVar(this.properties.data));
+	    },
 	    _getRows: function () {
 	        var rowArray = [];
 	        if (this._children.Row === undefined || !this._children.Row) {
@@ -2086,13 +2144,14 @@ var EZI =
 	            return [];
 	        }
 	        for (var k in this._data) {
-	            rowArray.push({'Row': {data: this._data[k]}});
+	            if (this._data[k])
+	                rowArray.push({'Row': {data: this._data[k], _copy: true}});
 	        }
-	        console.log(rowArray);
 	        return rowArray;
 	    },
 	    render: function () {
-	        return EZI.make('div', {
+	        console.log('rendering list');
+	        return EZI.make('ul', {
 	            class: 'list',
 	            children: this._getRows()
 	        });
@@ -2101,6 +2160,68 @@ var EZI =
 	}];
 
 	module.exports = List;
+
+/***/ },
+/* 24 */
+/***/ function(module, exports) {
+
+	/**
+	 * Created by Stijn on 02/03/16.
+	 */
+
+
+	//PROPERTIES TO PASS:
+	//on EVENTS
+	//class
+	//type
+	//name
+	//value
+	//placeholder
+	//id
+	//dataVar
+	//validation :: regex TODO
+
+	var Input = ['Component', {
+	    componentWillMount: function () {
+	        if (this.properties.dataVar)
+	            if (this._builder.getDataBank().dataVarExists(this.properties.dataVar))
+	                this._builder.getDataBank().addAsListenerTo(this, [this.properties.dataVar]);
+	            else
+	                this._builder.getDataBank().createDataVar(this.properties.dataVar, (this.properties.value)?this.properties.value:'', 'string', this);
+	            this._builder.getDataBank().getDataVar(this.properties.dataVar, true).triggersRerender(false);
+	    },
+	    render: function () {
+	        var events = {};
+	        if (!this.properties.on === undefined)
+	            events = this.properties.on;
+	        if (events.input === undefined) {
+	            events.input = (function (e) {
+	                console.log(EZ(e.target).value());
+	                this._builder.getDataBank().setDataVar(this.properties.dataVar, EZ(e.target).value());
+	            }).bind(this);
+	        }
+
+	        return EZI.make('div', {
+	            class: 'input_container',
+	            children: [
+	                {'input': {
+	                    id: this.properties.id,
+	                    class: 'input ' + this.properties.type + ' ' + this.properties.class,
+	                    name: this.properties.name,
+	                    type: this.properties.type,
+	                    placeholder: this.properties.placeholder,
+	                    on: events,
+	                    value: this._builder.getDataBank().getDataVar(this.properties.dataVar)
+	                }}
+	            ]
+	        })
+	    }
+	}];
+
+
+	module.exports = Input;
+
+
 
 /***/ }
 /******/ ]);

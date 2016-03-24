@@ -34,7 +34,8 @@ var Router = Object.create({
         else if (routeString !== undefined && routeString[0] === '/')
             routeString = routeString.substr(1, routeString.length-1);
         for (var k in this._routes) {
-            if (this._routes[k].getRouteString() === routeString) {
+            if (this._routes[k].urlBelongsToRoute(routeString)) {
+                console.log(this._routes[k]);
                 return this._routes[k];
             }
         }
