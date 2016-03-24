@@ -87,7 +87,7 @@ AnimationStep.getStyleString = function (t) {
 AnimationStep.remapProgress = function (t) {
 
     t -= this.startTime;
-    deltaT = this.endTime - this.startTime;
+    var deltaT = this.endTime - this.startTime;
     t *= (1 / deltaT);
     if (t > 1) t = this.endTime;
     return t;
