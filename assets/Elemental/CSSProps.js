@@ -1,7 +1,7 @@
 /**
  * Created by Stijn on 01/03/16.
  */
-CSSProps = Object.create({
+var CSSProps = Object.create({
 
     init: function () {
         var i = 0;
