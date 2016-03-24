@@ -1,6 +1,6 @@
 {
   "name": "ezi-script",
-  "version": "0.3.12",
+  "version": "0.3.13",
   "description": "A javascript library to simplify small, ui-related scripting and build your interface beautifully.",
   "main": "ezi-script.js",
   "scripts": {
