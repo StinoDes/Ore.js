@@ -21,7 +21,7 @@ var Easings = Object.create({
     DEFAULT: 'linear',
 
 
-    default: this.linear,
+    default: 'linear',
 
     linear: function (t) { return t },
 
