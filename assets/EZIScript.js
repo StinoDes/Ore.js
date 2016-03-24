@@ -28,6 +28,7 @@ var EZI = Object.create({
                 return el.ezi;
             }
         });
+        console.log(this);
         return this;
 
     },
