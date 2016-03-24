@@ -1,4 +1,6 @@
 /**
  * Created by Stijn on 01/03/16.
  */
-module.exports = require('./assets/EziScript').init();
+module.exports = function () {
+    window.EZI = require('./assets/EziScript').init();
+}
