@@ -18,7 +18,6 @@ var Animation = Object.create({
     autoRemove: true,
     toggle: false,
     repeat: false,
-    type: this.ONCE,
     callback: function () {},
 
     animate: false,
@@ -34,6 +33,7 @@ var Animation = Object.create({
         this.element = element;
         this.duration = duration;
         this.id = Math.random();
+        this.type = this.ONCE;
         this.callback = (typeof callback != "undefined") ? callback: this.callback;
         this.properties = [];
 
