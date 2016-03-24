@@ -170,6 +170,20 @@ var EziElement = Object.create({
     removeClass: function (className) {
         this.class(this.class().replace(className, ''));
     },
+    hasClass: function (className) {
+        var classes = this.class().split(' ');
+        if (classes === undefined || classes === null)
+            return false;
+        return classes.indexOf(className) > -1;
+    },
+    toggleClass: function (className) {
+        if (this.hasClass(className)) {
+            this.removeClass(className);
+        }
+        else {
+            this.addClass(className);
+        }
+    },
     attr: function (name, value) {
 
         if (!value && value != 0) {

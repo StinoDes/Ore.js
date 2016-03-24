@@ -73,17 +73,17 @@ var EZI =
 	            e = e || event;
 	            EZI.keymap[e.keyCode] = e.type == 'keydown';
 	        };
-	        window.EZ = function EZ (el) {
-	                if (typeof el == 'string') {
-	                    el = document.querySelector(el);
-	                }
-	                if (el == null) {
-	                    return null;
-	                }
-	                else {
-	                    return el.ezi;
-	                }
+	        window.EZ = (function EZ (el) {
+	            if (typeof el == 'string') {
+	                el = document.querySelector(el);
 	            }
+	            if (el == null) {
+	                return null;
+	            }
+	            else {
+	                return el.ezi;
+	            }
+	        });
 	        return this;
 
 	    },
@@ -505,6 +505,20 @@ var EZI =
 	    removeClass: function (className) {
 	        this.class(this.class().replace(className, ''));
 	    },
+	    hasClass: function (className) {
+	        var classes = this.class().split(' ');
+	        if (classes === undefined || classes === null)
+	            return false;
+	        return classes.indexOf(className) > -1;
+	    },
+	    toggleClass: function (className) {
+	        if (this.hasClass(className)) {
+	            this.removeClass(className);
+	        }
+	        else {
+	            this.addClass(className);
+	        }
+	    },
 	    attr: function (name, value) {
 
 	        if (!value && value != 0) {
@@ -614,7 +628,7 @@ var EZI =
 	/**
 	 * Created by Stijn on 01/03/16.
 	 */
-	CSSProps = Object.create({
+	var CSSProps = Object.create({
 
 	    init: function () {
 	        var i = 0;
@@ -871,7 +885,6 @@ var EZI =
 	    autoRemove: true,
 	    toggle: false,
 	    repeat: false,
-	    type: this.ONCE,
 	    callback: function () {},
 
 	    animate: false,
@@ -887,6 +900,7 @@ var EZI =
 	        this.element = element;
 	        this.duration = duration;
 	        this.id = Math.random();
+	        this.type = this.ONCE;
 	        this.callback = (typeof callback != "undefined") ? callback: this.callback;
 	        this.properties = [];
 
@@ -1233,7 +1247,7 @@ var EZI =
 	AnimationStep.remapProgress = function (t) {
 
 	    t -= this.startTime;
-	    deltaT = this.endTime - this.startTime;
+	    var deltaT = this.endTime - this.startTime;
 	    t *= (1 / deltaT);
 	    if (t > 1) t = this.endTime;
 	    return t;
@@ -1368,7 +1382,7 @@ var EZI =
 	    DEFAULT: 'linear',
 
 
-	    default: this.linear,
+	    default: 'linear',
 
 	    linear: function (t) { return t },
 
