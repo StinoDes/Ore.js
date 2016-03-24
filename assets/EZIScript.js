@@ -17,17 +17,17 @@ var EZI = Object.create({
             e = e || event;
             EZI.keymap[e.keyCode] = e.type == 'keydown';
         };
-        window.EZ = function EZ (el) {
-                if (typeof el == 'string') {
-                    el = document.querySelector(el);
-                }
-                if (el == null) {
-                    return null;
-                }
-                else {
-                    return el.ezi;
-                }
+        window.EZ = (function EZ (el) {
+            if (typeof el == 'string') {
+                el = document.querySelector(el);
             }
+            if (el == null) {
+                return null;
+            }
+            else {
+                return el.ezi;
+            }
+        });
         return this;
 
     },
