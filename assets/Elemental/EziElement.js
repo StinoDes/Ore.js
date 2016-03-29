@@ -9,7 +9,7 @@ var EziElement = Object.create({
 
     init: function (el) {
         this.element = el;
-
+        this.transformer = Object.create(require('./Transformer')).init();
         return this;
     },
     _getEziId: function () {
@@ -81,6 +81,42 @@ var EziElement = Object.create({
     width: function (value, duration, easing, autoStart) {
         return this.property('width', value, duration, easing, autoStart);
     },
+    //Params: name, x, y, z || name, valueArr, duration, easing
+    transform: function (transformName, par1, par2, par3) {
+        if (typeof par1 === 'number') {
+            this.transformer.setTransform(transformName, par1, par2, par3);
+            this.transformer.transformElement(this);
+        }
+        else if (par1.length !== undefined) {
+            if (par2 === undefined) {
+                this.transformer.setTransform.apply(this.transformer, [transformName].concat(par1));
+                this.transformer.transformElement(this);
+            }
+            else {
+                var autostart = (arguments[4]!== undefined)?arguments[4]:true;
+                if (EZI.AniManager.animations[this.element._eziId + 'transform'] === undefined) {
+                    anim = EZI.createAnimation(this.element._eziId + 'transform', this.element, par2);
+                    anim.addAnimatedProperty(this.transformer.createTransformAnimation(transformName, par1, (!par3) ? EZI.Easings.DEFAULT : par3));
+                    if (autostart) anim.start();
+                }
+                else {
+                    anim = EZI.AniManager.animations[this.element._eziId + 'transform'];
+                    anim[this.element._eziId + 'transform'].addTransform(transformName, par1);
+                    if (autostart) anim.start();
+                }
+                return anim;
+            }
+        }
+    },
+    translate: function (x, y, z) {
+        this.transform('translate', x, y, z);
+    },
+    rotate: function (a, b, c) {
+        this.transform('rotate', a, b, c);
+    },
+    scale: function (x, y, z) {
+        this.transform('scale', x, y, z);
+    },
     property: function (name, value, duration, easing, autoStart) {
 
         autoStart = (typeof autoStart == 'undefined') ? true: autoStart;
@@ -89,6 +125,7 @@ var EziElement = Object.create({
         if (!value && value !== 0) {
 
             //var value = 0;
+            console.log(name);
             var value = getComputedStyle(this.element, null).getPropertyValue(prop.name);
             if (value.match(/\d+/g) != null) value = parseFloat(value);
             return value;

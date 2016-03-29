@@ -61,16 +61,8 @@ var Animation = Object.create({
                 var property = this.properties[k];
 
                 if (property.isTransform()) {
-                    this.element.style.transform =
-                        property.getStyleString(progress);
-                    this.element.style.webkitTransform =
-                        property.getStyleString(progress);
-                    this.element.style.mozTransform =
-                        property.getStyleString(progress);
-                    this.element.style.msTransform =
-                        property.getStyleString(progress);
-                    this.element.style.oTransform =
-                        property.getStyleString(progress);
+                    property.assignTransforms(progress);
+                    property.transformer.transformElement(EZ(this.element));
                 }
                 else {
                     if (property.mustUpdate) {

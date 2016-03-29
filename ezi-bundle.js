@@ -255,22 +255,22 @@ var EZI =
 
 	EZI.Elemental = __webpack_require__(2);
 	EZI.EziElement = __webpack_require__(3);
-	EZI.CSSProps = __webpack_require__(4);
+	EZI.CSSProps = __webpack_require__(6);
 
-	EZI.AniManager = __webpack_require__(5);
-	EZI.Animation = __webpack_require__(6);
-	EZI.AnimatedProperty = __webpack_require__(7);
-	EZI.AnimationStep = __webpack_require__(8);
-	EZI.StepProperty = __webpack_require__(9);
-	EZI.Easings = __webpack_require__(10);
+	EZI.AniManager = __webpack_require__(7);
+	EZI.Animation = __webpack_require__(8);
+	EZI.AnimatedProperty = __webpack_require__(9);
+	EZI.AnimationStep = __webpack_require__(10);
+	EZI.StepProperty = __webpack_require__(11);
+	EZI.Easings = __webpack_require__(12);
 
-	EZI.Interacter = __webpack_require__(11);
-	EZI.Interaction = __webpack_require__(12);
+	EZI.Interacter = __webpack_require__(13);
+	EZI.Interaction = __webpack_require__(14);
 
-	EZI.Map = __webpack_require__(13);
-	EZI.Range = __webpack_require__(14);
+	EZI.Map = __webpack_require__(15);
+	EZI.Range = __webpack_require__(16);
 
-	EZI.Builder = __webpack_require__(15);
+	EZI.Builder = __webpack_require__(17);
 
 	module.exports = EZI;
 
@@ -331,7 +331,7 @@ var EZI =
 
 /***/ },
 /* 3 */
-/***/ function(module, exports) {
+/***/ function(module, exports, __webpack_require__) {
 
 	/**
 	 * Created by Stijn on 01/03/16.
@@ -344,7 +344,7 @@ var EZI =
 
 	    init: function (el) {
 	        this.element = el;
-
+	        this.transformer = Object.create(__webpack_require__(4)).init();
 	        return this;
 	    },
 	    _getEziId: function () {
@@ -416,6 +416,42 @@ var EZI =
 	    width: function (value, duration, easing, autoStart) {
 	        return this.property('width', value, duration, easing, autoStart);
 	    },
+	    //Params: name, x, y, z || name, valueArr, duration, easing
+	    transform: function (transformName, par1, par2, par3) {
+	        if (typeof par1 === 'number') {
+	            this.transformer.setTransform(transformName, par1, par2, par3);
+	            this.transformer.transformElement(this);
+	        }
+	        else if (par1.length !== undefined) {
+	            if (par2 === undefined) {
+	                this.transformer.setTransform.apply(this.transformer, [transformName].concat(par1));
+	                this.transformer.transformElement(this);
+	            }
+	            else {
+	                var autostart = (arguments[4]!== undefined)?arguments[4]:true;
+	                if (EZI.AniManager.animations[this.element._eziId + 'transform'] === undefined) {
+	                    anim = EZI.createAnimation(this.element._eziId + 'transform', this.element, par2);
+	                    anim.addAnimatedProperty(this.transformer.createTransformAnimation(transformName, par1, (!par3) ? EZI.Easings.DEFAULT : par3));
+	                    if (autostart) anim.start();
+	                }
+	                else {
+	                    anim = EZI.AniManager.animations[this.element._eziId + 'transform'];
+	                    anim[this.element._eziId + 'transform'].addTransform(transformName, par1);
+	                    if (autostart) anim.start();
+	                }
+	                return anim;
+	            }
+	        }
+	    },
+	    translate: function (x, y, z) {
+	        this.transform('translate', x, y, z);
+	    },
+	    rotate: function (a, b, c) {
+	        this.transform('rotate', a, b, c);
+	    },
+	    scale: function (x, y, z) {
+	        this.transform('scale', x, y, z);
+	    },
 	    property: function (name, value, duration, easing, autoStart) {
 
 	        autoStart = (typeof autoStart == 'undefined') ? true: autoStart;
@@ -424,6 +460,7 @@ var EZI =
 	        if (!value && value !== 0) {
 
 	            //var value = 0;
+	            console.log(name);
 	            var value = getComputedStyle(this.element, null).getPropertyValue(prop.name);
 	            if (value.match(/\d+/g) != null) value = parseFloat(value);
 	            return value;
@@ -623,6 +660,183 @@ var EZI =
 
 /***/ },
 /* 4 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var Transformer = Object.create({
+	    transforms: ['scale', 'translate', 'rotate'],
+	    prefixes: ['o', 'ms', 'moz', 'webkit'],
+	    init: function () {
+	        //X, Y, Z for each transform
+	        for (var k in this.transforms) {
+	            if (this.transforms[k] !== 'scale')
+	                this[this.transforms[k]] = [0, 0, 0];
+	            else
+	                this[this.transforms[k]] = [1, 1, 0];
+
+	        }
+	        this.translateUnit = 'px'
+	        return this;
+	    },
+	    setTransform: function (transform, par1, par2, par3) {
+	        if (par1.length === undefined) {
+	            var arr = Array.prototype.slice.call(arguments);
+	            arr = arr.slice(1);
+	            for (var k in arr) {
+	                if (arr[k] !== undefined)
+	                    this[transform][k] = arr[k];
+	            }
+	        }
+	        else {
+	            this[transform] = par1;
+	        }
+	    },
+	    getTransform: function (transformName) {
+	        return this[transformName];
+	    },
+	    getTransformString: function (includeNulls) {
+	        var str = "";
+	        for (var k in this.transforms) {
+	            if (includeNulls)
+	                str += this.getTransformPart(this.transforms[k]);
+	            else if (this[this.transforms[k]] !== [0, 0, 0]) {
+	                str += this.getTransformPart(this.transforms[k]);
+	            }
+	            //str += '';
+	            //if (k >= this.transforms.length-1) {
+	            //    str = str.substr(0, str.length-2);
+	            //}
+	        }
+	        return str;
+	    },
+	    transformElement: function (eziEl) {
+	        var string = this.getTransformString(true);
+	        eziEl.element.style['transform'] = string;
+	        for (var k in this.prefixes) {
+	            eziEl.element.style['-'+this.prefixes[k]+'-transform'] = string;
+	        }
+	    },
+	    getTransformPart: function (transformName) {
+	        var transform = this[transformName],
+	            str = '',
+	            is3d = transform[2] !== 0;
+	        if (is3d) {
+	            str += transformName + '3d(';
+	            for (var l in transform) {
+	                str += transform[l];
+	                if (transformName === 'translate')
+	                    str += this.translateUnit;
+	                if (transformName === 'rotate')
+	                    str += 'deg';
+	                str += ',';
+	            }
+	        }
+	        else {
+	            str += transformName + '(';
+	            if (transformName === 'rotate')
+	                str += transform[0] + 'deg';
+	            else {
+	                for (var l in transform) {
+	                    if (l < 2) {
+	                        str += transform[l];
+	                        if (transformName === 'translate')
+	                            str += this.translateUnit;
+	                        str += ',';
+	                    }
+	                }
+	            }
+	        }
+	        if (str[str.length-1] === ',')
+	            str = str.substr(0, str.length-1);
+	        str+= ') ';
+	        return str;
+	    },
+	    createTransformAnimation: function (name, valueArray, easing) {
+	        easing = (easing !== undefined)?easing:EZI.Easings.DEFAULT;
+	        var transformAnimation = Object.create(__webpack_require__(5)).init(name, valueArray, easing,this);
+	        return transformAnimation;
+	    }
+
+	});
+
+	module.exports = Transformer;
+
+/***/ },
+/* 5 */
+/***/ function(module, exports) {
+
+	/**
+	 * Created by Stijn on 26/03/16.
+	 */
+	/**
+	 * Created by Stijn on 01/03/16.
+	 */
+
+	var AnimatedProperty = Object.create({
+
+	    //constant
+	    TRANSFORMS: ['scale', 'horizontal-translate', 'vertical-translate', 'rotate'],
+	    mustUpdate: false,
+	    animationId: null,
+	    propertyName: null,
+	    startValues: null,
+	    endValues: null,
+	    easing: null,
+	    unit: 'px',
+
+	    id: 0,
+
+	    init: function (transformName, valueArray, easing, transformer) {
+
+	        this.propertyName = 'transform';
+	        this.transformer = transformer;
+	        this.easing = easing;
+	        this.startValues = {
+	            'scale': transformer.getTransform('scale'),
+	            'translate': transformer.getTransform('translate'),
+	            'rotate': transformer.getTransform('rotate')
+	        };
+	        this.endValues = {};
+	        this.endValues[transformName] = valueArray;
+	        this.id = Math.random();
+
+	        return this;
+
+	    },
+	    assignTransforms: function (progress) {
+	        for (var k in this.endValues) {
+	            var trnsfrm = k,
+	                delta = [],
+	                values = [];
+	            for (var l in this.endValues[trnsfrm]) {
+	                delta[l] = this.endValues[trnsfrm][l] - this.startValues[trnsfrm][l];
+	                values[l] = this.startValues[trnsfrm][l] + delta[l]  * EZI.Easings[this.easing](progress);
+	            }
+	            this.transformer.setTransform(k, values);
+	        }
+	    },
+	    getStyleString: function () {
+
+	        return this.transformer.getStyleString(false);
+
+	    },
+	    switchValues: function () {
+	        var end = this.startValue;
+	        var st = this.endValue;
+	        this.endValue = end;
+	        this.startValue = st;
+	    },
+	    isTransform: function () {
+	        return true;
+	    }
+
+	});
+
+	module.exports = AnimatedProperty;
+
+
+
+/***/ },
+/* 6 */
 /***/ function(module, exports) {
 
 	/**
@@ -755,7 +969,7 @@ var EZI =
 
 
 /***/ },
-/* 5 */
+/* 7 */
 /***/ function(module, exports) {
 
 	/**
@@ -870,7 +1084,7 @@ var EZI =
 	module.exports = AniManager;
 
 /***/ },
-/* 6 */
+/* 8 */
 /***/ function(module, exports) {
 
 	/**
@@ -936,16 +1150,8 @@ var EZI =
 	                var property = this.properties[k];
 
 	                if (property.isTransform()) {
-	                    this.element.style.transform =
-	                        property.getStyleString(progress);
-	                    this.element.style.webkitTransform =
-	                        property.getStyleString(progress);
-	                    this.element.style.mozTransform =
-	                        property.getStyleString(progress);
-	                    this.element.style.msTransform =
-	                        property.getStyleString(progress);
-	                    this.element.style.oTransform =
-	                        property.getStyleString(progress);
+	                    property.assignTransforms(progress);
+	                    property.transformer.transformElement(EZ(this.element));
 	                }
 	                else {
 	                    if (property.mustUpdate) {
@@ -1073,7 +1279,7 @@ var EZI =
 	module.exports = Animation;
 
 /***/ },
-/* 7 */
+/* 9 */
 /***/ function(module, exports) {
 
 	/**
@@ -1163,13 +1369,13 @@ var EZI =
 
 
 /***/ },
-/* 8 */
+/* 10 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
 	 * Created by Stijn on 01/03/16.
 	 */
-	var AnimationStep = Object.create(__webpack_require__(7), {
+	var AnimationStep = Object.create(__webpack_require__(9), {
 
 	    startTime: {
 	        writable: true,
@@ -1279,7 +1485,7 @@ var EZI =
 	module.exports = AnimationStep;
 
 /***/ },
-/* 9 */
+/* 11 */
 /***/ function(module, exports) {
 
 	/**
@@ -1364,7 +1570,7 @@ var EZI =
 	module.exports = StepProperty;
 
 /***/ },
-/* 10 */
+/* 12 */
 /***/ function(module, exports) {
 
 	/**
@@ -1440,7 +1646,7 @@ var EZI =
 	module.exports = Easings;
 
 /***/ },
-/* 11 */
+/* 13 */
 /***/ function(module, exports) {
 
 	/**
@@ -1469,7 +1675,7 @@ var EZI =
 
 
 /***/ },
-/* 12 */
+/* 14 */
 /***/ function(module, exports) {
 
 	/**
@@ -1525,7 +1731,7 @@ var EZI =
 
 
 /***/ },
-/* 13 */
+/* 15 */
 /***/ function(module, exports) {
 
 	/**
@@ -1565,7 +1771,7 @@ var EZI =
 	module.exports = Map;
 
 /***/ },
-/* 14 */
+/* 16 */
 /***/ function(module, exports) {
 
 	/**
@@ -1587,7 +1793,7 @@ var EZI =
 	module.exports = Range;
 
 /***/ },
-/* 15 */
+/* 17 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -1602,8 +1808,8 @@ var EZI =
 
 	    init: function (appName, initialData) {
 	        this.setAppName(appName);
-	        this._router = Object.create(__webpack_require__(16)).init();
-	        this._dataBank = Object.create(__webpack_require__(18)).init(initialData);
+	        this._router = Object.create(__webpack_require__(18)).init();
+	        this._dataBank = Object.create(__webpack_require__(20)).init(initialData);
 	        this._registeredComponents = this._baseComponents;
 	        return this;
 	    },
@@ -1660,7 +1866,7 @@ var EZI =
 	        return Object.create(this.getRegisteredComponent(componentName)).init(properties, this);
 	    },
 	    createPage: function (title, properties, rootComponent) {
-	        var page = Object.create(__webpack_require__(20)).init(title, properties, this);
+	        var page = Object.create(__webpack_require__(22)).init(title, properties, this);
 	        if (rootComponent)
 	            page.setRootComponent(rootComponent);
 	        return page;
@@ -1680,15 +1886,15 @@ var EZI =
 
 	});
 
-	Builder._baseComponents.Component = __webpack_require__(21);
-	Builder._baseComponents.Button = Builder._defineBaseComponent.apply(Builder, __webpack_require__(22));
-	Builder._baseComponents.List = Builder._defineBaseComponent.apply(Builder, __webpack_require__(23));
-	Builder._baseComponents.Input = Builder._defineBaseComponent.apply(Builder, __webpack_require__(24));
+	Builder._baseComponents.Component = __webpack_require__(23);
+	Builder._baseComponents.Button = Builder._defineBaseComponent.apply(Builder, __webpack_require__(24));
+	Builder._baseComponents.List = Builder._defineBaseComponent.apply(Builder, __webpack_require__(25));
+	Builder._baseComponents.Input = Builder._defineBaseComponent.apply(Builder, __webpack_require__(26));
 
 	module.exports = Builder;
 
 /***/ },
-/* 16 */
+/* 18 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -1741,7 +1947,7 @@ var EZI =
 	        return this._routes[identifier];
 	    },
 	    createRoute: function (identifier, urlString, page) {
-	        var route = Object.create(__webpack_require__(17)).init(identifier, urlString, page);
+	        var route = Object.create(__webpack_require__(19)).init(identifier, urlString, page);
 	        return route;
 	    },
 	    addRoute: function (route) {
@@ -1781,7 +1987,7 @@ var EZI =
 
 
 /***/ },
-/* 17 */
+/* 19 */
 /***/ function(module, exports) {
 
 	/**
@@ -1832,7 +2038,7 @@ var EZI =
 	module.exports = Route;
 
 /***/ },
-/* 18 */
+/* 20 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -1856,7 +2062,7 @@ var EZI =
 	        }
 	    },
 	    createDataVar: function (name, value, type, listeners) {
-	        this._data[name] = Object.create(__webpack_require__(19)).init(name, value, type, listeners);
+	        this._data[name] = Object.create(__webpack_require__(21)).init(name, value, type, listeners);
 	        return this.getDataVar(name);
 	    },
 	    setDataVar: function (name, value) {
@@ -1881,7 +2087,7 @@ var EZI =
 	module.exports = DataBank;
 
 /***/ },
-/* 19 */
+/* 21 */
 /***/ function(module, exports) {
 
 	/**
@@ -1948,13 +2154,13 @@ var EZI =
 
 
 /***/ },
-/* 20 */
+/* 22 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
 	 * Created by Stijn on 03/03/16.
 	 */
-	var Page = Object.create(__webpack_require__(21));
+	var Page = Object.create(__webpack_require__(23));
 
 	Page.init = function (title, properties, builder) {
 	    this.properties = properties;
@@ -1981,7 +2187,7 @@ var EZI =
 	module.exports = Page;
 
 /***/ },
-/* 21 */
+/* 23 */
 /***/ function(module, exports) {
 
 	/**
@@ -2101,7 +2307,7 @@ var EZI =
 
 
 /***/ },
-/* 22 */
+/* 24 */
 /***/ function(module, exports) {
 
 	/**
@@ -2126,7 +2332,7 @@ var EZI =
 
 
 /***/ },
-/* 23 */
+/* 25 */
 /***/ function(module, exports) {
 
 	var List = ['Component', {
@@ -2184,7 +2390,7 @@ var EZI =
 	module.exports = List;
 
 /***/ },
-/* 24 */
+/* 26 */
 /***/ function(module, exports) {
 
 	/**
