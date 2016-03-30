@@ -5,12 +5,11 @@
 var DataStoreVariable = Object.create({
 
     init: function (name, value, type, listeners) {
-        if (Array.isArray(listeners))
-            listeners = listeners;
-        else if (listeners === undefined || !listeners)
+        if (listeners === undefined || !listeners)
             listeners = [];
-        else
+        else if (!Array.isArray(listeners))
             listeners = [listeners];
+        console.log(listeners);
         this.setName(name);
         this.setType(type);
         this.setValue(value);
@@ -19,10 +18,7 @@ var DataStoreVariable = Object.create({
         //functions
         this._handlers = [];
         for (var k in listeners) {
-            if (typeof listeners === 'function')
-                this._handlers.push(listeners[k]);
-            else
-                this._subscribers.push(listeners[k]);
+            this.addSubscriber(listeners[k]);
         }
         this._triggersRerender = true;
         return this;
@@ -36,6 +32,7 @@ var DataStoreVariable = Object.create({
         }
     },
     addSubscriber: function (listener) {
+        console.log(typeof listener);
         if (typeof listener === 'function')
             this._handlers.push(listener);
         else
