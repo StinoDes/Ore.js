@@ -428,7 +428,8 @@ var EZI =
 	                this.transformer.transformElement(this);
 	            }
 	            else {
-	                var autostart = (arguments[4]!== undefined)?arguments[4]:true;
+	                var autostart = (arguments[4]!== undefined)?arguments[4]:true,
+	                    anim = null;
 	                if (EZI.AniManager.animations[this.element._eziId + 'transform'] === undefined) {
 	                    anim = EZI.createAnimation(this.element._eziId + 'transform', this.element, par2);
 	                    anim.addAnimatedProperty(this.transformer.createTransformAnimation(transformName, par1, (!par3) ? EZI.Easings.DEFAULT : par3));
@@ -460,7 +461,6 @@ var EZI =
 	        if (!value && value !== 0) {
 
 	            //var value = 0;
-	            console.log(name);
 	            var value = getComputedStyle(this.element, null).getPropertyValue(prop.name);
 	            if (value.match(/\d+/g) != null) value = parseFloat(value);
 	            return value;
