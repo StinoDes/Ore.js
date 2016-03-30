@@ -4,7 +4,7 @@
 
 //DATABANK OBJECT
 //HOLDS VARIABLES, REFRESHES LISTENING COMPONENTS ON VAR UPDATe
-var DataBank = Object.create({
+var DataStore = Object.create({
 
     //Initial Data: Array of {name: value} objects
     init: function (initialData) {
@@ -19,7 +19,7 @@ var DataBank = Object.create({
         }
     },
     createDataVar: function (name, value, type, listeners) {
-        this._data[name] = Object.create(require('./DataBankVariable')).init(name, value, type, listeners);
+        this._data[name] = Object.create(require('./DataStoreVariable')).init(name, value, type, listeners);
         return this.getDataVar(name);
     },
     setDataVar: function (name, value) {
@@ -33,12 +33,12 @@ var DataBank = Object.create({
             return true;
         return false;
     },
-    addAsListenerTo: function (object, nameArray) {
+    addAsSubscriberTo: function (componentOrFunction, nameArray) {
         for (var k in nameArray) {
-            this.getDataVar(nameArray[k], true).addListener(object);
+            this.getDataVar(nameArray[k], true).addSubscriber(componentOrFunction);
         }
     }
 
 });
 
-module.exports = DataBank;
+module.exports = DataStore;

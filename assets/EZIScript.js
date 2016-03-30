@@ -193,6 +193,9 @@ var EZI = Object.create({
     },
     getApp: function () {
         return this._app;
+    },
+    createDataStore: function (initialData) {
+        return require('./Builder/utilities/DataStore').init(initialData);
     }
 
 });

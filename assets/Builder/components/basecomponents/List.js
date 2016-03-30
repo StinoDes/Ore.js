@@ -11,7 +11,7 @@ var List = ['Component', {
         if (typeof this.properties.data === 'string') {
             console.log('adding as listener');
             console.log(this);
-            this._builder.getDataBank().addAsListenerTo(this, [this.properties.data]);
+            this._builder.getDataStore().addComponentAsSubscriberTo(this, [this.properties.data]);
         }
         else
             this.setData(this.properties.data);
@@ -26,7 +26,7 @@ var List = ['Component', {
         this.addChildComponent('Row', component);
     },
     dataVarsHaveUpdated: function () {
-        this.setData(this._builder.getDataBank().getDataVar(this.properties.data));
+        this.setData(this._builder.getDataStore().getDataVar(this.properties.data));
     },
     _getRows: function () {
         var rowArray = [];

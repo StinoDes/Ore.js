@@ -11,7 +11,7 @@ var Builder = Object.create({
     init: function (appName, initialData) {
         this.setAppName(appName);
         this._router = Object.create(require('./utilities/Router.js')).init();
-        this._dataBank = Object.create(require('./utilities/DataBank.js')).init(initialData);
+        this._dataStore = EZI.createDataStore(initialData);
         this._registeredComponents = this._baseComponents;
         return this;
     },
@@ -27,8 +27,8 @@ var Builder = Object.create({
         return this._appName;
     },
 
-    getDataBank: function () {
-        return this._dataBank;
+    getDataStore: function () {
+        return this._dataStore;
     },
     getRouter: function () {
         return this._router;

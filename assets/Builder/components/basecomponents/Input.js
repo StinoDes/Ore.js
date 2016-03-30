@@ -17,11 +17,11 @@
 var Input = ['Component', {
     componentWillMount: function () {
         if (this.properties.dataVar)
-            if (this._builder.getDataBank().dataVarExists(this.properties.dataVar))
-                this._builder.getDataBank().addAsListenerTo(this, [this.properties.dataVar]);
+            if (this._builder.getDataStore().dataVarExists(this.properties.dataVar))
+                this._builder.getDataStore().addComponentAsSubscriberTo(this, [this.properties.dataVar]);
             else
-                this._builder.getDataBank().createDataVar(this.properties.dataVar, (this.properties.value)?this.properties.value:'', 'string', this);
-            this._builder.getDataBank().getDataVar(this.properties.dataVar, true).triggersRerender(false);
+                this._builder.getDataStore().createDataVar(this.properties.dataVar, (this.properties.value)?this.properties.value:'', 'string', this);
+            this._builder.getDataStore().getDataVar(this.properties.dataVar, true).triggersRerender(false);
     },
     render: function () {
         var events = {};
@@ -30,7 +30,7 @@ var Input = ['Component', {
         if (events.input === undefined) {
             events.input = (function (e) {
                 console.log(EZ(e.target).value());
-                this._builder.getDataBank().setDataVar(this.properties.dataVar, EZ(e.target).value());
+                this._builder.getDataStore().setDataVar(this.properties.dataVar, EZ(e.target).value());
             }).bind(this);
         }
 
@@ -44,7 +44,7 @@ var Input = ['Component', {
                     type: this.properties.type,
                     placeholder: this.properties.placeholder,
                     on: events,
-                    value: this._builder.getDataBank().getDataVar(this.properties.dataVar)
+                    value: this._builder.getDataStore().getDataVar(this.properties.dataVar)
                 }}
             ]
         })
