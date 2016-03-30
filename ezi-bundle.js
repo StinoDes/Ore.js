@@ -2237,7 +2237,7 @@ var EZI =
 	        if (typeof this.properties.data === 'string') {
 	            console.log('adding as listener');
 	            console.log(this);
-	            this._builder.getDataStore().addComponentAsSubscriberTo(this, [this.properties.data]);
+	            this._builder.getDataStore().addAsSubscriberTo(this, [this.properties.data]);
 	        }
 	        else
 	            this.setData(this.properties.data);
@@ -2302,7 +2302,7 @@ var EZI =
 	    componentWillMount: function () {
 	        if (this.properties.dataVar)
 	            if (this._builder.getDataStore().dataVarExists(this.properties.dataVar))
-	                this._builder.getDataStore().addComponentAsSubscriberTo(this, [this.properties.dataVar]);
+	                this._builder.getDataStore().addAsSubscriberTo(this, [this.properties.dataVar]);
 	            else
 	                this._builder.getDataStore().createDataVar(this.properties.dataVar, (this.properties.value)?this.properties.value:'', 'string', this);
 	            this._builder.getDataStore().getDataVar(this.properties.dataVar, true).triggersRerender(false);
@@ -2379,9 +2379,9 @@ var EZI =
 	            return true;
 	        return false;
 	    },
-	    addAsSubscriberTo: function (componentOrFunction, nameArray) {
+	    addAsSubscriberTo: function (componentOrFunc, nameArray) {
 	        for (var k in nameArray) {
-	            this.getDataVar(nameArray[k], true).addSubscriber(componentOrFunction);
+	            this.getDataVar(nameArray[k], true).addSubscriber(componentOrFunc);
 	        }
 	    }
 

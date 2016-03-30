@@ -11,7 +11,7 @@ var List = ['Component', {
         if (typeof this.properties.data === 'string') {
             console.log('adding as listener');
             console.log(this);
-            this._builder.getDataStore().addComponentAsSubscriberTo(this, [this.properties.data]);
+            this._builder.getDataStore().addAsSubscriberTo(this, [this.properties.data]);
         }
         else
             this.setData(this.properties.data);

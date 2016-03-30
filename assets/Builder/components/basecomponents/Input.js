@@ -18,7 +18,7 @@ var Input = ['Component', {
     componentWillMount: function () {
         if (this.properties.dataVar)
             if (this._builder.getDataStore().dataVarExists(this.properties.dataVar))
-                this._builder.getDataStore().addComponentAsSubscriberTo(this, [this.properties.dataVar]);
+                this._builder.getDataStore().addAsSubscriberTo(this, [this.properties.dataVar]);
             else
                 this._builder.getDataStore().createDataVar(this.properties.dataVar, (this.properties.value)?this.properties.value:'', 'string', this);
             this._builder.getDataStore().getDataVar(this.properties.dataVar, true).triggersRerender(false);

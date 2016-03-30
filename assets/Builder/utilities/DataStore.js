@@ -33,9 +33,9 @@ var DataStore = Object.create({
             return true;
         return false;
     },
-    addAsSubscriberTo: function (componentOrFunction, nameArray) {
+    addAsSubscriberTo: function (componentOrFunc, nameArray) {
         for (var k in nameArray) {
-            this.getDataVar(nameArray[k], true).addSubscriber(componentOrFunction);
+            this.getDataVar(nameArray[k], true).addSubscriber(componentOrFunc);
         }
     }
 
