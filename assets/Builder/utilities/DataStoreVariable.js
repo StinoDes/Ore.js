@@ -9,7 +9,6 @@ var DataStoreVariable = Object.create({
             listeners = [];
         else if (!Array.isArray(listeners))
             listeners = [listeners];
-        console.log(listeners);
         this.setName(name);
         this.setType(type);
         this.setValue(value);
@@ -32,7 +31,6 @@ var DataStoreVariable = Object.create({
         }
     },
     addSubscriber: function (listener) {
-        console.log(typeof listener);
         if (typeof listener === 'function')
             this._handlers.push(listener);
         else
