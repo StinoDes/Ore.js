@@ -93,6 +93,7 @@ var EziElement = Object.create({
                 this.transformer.transformElement(this);
             }
             else {
+                console.log('animating');
                 var autostart = (arguments[4]!== undefined)?arguments[4]:true,
                     anim = null;
                 if (EZI.AniManager.animations[this.element._eziId + 'transform'] === undefined) {
