@@ -82,7 +82,7 @@ var EziElement = Object.create({
         return this.property('width', value, duration, easing, autoStart);
     },
     //Params: name, x, y, z || name, valueArr, duration, easing
-    transform: function (transformName, par1, par2, par3) {
+    transform: function (transformName, par1, par2, par3, autostart) {
         if (typeof par1 === 'number') {
             this.transformer.setTransform(transformName, par1, par2, par3);
             this.transformer.transformElement(this);
@@ -93,30 +93,28 @@ var EziElement = Object.create({
                 this.transformer.transformElement(this);
             }
             else {
-                var autostart = (arguments[4]!== undefined)?arguments[4]:true,
+                var autostart = (autostart !== undefined)?autostart:true,
                     anim = null;
-                if (EZI.AniManager.animations[this.element._eziId + 'transform'] === undefined) {
-                    anim = EZI.createAnimation(this.element._eziId + 'transform', this.element, par2);
-                    anim.addAnimatedProperty(this.transformer.createTransformAnimation(transformName, par1, (!par3) ? EZI.Easings.DEFAULT : par3));
-                    if (autostart) anim.start();
+                if (EZI.AniManager.animations[this.element._eziId + transformName] !== undefined) {
+                    anim = EZI.AniManager.animations[this.element._eziId + transformName];
+                    anim.stop();
+                    anim.remove();
                 }
-                else {
-                    anim = EZI.AniManager.animations[this.element._eziId + 'transform'];
-                    anim[this.element._eziId + 'transform'].addTransform(transformName, par1);
-                    if (autostart) anim.start();
-                }
+                anim = EZI.createAnimation(this.element._eziId + transformName, this.element, par2);
+                anim.addAnimatedProperty(this.transformer.createTransformAnimation(transformName, par1, (!par3) ? EZI.Easings.DEFAULT : par3));
+                if (autostart) anim.start();
                 return anim;
             }
         }
     },
-    translate: function (x, y, z) {
-        this.transform('translate', x, y, z);
+    translate: function (x, y, z, autostart) {
+        return this.transform('translate', x, y, z, autostart);
     },
-    rotate: function (a, b, c) {
-        this.transform('rotate', a, b, c);
+    rotate: function (a, b, c, autostart) {
+        return this.transform('rotate', a, b, c, autostart);
     },
-    scale: function (x, y, z) {
-        this.transform('scale', x, y, z);
+    scale: function (x, y, z, autostart) {
+        return this.transform('scale', x, y, z, autostart);
     },
     property: function (name, value, duration, easing, autoStart) {
 

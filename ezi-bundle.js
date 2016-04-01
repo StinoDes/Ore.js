@@ -420,7 +420,7 @@ var EZI =
 	        return this.property('width', value, duration, easing, autoStart);
 	    },
 	    //Params: name, x, y, z || name, valueArr, duration, easing
-	    transform: function (transformName, par1, par2, par3) {
+	    transform: function (transformName, par1, par2, par3, autostart) {
 	        if (typeof par1 === 'number') {
 	            this.transformer.setTransform(transformName, par1, par2, par3);
 	            this.transformer.transformElement(this);
@@ -431,30 +431,28 @@ var EZI =
 	                this.transformer.transformElement(this);
 	            }
 	            else {
-	                var autostart = (arguments[4]!== undefined)?arguments[4]:true,
+	                var autostart = (autostart !== undefined)?autostart:true,
 	                    anim = null;
-	                if (EZI.AniManager.animations[this.element._eziId + 'transform'] === undefined) {
-	                    anim = EZI.createAnimation(this.element._eziId + 'transform', this.element, par2);
-	                    anim.addAnimatedProperty(this.transformer.createTransformAnimation(transformName, par1, (!par3) ? EZI.Easings.DEFAULT : par3));
-	                    if (autostart) anim.start();
+	                if (EZI.AniManager.animations[this.element._eziId + transformName] !== undefined) {
+	                    anim = EZI.AniManager.animations[this.element._eziId + transformName];
+	                    anim.stop();
+	                    anim.remove();
 	                }
-	                else {
-	                    anim = EZI.AniManager.animations[this.element._eziId + 'transform'];
-	                    anim[this.element._eziId + 'transform'].addTransform(transformName, par1);
-	                    if (autostart) anim.start();
-	                }
+	                anim = EZI.createAnimation(this.element._eziId + transformName, this.element, par2);
+	                anim.addAnimatedProperty(this.transformer.createTransformAnimation(transformName, par1, (!par3) ? EZI.Easings.DEFAULT : par3));
+	                if (autostart) anim.start();
 	                return anim;
 	            }
 	        }
 	    },
-	    translate: function (x, y, z) {
-	        this.transform('translate', x, y, z);
+	    translate: function (x, y, z, autostart) {
+	        return this.transform('translate', x, y, z, autostart);
 	    },
-	    rotate: function (a, b, c) {
-	        this.transform('rotate', a, b, c);
+	    rotate: function (a, b, c, autostart) {
+	        return this.transform('rotate', a, b, c, autostart);
 	    },
-	    scale: function (x, y, z) {
-	        this.transform('scale', x, y, z);
+	    scale: function (x, y, z, autostart) {
+	        return this.transform('scale', x, y, z, autostart);
 	    },
 	    property: function (name, value, duration, easing, autoStart) {
 
@@ -666,18 +664,19 @@ var EZI =
 /***/ function(module, exports, __webpack_require__) {
 
 	var Transformer = Object.create({
-	    transforms: ['scale', 'translate', 'rotate'],
-	    prefixes: ['o', 'ms', 'moz', 'webkit'],
+	    TRANSFORMS: ['scale', 'translate', 'rotate'],
+	    PREFIXES: ['o', 'ms', 'moz', 'webkit'],
+	    DEFAULTS: {
+	        'scale': [1, 1, 1],
+	        'translate': [0, 0, 0],
+	        'rotate': [0]
+	    },
 	    init: function () {
 	        //X, Y, Z for each transform
-	        for (var k in this.transforms) {
-	            if (this.transforms[k] !== 'scale')
-	                this[this.transforms[k]] = [0, 0, 0];
-	            else
-	                this[this.transforms[k]] = [1, 1, 0];
-
+	        for (var k in this.TRANSFORMS) {
+	                this[this.TRANSFORMS[k]] = this.DEFAULTS[this.TRANSFORMS[k]];
 	        }
-	        this.translateUnit = 'px'
+	        this.translateUnit = 'px';
 	        return this;
 	    },
 	    setTransform: function (transform, par1, par2, par3) {
@@ -698,24 +697,24 @@ var EZI =
 	    },
 	    getTransformString: function (includeNulls) {
 	        var str = "";
-	        for (var k in this.transforms) {
+	        for (var k in this.TRANSFORMS) {
 	            if (includeNulls)
-	                str += this.getTransformPart(this.transforms[k]);
-	            else if (this[this.transforms[k]] !== [0, 0, 0]) {
-	                str += this.getTransformPart(this.transforms[k]);
+	                str += this.getTransformPart(this.TRANSFORMS[k]);
+	            else if (this[this.TRANSFORMS[k]] !== this.DEFAULTS[this.TRANSFORMS[k]]) {
+	                str += this.getTransformPart(this.TRANSFORMS[k]);
 	            }
 	            //str += '';
-	            //if (k >= this.transforms.length-1) {
+	            //if (k >= this.TRANSFORMS.length-1) {
 	            //    str = str.substr(0, str.length-2);
 	            //}
 	        }
 	        return str;
 	    },
-	    transformElement: function (eziEl) {
-	        var string = this.getTransformString(true);
+	    transformElement: function (eziEl, includeNulls) {
+	        var string = this.getTransformString(includeNulls || false);
 	        eziEl.element.style['transform'] = string;
-	        for (var k in this.prefixes) {
-	            eziEl.element.style['-'+this.prefixes[k]+'-transform'] = string;
+	        for (var k in this.PREFIXES) {
+	            eziEl.element.style['-'+this.PREFIXES[k]+'-transform'] = string;
 	        }
 	    },
 	    getTransformPart: function (transformName) {
@@ -1173,7 +1172,7 @@ var EZI =
 	                }
 	                this.callback();
 	                if (this.autoRemove)
-	                    EZI.AniManager.removeAnimation(this.identifier);
+	                    this.remove();
 	                if (this.toggle) {
 	                    this.callOnAllProperties('switchValues');
 	                }
@@ -1275,6 +1274,9 @@ var EZI =
 	        this.curTime -= ms;
 	        if (this.curTime > this.duration) this.curTime = this.duration;
 	        if (this.curTime < 0) this.curTime = 0;
+	    },
+	    remove: function () {
+	        EZI.AniManager.removeAnimation(this.identifier);
 	    }
 
 	});

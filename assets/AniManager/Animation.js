@@ -81,7 +81,7 @@ var Animation = Object.create({
                 }
                 this.callback();
                 if (this.autoRemove)
-                    EZI.AniManager.removeAnimation(this.identifier);
+                    this.remove();
                 if (this.toggle) {
                     this.callOnAllProperties('switchValues');
                 }
@@ -183,6 +183,9 @@ var Animation = Object.create({
         this.curTime -= ms;
         if (this.curTime > this.duration) this.curTime = this.duration;
         if (this.curTime < 0) this.curTime = 0;
+    },
+    remove: function () {
+        EZI.AniManager.removeAnimation(this.identifier);
     }
 
 });
