@@ -4,12 +4,12 @@ var Transformer = Object.create({
     DEFAULTS: {
         'scale': [1, 1, 1],
         'translate': [0, 0, 0],
-        'rotate': [0]
+        'rotate': [0, 0, 0]
     },
     init: function () {
         //X, Y, Z for each transform
         for (var k in this.TRANSFORMS) {
-                this[this.TRANSFORMS[k]] = this.DEFAULTS[this.TRANSFORMS[k]];
+                this[this.TRANSFORMS[k]] = this.DEFAULTS[this.TRANSFORMS[k]].slice();
         }
         this.translateUnit = 'px';
         return this;
@@ -30,12 +30,19 @@ var Transformer = Object.create({
     getTransform: function (transformName) {
         return this[transformName];
     },
+    isDefault: function (name) {
+        for (var k in this[name]) {
+            if (this[name][k] !== this.DEFAULTS[name][k])
+                return false;
+        }
+        return true;
+    },
     getTransformString: function (includeNulls) {
         var str = "";
         for (var k in this.TRANSFORMS) {
             if (includeNulls)
                 str += this.getTransformPart(this.TRANSFORMS[k]);
-            else if (this[this.TRANSFORMS[k]] !== this.DEFAULTS[this.TRANSFORMS[k]]) {
+            else if (!this.isDefault(this.TRANSFORMS[k])) {
                 str += this.getTransformPart(this.TRANSFORMS[k]);
             }
             //str += '';
@@ -55,7 +62,7 @@ var Transformer = Object.create({
     getTransformPart: function (transformName) {
         var transform = this[transformName],
             str = '',
-            is3d = transform[2] !== 0;
+            is3d = transform[2] !== 0 && transform[2] !== undefined;
         if (is3d) {
             str += transformName + '3d(';
             for (var l in transform) {
