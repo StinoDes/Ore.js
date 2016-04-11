@@ -17,14 +17,28 @@ var EZI = Object.create({
             e = e || event;
             EZI.keymap[e.keyCode] = e.type == 'keydown';
         };
-        window.EZ = (function EZ (el) {
+        window.EZ = (function EZ (el, asArray) {
+            asArray = (asArray===undefined)?false:asArray;
             if (typeof el == 'string') {
-                el = document.querySelector(el);
+                el = document.querySelectorAll(el);
             }
+            console.log(el);
             if (el == null) {
                 return null;
             }
+            else if (el.constructor === NodeList) {
+                var arr = [];
+                for (var i = 0; i < el.length; i++) {
+                    arr.push(el.item(i).ezi);
+                }
+                if (arr.length === 1 && !asArray)
+                    return arr[0];
+                else
+                    return arr;
+            }
             else {
+                if(asArray)
+                    return [el.ezi];
                 return el.ezi;
             }
         });

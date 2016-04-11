@@ -73,14 +73,28 @@ var EZI =
 	            e = e || event;
 	            EZI.keymap[e.keyCode] = e.type == 'keydown';
 	        };
-	        window.EZ = (function EZ (el) {
+	        window.EZ = (function EZ (el, asArray) {
+	            asArray = (asArray===undefined)?false:asArray;
 	            if (typeof el == 'string') {
-	                el = document.querySelector(el);
+	                el = document.querySelectorAll(el);
 	            }
+	            console.log(el);
 	            if (el == null) {
 	                return null;
 	            }
+	            else if (el.constructor === NodeList) {
+	                var arr = [];
+	                for (var i = 0; i < el.length; i++) {
+	                    arr.push(el.item(i).ezi);
+	                }
+	                if (arr.length === 1 && !asArray)
+	                    return arr[0];
+	                else
+	                    return arr;
+	            }
 	            else {
+	                if(asArray)
+	                    return [el.ezi];
 	                return el.ezi;
 	            }
 	        });
@@ -251,34 +265,166 @@ var EZI =
 	        return this._app;
 	    },
 	    createDataStore: function (initialData) {
-	        return __webpack_require__(27).init(initialData);
+	        return __webpack_require__(2).init(initialData);
 	    }
 
 	});
 
-	EZI.Elemental = __webpack_require__(2);
-	EZI.EziElement = __webpack_require__(3);
-	EZI.CSSProps = __webpack_require__(6);
+	EZI.Elemental = __webpack_require__(4);
+	EZI.EziElement = __webpack_require__(5);
+	EZI.CSSProps = __webpack_require__(8);
 
-	EZI.AniManager = __webpack_require__(7);
-	EZI.Animation = __webpack_require__(8);
-	EZI.AnimatedProperty = __webpack_require__(9);
-	EZI.AnimationStep = __webpack_require__(10);
-	EZI.StepProperty = __webpack_require__(11);
-	EZI.Easings = __webpack_require__(12);
+	EZI.AniManager = __webpack_require__(9);
+	EZI.Animation = __webpack_require__(10);
+	EZI.AnimatedProperty = __webpack_require__(11);
+	EZI.AnimationStep = __webpack_require__(12);
+	EZI.StepProperty = __webpack_require__(13);
+	EZI.Easings = __webpack_require__(14);
 
-	EZI.Interacter = __webpack_require__(13);
-	EZI.Interaction = __webpack_require__(14);
+	EZI.Interacter = __webpack_require__(15);
+	EZI.Interaction = __webpack_require__(16);
 
-	EZI.Map = __webpack_require__(15);
-	EZI.Range = __webpack_require__(16);
+	EZI.Map = __webpack_require__(17);
+	EZI.Range = __webpack_require__(18);
 
-	EZI.Builder = __webpack_require__(17);
+	EZI.Builder = __webpack_require__(19);
 
 	module.exports = EZI;
 
 /***/ },
 /* 2 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 * Created by Stijn on 01/03/16.
+	 */
+
+	//DATABANK OBJECT
+	//HOLDS VARIABLES, REFRESHES LISTENING COMPONENTS ON VAR UPDATe
+	var DataStore = Object.create({
+
+	    //Initial Data: Array of {name: value} objects
+	    init: function (initialData) {
+	        this._data = {};
+	        (typeof initialData == 'object')?this._dataFromObject(initialData):null;
+	        return this;
+	    },
+	    _dataFromObject: function (object) {
+	        var dataObject = {};
+	        for (var k in object) {
+	            dataObject[k] =  this.createDataVar(k, object[k], typeof object[k]);
+	        }
+	    },
+	    createDataVar: function (name, value, type, listeners) {
+	        this._data[name] = Object.create(__webpack_require__(3)).init(name, value, type, listeners);
+	        return this.getDataVar(name);
+	    },
+	    setDataVar: function (name, value) {
+	        this._data[name].setValue(value);
+	    },
+	    getDataVar: function (name, getWholeObject) {
+	        return (getWholeObject)?this._data[name]:this._data[name].getValue();
+	    },
+	    dataVarExists: function (name) {
+	        if (this.getDataVar(name, true))
+	            return true;
+	        return false;
+	    },
+	    addAsSubscriberTo: function (componentOrFunc, nameArray) {
+	        for (var k in nameArray) {
+	            this.getDataVar(nameArray[k], true).addSubscriber(componentOrFunc);
+	        }
+	    }
+
+	});
+
+	module.exports = DataStore;
+
+/***/ },
+/* 3 */
+/***/ function(module, exports) {
+
+	/**
+	 * Created by Stijn on 01/03/16.
+	 */
+
+	var DataStoreVariable = Object.create({
+
+	    init: function (name, value, type, listeners) {
+	        if (listeners === undefined || !listeners)
+	            listeners = [];
+	        else if (!Array.isArray(listeners))
+	            listeners = [listeners];
+	        this.setName(name);
+	        this.setType(type);
+	        this.setValue(value);
+	        //components
+	        this._subscribers = [];
+	        //functions
+	        this._handlers = [];
+	        for (var k in listeners) {
+	            this.addSubscriber(listeners[k]);
+	        }
+	        this._triggersRerender = true;
+	        return this;
+	    },
+	    callToSubscribers: function () {
+	        for (var k in this._handlers) {
+	            this._handlers[k](this.getValue());
+	        }
+	        for (var k in this._subscribers) {
+	            this._subscribers[k]._dataVarChanged(this._triggersRerender);
+	        }
+	    },
+	    addSubscriber: function (listener) {
+	        if (typeof listener === 'function')
+	            this._handlers.push(listener);
+	        else
+	            this._subscribers.push(listener);
+	    },
+	    removeSubscriber: function (listener) {
+	        if (typeof listener === 'function') {
+	            var i = this._handlers.getIndexOf(listener);
+	            this._handlers.splice(i, 1);
+	        }
+	        else {
+	            var i = this._subscribers.getIndexOf(listener);
+	            this._subscribers.splice(i, 1);
+	        }
+	    },
+	    setName: function (name) {
+	        this._name = name;
+	    },
+	    getName: function () {
+	        return this._name;
+	    },
+	    setType: function (type) {
+	        this._type = type;
+	        this.callToSubscribers();
+	    },
+	    getType: function () {
+	        return this._type;
+	    },
+	    setValue: function (value) {
+	        if ((this.getType() && typeof value === this.getType()) || value == null) {
+	            this._value = value;
+	            this.callToSubscribers();
+	        }
+	        else
+	            console.error('Value is not of the type specified.');
+	    },
+	    getValue: function () {
+	        return this._value;
+	    },
+	    triggersRerender: function (bool) {
+	        this._triggersRerender = bool;
+	    },
+	});
+	module.exports = DataStoreVariable;
+
+
+/***/ },
+/* 4 */
 /***/ function(module, exports) {
 
 	/**
@@ -333,7 +479,7 @@ var EZI =
 	module.exports = Elemental;
 
 /***/ },
-/* 3 */
+/* 5 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -347,7 +493,7 @@ var EZI =
 
 	    init: function (el) {
 	        this.element = el;
-	        this.transformer = Object.create(__webpack_require__(4)).init();
+	        this.transformer = Object.create(__webpack_require__(6)).init();
 	        return this;
 	    },
 	    _getEziId: function () {
@@ -660,7 +806,7 @@ var EZI =
 	module.exports = EziElement;
 
 /***/ },
-/* 4 */
+/* 6 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var Transformer = Object.create({
@@ -761,7 +907,7 @@ var EZI =
 	    },
 	    createTransformAnimation: function (name, valueArray, easing) {
 	        easing = (easing !== undefined)?easing:EZI.Easings.DEFAULT;
-	        var transformAnimation = Object.create(__webpack_require__(5)).init(name, valueArray, easing,this);
+	        var transformAnimation = Object.create(__webpack_require__(7)).init(name, valueArray, easing,this);
 	        return transformAnimation;
 	    }
 
@@ -770,7 +916,7 @@ var EZI =
 	module.exports = Transformer;
 
 /***/ },
-/* 5 */
+/* 7 */
 /***/ function(module, exports) {
 
 	/**
@@ -845,7 +991,7 @@ var EZI =
 
 
 /***/ },
-/* 6 */
+/* 8 */
 /***/ function(module, exports) {
 
 	/**
@@ -978,7 +1124,7 @@ var EZI =
 
 
 /***/ },
-/* 7 */
+/* 9 */
 /***/ function(module, exports) {
 
 	/**
@@ -1093,7 +1239,7 @@ var EZI =
 	module.exports = AniManager;
 
 /***/ },
-/* 8 */
+/* 10 */
 /***/ function(module, exports) {
 
 	/**
@@ -1291,7 +1437,7 @@ var EZI =
 	module.exports = Animation;
 
 /***/ },
-/* 9 */
+/* 11 */
 /***/ function(module, exports) {
 
 	/**
@@ -1381,13 +1527,13 @@ var EZI =
 
 
 /***/ },
-/* 10 */
+/* 12 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
 	 * Created by Stijn on 01/03/16.
 	 */
-	var AnimationStep = Object.create(__webpack_require__(9), {
+	var AnimationStep = Object.create(__webpack_require__(11), {
 
 	    startTime: {
 	        writable: true,
@@ -1497,7 +1643,7 @@ var EZI =
 	module.exports = AnimationStep;
 
 /***/ },
-/* 11 */
+/* 13 */
 /***/ function(module, exports) {
 
 	/**
@@ -1582,7 +1728,7 @@ var EZI =
 	module.exports = StepProperty;
 
 /***/ },
-/* 12 */
+/* 14 */
 /***/ function(module, exports) {
 
 	/**
@@ -1658,7 +1804,7 @@ var EZI =
 	module.exports = Easings;
 
 /***/ },
-/* 13 */
+/* 15 */
 /***/ function(module, exports) {
 
 	/**
@@ -1687,7 +1833,7 @@ var EZI =
 
 
 /***/ },
-/* 14 */
+/* 16 */
 /***/ function(module, exports) {
 
 	/**
@@ -1743,7 +1889,7 @@ var EZI =
 
 
 /***/ },
-/* 15 */
+/* 17 */
 /***/ function(module, exports) {
 
 	/**
@@ -1783,7 +1929,7 @@ var EZI =
 	module.exports = Map;
 
 /***/ },
-/* 16 */
+/* 18 */
 /***/ function(module, exports) {
 
 	/**
@@ -1805,7 +1951,7 @@ var EZI =
 	module.exports = Range;
 
 /***/ },
-/* 17 */
+/* 19 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -1820,7 +1966,7 @@ var EZI =
 
 	    init: function (appName, initialData) {
 	        this.setAppName(appName);
-	        this._router = Object.create(__webpack_require__(18)).init();
+	        this._router = Object.create(__webpack_require__(20)).init();
 	        this._dataStore = EZI.createDataStore(initialData);
 	        this._registeredComponents = this._baseComponents;
 	        return this;
@@ -1906,7 +2052,7 @@ var EZI =
 	module.exports = Builder;
 
 /***/ },
-/* 18 */
+/* 20 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -1959,7 +2105,7 @@ var EZI =
 	        return this._routes[identifier];
 	    },
 	    createRoute: function (identifier, urlString, page) {
-	        var route = Object.create(__webpack_require__(19)).init(identifier, urlString, page);
+	        var route = Object.create(__webpack_require__(21)).init(identifier, urlString, page);
 	        return route;
 	    },
 	    addRoute: function (route) {
@@ -1999,7 +2145,7 @@ var EZI =
 
 
 /***/ },
-/* 19 */
+/* 21 */
 /***/ function(module, exports) {
 
 	/**
@@ -2050,8 +2196,6 @@ var EZI =
 	module.exports = Route;
 
 /***/ },
-/* 20 */,
-/* 21 */,
 /* 22 */
 /***/ function(module, exports, __webpack_require__) {
 
@@ -2347,138 +2491,6 @@ var EZI =
 
 	module.exports = Input;
 
-
-
-/***/ },
-/* 27 */
-/***/ function(module, exports, __webpack_require__) {
-
-	/**
-	 * Created by Stijn on 01/03/16.
-	 */
-
-	//DATABANK OBJECT
-	//HOLDS VARIABLES, REFRESHES LISTENING COMPONENTS ON VAR UPDATe
-	var DataStore = Object.create({
-
-	    //Initial Data: Array of {name: value} objects
-	    init: function (initialData) {
-	        this._data = {};
-	        (typeof initialData == 'object')?this._dataFromObject(initialData):null;
-	        return this;
-	    },
-	    _dataFromObject: function (object) {
-	        var dataObject = {};
-	        for (var k in object) {
-	            dataObject[k] =  this.createDataVar(k, object[k], typeof object[k]);
-	        }
-	    },
-	    createDataVar: function (name, value, type, listeners) {
-	        this._data[name] = Object.create(__webpack_require__(28)).init(name, value, type, listeners);
-	        return this.getDataVar(name);
-	    },
-	    setDataVar: function (name, value) {
-	        this._data[name].setValue(value);
-	    },
-	    getDataVar: function (name, getWholeObject) {
-	        return (getWholeObject)?this._data[name]:this._data[name].getValue();
-	    },
-	    dataVarExists: function (name) {
-	        if (this.getDataVar(name, true))
-	            return true;
-	        return false;
-	    },
-	    addAsSubscriberTo: function (componentOrFunc, nameArray) {
-	        for (var k in nameArray) {
-	            this.getDataVar(nameArray[k], true).addSubscriber(componentOrFunc);
-	        }
-	    }
-
-	});
-
-	module.exports = DataStore;
-
-/***/ },
-/* 28 */
-/***/ function(module, exports) {
-
-	/**
-	 * Created by Stijn on 01/03/16.
-	 */
-
-	var DataStoreVariable = Object.create({
-
-	    init: function (name, value, type, listeners) {
-	        if (listeners === undefined || !listeners)
-	            listeners = [];
-	        else if (!Array.isArray(listeners))
-	            listeners = [listeners];
-	        this.setName(name);
-	        this.setType(type);
-	        this.setValue(value);
-	        //components
-	        this._subscribers = [];
-	        //functions
-	        this._handlers = [];
-	        for (var k in listeners) {
-	            this.addSubscriber(listeners[k]);
-	        }
-	        this._triggersRerender = true;
-	        return this;
-	    },
-	    callToSubscribers: function () {
-	        for (var k in this._handlers) {
-	            this._handlers[k](this.getValue());
-	        }
-	        for (var k in this._subscribers) {
-	            this._subscribers[k]._dataVarChanged(this._triggersRerender);
-	        }
-	    },
-	    addSubscriber: function (listener) {
-	        if (typeof listener === 'function')
-	            this._handlers.push(listener);
-	        else
-	            this._subscribers.push(listener);
-	    },
-	    removeSubscriber: function (listener) {
-	        if (typeof listener === 'function') {
-	            var i = this._handlers.getIndexOf(listener);
-	            this._handlers.splice(i, 1);
-	        }
-	        else {
-	            var i = this._subscribers.getIndexOf(listener);
-	            this._subscribers.splice(i, 1);
-	        }
-	    },
-	    setName: function (name) {
-	        this._name = name;
-	    },
-	    getName: function () {
-	        return this._name;
-	    },
-	    setType: function (type) {
-	        this._type = type;
-	        this.callToSubscribers();
-	    },
-	    getType: function () {
-	        return this._type;
-	    },
-	    setValue: function (value) {
-	        if ((this.getType() && typeof value === this.getType()) || value == null) {
-	            this._value = value;
-	            this.callToSubscribers();
-	        }
-	        else
-	            console.error('Value is not of the type specified.');
-	    },
-	    getValue: function () {
-	        return this._value;
-	    },
-	    triggersRerender: function (bool) {
-	        this._triggersRerender = bool;
-	    },
-	});
-	module.exports = DataStoreVariable;
 
 
 /***/ }
