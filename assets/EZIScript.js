@@ -22,7 +22,6 @@ var EZI = Object.create({
             if (typeof el == 'string') {
                 el = document.querySelectorAll(el);
             }
-            console.log(el);
             if (el == null) {
                 return null;
             }

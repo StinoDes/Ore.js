@@ -11,7 +11,7 @@ var Animation = Object.create({
     LOOPBACK: 'loopback',
 
     identifier: null,
-    properties: [],
+    properties: {},
     element: null,
     duration: null,
     curTime: 0,
@@ -35,7 +35,7 @@ var Animation = Object.create({
         this.id = Math.random();
         this.type = this.ONCE;
         this.callback = (typeof callback != "undefined") ? callback: this.callback;
-        this.properties = [];
+        this.properties = {};
 
         return this;
 
@@ -62,7 +62,7 @@ var Animation = Object.create({
 
                 if (property.isTransform()) {
                     property.assignTransforms(progress);
-                    property.transformer.transformElement(EZ(this.element));
+                    property.transformer.transformElement(EZ(this.element),property.includeNulls);
                 }
                 else {
                     if (property.mustUpdate) {

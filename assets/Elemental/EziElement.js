@@ -125,7 +125,7 @@ var EziElement = Object.create({
 
             //var value = 0;
             var value = getComputedStyle(this.element, null).getPropertyValue(prop.name);
-            if (value.match(/\d+/g) != null) value = parseFloat(value);
+            if (/(^[^#]\d*(px|%|\d|em|rem|vh|vw)*$)/i.test(value)) value = parseFloat(value);
             return value;
 
         }
@@ -270,7 +270,20 @@ var EziElement = Object.create({
             console.error('The object you\'re trying to append is undefined. Please pass a tag-string, EZI-element or DOM-element.');
         }
         else if (typeof obj == 'string') {
-            this.element.appendChild(EZI.make(obj, arguments[1]).element);
+            var el = EZI.make(obj, arguments[1]);
+            this.element.appendChild(el.element);
+            return el;
+        }
+        else if (obj.constructor === Array) {
+            for (var k in obj) {
+                this.element.appendChild(obj[k].element);
+            }
+        }
+        else if (arguments.length > 1 && arguments[0]._getEziId()) {
+            for (var i = 0; i < arguments.length; i++) {
+                if (arguments[i]._getEziId())
+                    this.element.appendChild(arguments[i].element);
+            }
         }
         else {
             this.element.appendChild(obj.element || obj);

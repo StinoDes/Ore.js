@@ -20,7 +20,7 @@ var AnimatedProperty = Object.create({
     id: 0,
 
     init: function (transformName, valueArray, easing, transformer) {
-
+        this.includeNulls = false;
         this.propertyName = 'transform';
         this.transformer = transformer;
         this.easing = easing;
