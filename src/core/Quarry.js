@@ -32,7 +32,7 @@ export default function (Class) {
             value (element) {
                 if (!this._cache[element.__mined__]) {
                     element.__mined__ = this._genD();
-                    this._cache[element.__mined__] = this.Element.create(element);
+                    this._cache[element.__mined__] = this.Element.create(element, element.__mined__);
                 }
                 return this._cache[element.__mined__];
             },
@@ -48,7 +48,7 @@ export default function (Class) {
         },
         _genD: {
             value () {
-                let str = randomString(8, 'aA#');
+                let str = randomString(8, 'aA');
                 if (this._cache[str])
                     return this._genD();
                 return str;

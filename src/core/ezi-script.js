@@ -1,10 +1,11 @@
 import Class from './class';
 import maps  from './maps';
 import initQuarry from './Quarry';
+import initRefiner from './Refiner';
 export default EZI = Class.extend({
     init () {
-        console.log('test');
         this.Quarry = initQuarry(this.Class);
+        this.Refiner = initRefiner(this.Class);
         return this;
     },
     Class: {
@@ -19,8 +20,11 @@ export default EZI = Class.extend({
     },
     craft: {
         value (tag, config) {
-            var el = document.createElement(tag);
-            console.log(this.maps._craftConfigMap(config));
+            var el = this.collect(document.createElement(tag));
+            if (config) {
+                config = this.maps._craftConfigMap(config) || {};
+                el.apply(config);
+            }
             return el;
         },
         visible: true,
@@ -28,10 +32,14 @@ export default EZI = Class.extend({
     },
     collect: {
         value (element, asArray) {
+            let arr;
             if (typeof element === 'string')
-                return this.Quarry.reclaim(document.querySelectorAll(element));
+                arr = this.Quarry.reclaim(document.querySelectorAll(element));
             else if (typeof element === 'object')
-                return this.Quarry.reclaim(element);
+                arr = this.Quarry.reclaim([element]);
+            if (arr.length === 1 && !asArray)
+                return arr[0];
+            return arr;
         }
     }
 }).init();
