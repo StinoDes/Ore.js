@@ -1,8 +1,9 @@
+var HtmlWebpackPlugin = require('html-webpack-plugin');
 module.exports = {
-    entry: "./ezi-script.js",
+    entry: "./src/index.js",
     output: {
-        path: __dirname,
-        filename: "ezi-bundle.js",
+        path: 'dist',
+        filename: "index.js",
 
         // export itself to a global var
         libraryTarget: "var",
@@ -11,8 +12,20 @@ module.exports = {
     },
     module: {
         loaders: [
-            { test: /\.css$/, loader: "style!css" }
-        ]
+        {
+            test: /\.js$/,
+            exclude: '/node_modules/',
+            loader: 'babel-loader',
+            query: {
+                presets: ['es2015', 'stage-2']
+            }
+        }]
     },
-    watch: true,
+    plugins: [
+        new HtmlWebpackPlugin({
+            filename: 'index.html',
+            template: './src/index.html',
+            inject: 'body'
+        })
+    ]
 };
