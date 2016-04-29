@@ -3,10 +3,12 @@ import coreMaps  from './../maps/core';
 import maps from '../maps';
 import initQuarry from './Quarry';
 import initRefiner from './Refiner';
+import { initEasings } from '../glimmer';
 export default EZI = Class.extend({
     init () {
         this.Quarry = initQuarry(this.Class);
         this.Refiner = initRefiner(this.Class);
+        this.easings = initEasings(this.Class).create();
         return this;
     },
     _modules: {
@@ -28,7 +30,7 @@ export default EZI = Class.extend({
         value (tag, config) {
             var el = this.collect(document.createElement(tag));
             if (config) {
-                config = this.maps._craftConfigMap(config) || {};
+                config = this.maps._doConfigMap(config) || {};
                 el.apply(config);
             }
             return el;

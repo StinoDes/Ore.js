@@ -1,27 +1,40 @@
 import { constants, validate } from '../utils';
 
-export const _craftConfigMap = (config) => {
+export const _doConfigMap = (config) => {
     let children = config.children || [],
         text = config.text || null;
     return {
-        events: _eventMap({
+        events: _doEventMap({
             ...config,
             ...config.events
         }),
-        attr: _attrMap({
+        attr: _doAttrMap({
             ...config,
             ...config.attr
         }),
-        styles: _styleMap({
+        styles: _doStyleMap({
             ...config,
             ...config.styles
         }),
-        class: _classMap(config),
+        class: _doClassMap(config),
         children,
         text
     }
 };
-export const _classMap = config => {
+export const _extractConfigMap = (config) => {
+    return {
+        attr: _extractAttrMap({
+            ...config,
+            ...config.attr
+        }),
+        styles: _extractStyleMap({
+            ...config,
+            ...config.styles
+        }),
+        class: _extractClassMap(config)
+    }
+};
+export const _doClassMap = config => {
     let c = (typeof config.class === 'string') ? config.class:false;
     return {
         add: config.addClass,
@@ -32,7 +45,14 @@ export const _classMap = config => {
     }
 
 };
-export const _eventMap = config => {
+export const _extractClassMap = config => {
+    return {
+        get: config.getClass,
+        has: config.hasClass,
+        ...config.class
+    }
+};
+export const _doEventMap = config => {
     let obj = {};
     for (var k in config) {
         if (k in constants.EVENTS) {
@@ -45,12 +65,12 @@ export const _eventMap = config => {
             if (validate(constants.FUNC, config[k]))
                 obj[k.replace(/^on/, '')] = config[k];
             else
-                console.error(k+' was not a valid '+constants.FUNC+'.');
+                console.error(k+' is not a valid '+constants.FUNC+'.');
         }
     }
     return obj;
 };
-export const _attrMap = config => {
+export const _doAttrMap = config => {
     let obj = {};
     for (var k in config) {
         if (k in constants.ATTRIBUTES)
@@ -58,16 +78,34 @@ export const _attrMap = config => {
     }
     return obj;
 };
-export const _styleMap = config => {
+export const _extractAttrMap = config => {
+    let obj = {};
+    for (var k in config) {
+        if (k in constants.ATTRIBUTES)
+            obj[k] = config[k]
+    }
+    return obj;
+};
+export const _doStyleMap = config => {
     let obj = {};
     for (var k in config) {
         if (k in constants.CSS_PROPERTIES)
             if (validate(constants.CSS_PROPERTIES[k], config[k]))
                 obj[k] = config[k];
             else
-                console.error(k+' was not a valid '+constants.CSS_PROPERTIES[k]+'.');
+                console.error(k+' is not a valid '+constants.CSS_PROPERTIES[k]+'.');
+    }
+    return obj;
+};
+export const _extractStyleMap = config => {
+    let obj = {};
+    for (var k in config) {
+        if (k in constants.CSS_PROPERTIES) {
+            obj[k] = config[k];
+        }
     }
     return obj;
 };
 
-export default { _craftConfigMap, _eventMap, _attrMap };
+export default { _doConfigMap, _doEventMap, _doAttrMap, _doClassMap, _doStyleMap,
+    _extractConfigMap, _extractAttrMap, _extractClassMap, _extractStyleMap };

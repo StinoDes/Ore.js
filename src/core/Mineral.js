@@ -23,6 +23,15 @@ export default function (Class) {
                 ...config
             }
         },
+        extract (config) {
+            config = EZI.maps._extractConfigMap(config);
+            console.log(config);
+            return {
+                class: this._extractClass(config.class),
+                styles: this._extractStyles(config.styles),
+                attr: this._extractAttr(config.attr)
+            }
+        },
         do (config) {
             for (let k in config) {
                 if (this.configurations[k] === undefined)
@@ -33,7 +42,7 @@ export default function (Class) {
                     this.configurations[k].call(this, config[k]);
                 delete config[k];
             }
-            this.apply(EZI.maps._craftConfigMap(config));
+            this.apply(EZI.maps._doConfigMap(config));
         },
         apply (config) {
             if (config.children.length)
@@ -63,7 +72,7 @@ export default function (Class) {
             value () {
                 let handler = function (e) {
                     let handlers = this._eventHandlers[e.type];
-                    for (var k in handlers) {
+                    for (let k in handlers) {
                         handlers[k](e);
                     }
                 };
@@ -74,7 +83,7 @@ export default function (Class) {
         },
         _applyEvents: {
             value (events) {
-                for (var k in events) {
+                for (let k in events) {
                     if (!this._eventHandlers[k]) {
                         this._eventHandlers[k] = [];
                         this._element.addEventListener(k, this._generateHandler(k));
@@ -100,10 +109,22 @@ export default function (Class) {
             editable: false,
             visible: false
         },
+        _extractStyles: {
+            value (styles) {
+                let rtrnobj = {},
+                    computed = window.getComputedStyle(this._element);
+                for (let k in styles) {
+                    rtrnobj[k] = computed[k];
+                }
+                return rtrnobj;
+            },
+            editable: false,
+            visible: false
+        },
         _applyText: {
             value (text) {
-                var childTextNode;
-                for (var i = 0; i < this._element.childNodes.length; i++) {
+                let childTextNode;
+                for (let i = 0; i < this._element.childNodes.length; i++) {
                     if (this._element.childNodes[i].nodeName == '#text') {
                         childTextNode = this._element.childNodes[i];
                     }
@@ -119,12 +140,23 @@ export default function (Class) {
         },
         _applyAttr: {
             value (attr) {
-                for (var k in attr) {
+                for (let k in attr) {
                     this._element.setAttribute(k, attr[k]);
                 }
             },
             visible: false,
             editable: false
+        },
+        _extractAttr: {
+            value (attr) {
+                let rtrnobj = {};
+                for (let k in attr) {
+                    rtrnobj[k] = this._element.getAttribute(k);
+                }
+                return rtrnobj;
+            },
+            editable: false,
+            visible: false
         },
         _applyClass: {
             value (classActions) {
@@ -137,6 +169,18 @@ export default function (Class) {
                     this._element.classList.add(add);
                 if (toggle)
                     this._element.classList.toggle(toggle);
+            },
+            visible: false,
+            editable: false
+        },
+        _extractClass: {
+            value (classActions) {
+                let rtrnobj = {};
+                if (classActions.has)
+                    rtrnobj.has = this._element.classList.contains(classActions.has);
+                if (classActions.get)
+                    rtrnobj.has = this._element.getAttribute('class');
+                return rtrnobj;
             },
             visible: false,
             editable: false

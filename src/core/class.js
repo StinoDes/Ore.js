@@ -35,7 +35,7 @@ const Class = Object.create(Object.prototype, {
                         value,
                         writable: true,
                         configurable: true,
-                        editable: true
+                        enumerable: true
                     }
                 }
             }

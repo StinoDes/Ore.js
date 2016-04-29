@@ -1,2 +1,3 @@
 import initGlimmer from './Glimmer';
-export { initGlimmer };
+import initEasings from './Easings';
+export { initGlimmer, initEasings };
