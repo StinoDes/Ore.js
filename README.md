@@ -1,3 +1,7 @@
+# New version coming
+### I've reworked ezi from scratch. Check out the ezi-script1.0 branch for the changes.  
+### Readme will be updated after its release.
+
 # ezi-script
 
 Ezi-script is (yes, another) javascript library, which aims to make common processes, 
