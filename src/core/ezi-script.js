@@ -1,5 +1,6 @@
 import Class from './class';
-import maps  from './maps';
+import coreMaps  from './../maps/core';
+import maps from '../maps';
 import initQuarry from './Quarry';
 import initRefiner from './Refiner';
 export default EZI = Class.extend({
@@ -8,13 +9,18 @@ export default EZI = Class.extend({
         this.Refiner = initRefiner(this.Class);
         return this;
     },
+    _modules: {
+        value: {},
+        visible: false,
+        editable: false
+    },
     Class: {
         value: Class,
         visible: false,
         editable: false
     },
     maps: {
-        value: maps,
+        value: { ...maps },
         visible: false,
         editable: false
     },
@@ -31,15 +37,15 @@ export default EZI = Class.extend({
         editable: false
     },
     collect: {
-        value (element, asArray) {
-            let arr;
-            if (typeof element === 'string')
-                arr = this.Quarry.reclaim(document.querySelectorAll(element));
-            else if (typeof element === 'object')
-                arr = this.Quarry.reclaim([element]);
-            if (arr.length === 1 && !asArray)
-                return arr[0];
-            return arr;
+        value (selector, asArray) {
+            let batch;
+            if (typeof selector === 'string')
+                batch = this.Quarry.reclaim(document.querySelectorAll(selector));
+            else if (typeof selector === 'object')
+                batch = this.Quarry.reclaim([selector]);
+            if (batch.length === 1 && !asArray)
+                return batch.mineral(0);
+            return batch;
         }
     }
 }).init();

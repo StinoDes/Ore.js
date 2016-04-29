@@ -16,9 +16,21 @@ export const _craftConfigMap = (config) => {
             ...config,
             ...config.styles
         }),
+        class: _classMap(config),
         children,
         text
     }
+};
+export const _classMap = config => {
+    let c = (typeof config.class === 'string') ? config.class:false;
+    return {
+        add: config.addClass,
+        toggle: config.toggleClass,
+        remove: config.removeClass,
+        set: c || config.setClass,
+        ...config.class
+    }
+
 };
 export const _eventMap = config => {
     let obj = {};

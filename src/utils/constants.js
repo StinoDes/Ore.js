@@ -184,7 +184,7 @@ export const
         'charset': null,
         'checked': null,
         'cite': null,
-        'class': null,
+        //'class': null, CLASS HAS OWN METHODS
         'code': null,
         'codebase': null,
         'color': null,

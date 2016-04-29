@@ -15,14 +15,18 @@ const Class = Object.create(Object.prototype, {
             let descriptor = {};
             for (var k in objectToAdd) {
                 if (typeof objectToAdd[k] === 'object') {
-                    let value = objectToAdd[k]['value'],
-                        visible = objectToAdd[k]['visible'],
-                        editable = objectToAdd[k]['editable'];
+                    let { value, get, set, visible, editable } = objectToAdd[k],
+                        v = {};
+                    if ((value !== undefined || editable !== undefined ) && (get || set))
+                        console.warn('Can\'t define a \'get\' or \'set\' with a value and editable. Prioritising value if present');
+                    if (value !== undefined)
+                        v = {value, writable: editable !== undefined ? editable : true,};
+                    else
+                        v = {get, set};
                     descriptor[k] = {
-                        value,
-                        writable: editable !== undefined ? editable: true,
-                        configurable: editable !== undefined ? editable: true,
-                        enumerable: visible !== undefined ? visible: true,
+                        ...v,
+                        configurable: editable !== undefined ? editable : true,
+                        enumerable: visible !== undefined ? visible : true,
                     }
                 }
                 else {

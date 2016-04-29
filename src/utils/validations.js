@@ -15,7 +15,19 @@ export default function (type, val) {
     }
 }
 function isFunc (val) {
-    return typeof val === 'function';
+    let isfunc = true,
+        isarroffunc = true;
+    if (typeof val !== 'function')
+        isfunc = false;
+    else if (val.constructor === Array) {
+        for (var k in val) {
+            if (typeof val[k] !== 'function') {
+                isarroffunc = false;
+                break;
+            }
+        }
+    }
+    return isfunc || isarroffunc;
 }
 function isLength (val) {
     return /(\d+\s?px$)|(\d+\s?\%$)|(\d+\s?em$)|(\d+\s?rem$)/.test(val);
