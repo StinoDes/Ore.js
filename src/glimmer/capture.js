@@ -22,7 +22,6 @@ const capture  = (config, asRay) => {
 const screen = (glimmers, query) => {
     let arr = [];
     for (var k in glimmers) {
-        let b = true;
         if (EZI.maps._matchGlimmerQuery(glimmers[k], query))
             arr.push(glimmers[k])
     }
