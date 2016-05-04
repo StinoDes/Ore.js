@@ -1,7 +1,7 @@
 import { constants, validate } from '../utils';
 
-export const _doConfigMap = (config) => {
-    let children = config.children || [],
+export const _craftConfigMap = (config) => {
+    let append = config.children || [],
         text = config.text || null;
     return {
         events: _doEventMap({
@@ -17,7 +17,27 @@ export const _doConfigMap = (config) => {
             ...config.styles
         }),
         class: _doClassMap(config),
-        children,
+        children: { append: { minerals: append, index: null }, prepend: { minerals: [], index: null } },
+        text
+    }
+};
+export const _doConfigMap = (config) => {
+    let text = config.text || null;
+    return {
+        events: _doEventMap({
+            ...config,
+            ...config.events
+        }),
+        attr: _doAttrMap({
+            ...config,
+            ...config.attr
+        }),
+        styles: _doStyleMap({
+            ...config,
+            ...config.styles
+        }),
+        class: _doClassMap(config),
+        children: _doChildrenMap(config),
         text
     }
 };
@@ -33,6 +53,36 @@ export const _extractConfigMap = (config) => {
         }),
         class: _extractClassMap(config)
     }
+};
+export const _doChildrenMap = config => {
+    // {
+    //   append: {
+    //     minerals: [],
+    //     index: int
+    //   },
+    //   prepend: {
+    //     minerals: [],
+    //     index: int
+    //   },
+    // }
+    let getChildrenObj = type => {
+        if (config[type]) {
+            if (config[type].constructor === Array)
+                return {minerals: config[type], index: null};
+            else
+                return { minerals: [config[type]], index: null };
+        }
+        else if (config[type+'At'])
+            return { minerals: config[type+'At'].minerals, index: config[type+'At'].index };
+        else {
+            return (config.children)?config.children[type]: { minerals: [], index: null };
+        }
+    };
+    return {
+        append: getChildrenObj('append'),
+        prepend: getChildrenObj('prepend')
+    };
+
 };
 export const _doClassMap = config => {
     let c = (typeof config.class === 'string') ? config.class:false;
@@ -107,5 +157,5 @@ export const _extractStyleMap = config => {
     return obj;
 };
 
-export default { _doConfigMap, _doEventMap, _doAttrMap, _doClassMap, _doStyleMap,
+export default { _doConfigMap, _craftConfigMap, _doEventMap, _doAttrMap, _doClassMap, _doStyleMap,
     _extractConfigMap, _extractAttrMap, _extractClassMap, _extractStyleMap };

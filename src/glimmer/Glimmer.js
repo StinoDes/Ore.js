@@ -23,6 +23,8 @@ export default function (Class) {
          */
         init (config) {
             this._configuration = EZI.maps._glimmerConfigMap(config);
+            if (config.play)
+                this.loop();
             return this;
         },
         do (config) {

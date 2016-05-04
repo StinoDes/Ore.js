@@ -45,8 +45,9 @@ export default function (Class) {
             this.apply(EZI.maps._doConfigMap(config));
         },
         apply (config) {
-            if (config.children.length)
-                this._append(config.children);
+            console.log(config.children);
+            if (config.children.append.minerals.length || config.children.prepend.minerals.length)
+                this._applyChildren(config.children);
             if (Object.keys(config.styles).length)
                 this._applyStyles(config.styles);
             if (config.text)
@@ -185,11 +186,34 @@ export default function (Class) {
             visible: false,
             editable: false
         },
-        _append: {
+        _applyChildren: {
             value (children) {
-                for (let k in children) {
-                    let child = children[k];
-                    this._element.appendChild((child._mined) ? child._element : child);
+                console.log(children);
+                let {append, prepend} = children,
+                    appendChild = (mineral, index) => {
+                        if (index === null)
+                            this._element.appendChild(mineral.getElement());
+                        else {
+                            if (this._element.childNodes.item(index+1))
+                                this._element.insertBefore(mineral.getElement(), this._element.childNodes.item(index+1));
+                            else
+                                appendChild(mineral, null);
+
+                        }
+                    },
+                    prependChild = (mineral, index) => {
+                        if (!this._element.firstElementChild || index >= this._element.childNodes.length)
+                            appendChild(mineral, null);
+                        if (index === null)
+                            this._element.insertBefore(mineral.getElement(), this._element.firstElementChild);
+                        else
+                            this._element.insertBefore(mineral.getElement(), this._element.childNodes.item(index));
+                    }
+                for (var k in append.minerals) {
+                    appendChild(append.minerals[k], append.index);
+                }
+                for (var k in prepend.minerals) {
+                    prependChild(prepend.minerals[k], prepend.index);
                 }
             },
             editable: false,

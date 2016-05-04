@@ -30,7 +30,7 @@ export default EZI = Class.extend({
         value (tag, config) {
             var el = this.collect(document.createElement(tag));
             if (config) {
-                config = this.maps._doConfigMap(config) || {};
+                config = this.maps._craftConfigMap(config) || {};
                 el.apply(config);
             }
             return el;

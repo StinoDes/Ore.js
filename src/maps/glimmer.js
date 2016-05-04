@@ -15,10 +15,10 @@ export const _glimmerConfigMap = config => {
     //    easing: easefunc,
     //    play: bool
     //}
-    if (config.style && config.mineral) {
-        config.set = _glimmerStyleToSetMap(config.mineral, config.style);
+    if (config.styles && config.mineral) {
+        config.set = _glimmerStyleToSetMap(config.mineral, config.styles);
     }
-    else if (config.style || config.mineral)
+    else if (config.styles || config.mineral)
         console.error('Pass both a mineral and style.');
     if (!config.set)
         console.error('Glimmers need to set something. Add a set function via `do` or initialisation, or add a style and mineral config.');
