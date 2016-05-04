@@ -23,6 +23,11 @@ export default function (Class) {
         apply (config) {
             this.loop(mineral => mineral.apply(config));
         },
+        extract (config) {
+            let rtrn = [];
+            this.loop(mineral => rtrn.push(mineral.extract(config)));
+            return rtrn;
+        },
         loop (callback) {
             for (var k in this._minerals) {
                 callback(this._minerals[k], k);

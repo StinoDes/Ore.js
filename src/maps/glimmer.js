@@ -22,6 +22,7 @@ export const _glimmerConfigMap = config => {
     }
     else if (config.styles || config.mineral)
         console.error('Pass both a mineral and style.');
+    config.styles = _glimmerStyleToArrayMap(config.styles);
     if (!config.set)
         console.error('Glimmers need to set something. Add a set function via `do` or initialisation, or add a style and mineral config.');
     if (!config.get && (!config.initial&&config.initial !== 0)) {
@@ -38,6 +39,7 @@ export const _glimmerConfigMap = config => {
         set: config.set,
         get: config.get || function () {return this.value},
         mineral: config.mineral,
+        styles: config.styles,
         duration: config.duration,
         initial: (config.initial!==undefined)?config.initial:config.get(),
         toValue: config.toValue,
@@ -45,6 +47,14 @@ export const _glimmerConfigMap = config => {
         callback: config.callback,
         play: (config.play !== undefined)?config.play:false
     }
+};
+export const _glimmerStyleToArrayMap = (styles) => {
+    if (styles.prototype = Array)
+        return styles;
+    else if (typeof styles === 'object')
+        return Object.keys(styles);
+    else if (typeof styles === 'string')
+        return [styles];
 };
 export const _glimmerStyleToSetMap = (mineral, style) => {
     //style: {
@@ -117,6 +127,40 @@ export const _glimmerObjectStyleMap = (style) => {
     }
     return props;
 };
+export const _matchGlimmerQuery = (glimmer, config) => {
+    delete config.set;
+    delete config.get;
+    let compareTo = glimmer.extract(config);
+    for (var k in config) {
+        if (k === 'mineral') {
+            if (config[k]._minerals) {
+                let b = false;
+                config[k].loop(mineral => { if (mineral._mined === compareTo.mineral._mined) b = true });
+                if (!b) return false;
+            }
+            else if (config[k]._mined) {
+                if (compareTo[k]._mined !== config[k]._mined)
+                    return false
+            }
+        }
+        else if (k === 'styles') {
+            let b = true;
+            if (typeof config.styles === 'string' && !(config.styles in compareTo.styles))
+                return false;
+            else if (config.styles.constructor === Array) {
+                for (var k in config.styles) {
+                    console.log(k);
+                    if (compareTo.styles.indexOf(config.styles[k]) == -1)
+                        return false
+                }
+            }
+
+        }
+        else if (compareTo[k] !== config[k])
+            return false;
+    }
+    return true;
+};
 export const _doAddon = (config) => {
     let glimmers = [];
     if (config.glimmer)
@@ -128,4 +172,4 @@ export const _doAddon = (config) => {
 export const _extractAddon = (config) => {
     return {glimmers: config.glimmers};
 };
-export default { _glimmerConfigMap, _glimmerConfigMap, _doAddon, _extractAddon };
+export default { _glimmerConfigMap, _glimmerConfigMap, _matchGlimmerQuery, _doAddon, _extractAddon };

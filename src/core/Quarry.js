@@ -13,7 +13,7 @@ export default function (Class) {
             visible: false
         },
         _cache: {
-            value: [],
+            value: {_minerals: [], _glimmers: []},
             editable: true,
             visible: false
         },
@@ -27,21 +27,30 @@ export default function (Class) {
                     }
                 });
             }
-            Object.defineProperty(this, 'Mineral', {value: initMineral(Class), writable: false, configurable: false, enumerable: false});
-            Object.defineProperty(this, 'Batch', {value: initBatch(Class), writable: false, configurable: false, enumerable: false});
-            Object.defineProperty(this, 'Glimmer', {value: initGlimmer(Class), writable: false, configurable: false, enumerable: false});
+            this.newProperty('Mineral', {value: initMineral(Class), editable: false});
+            this.newProperty('Batch', {value: initBatch(Class), editable: false});
             return this;
         },
         mineMineral: {
             value (element) {
-                if (!this._cache[element.__mined__]) {
-                    element.__mined__ = this._genD();
-                    this._cache[element.__mined__] = this.Mineral.create(element, element.__mined__);
+                if (!this._cache._minerals[element.__mined__]) {
+                    element.__mined__ = this._genD('mineral');
+                    this._cache._minerals[element.__mined__] = this.Mineral.create(element, element.__mined__);
                 }
-                return this._cache[element.__mined__];
+                return this._cache._minerals[element.__mined__];
             },
             editable: false,
             visible: false
+        },
+        shineGlimmer: {
+            value (config) {
+                if (!config.shined) {
+                    console.log(this);
+                    config.shined = this._genD('glimmer');
+                    this._cache._glimmers[config.shined] = this.Glimmer.create(config);
+                }
+                return this._cache._glimmers[config.shined];
+            }
         },
         reclaim: {
             value (nodelist) {
@@ -51,10 +60,10 @@ export default function (Class) {
             visible: false
         },
         _genD: {
-            value () {
+            value (type) {
                 let str = randomString(8, 'aA');
-                if (this._cache[str])
-                    return this._genD();
+                if (this._cache['_'+type+'s'][str])
+                    return this._genD(type);
                 return str;
             },
             editable: false,

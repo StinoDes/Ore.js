@@ -10,6 +10,36 @@ const Class = Object.create(Object.prototype, {
             return this;
         }
     },
+    newProperty: {
+        value (name, val) {
+            let descriptor = {};
+            if (typeof val === 'object') {
+                let { value, get, set, visible, editable } = val,
+                    v = {};
+                if ((value !== undefined || editable !== undefined ) && (get || set))
+                    console.warn('Can\'t define a \'get\' or \'set\' with a value and editable. Prioritising value if present');
+                if (value !== undefined)
+                    v = {value, writable: editable !== undefined ? editable : true,};
+                else
+                    v = {get, set};
+                descriptor = {
+                    ...v,
+                    configurable: editable !== undefined ? editable : true,
+                    enumerable: visible !== undefined ? visible : true,
+                }
+            }
+            else {
+                let value = val;
+                descriptor = {
+                    value,
+                    writable: true,
+                    configurable: true,
+                    enumerable: true
+                }
+            }
+            Object.defineProperty(this, name, descriptor);
+        }
+    },
     extend: {
         value (objectToAdd) {
             let descriptor = {};

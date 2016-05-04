@@ -27,6 +27,7 @@ export default function (Class) {
             editable: true
         },
         init (config) {
+            this._shined = config.shined;
             this._configuration = EZI.maps._glimmerConfigMap(config);
             if (config.play)
                 this.loop();
@@ -36,21 +37,22 @@ export default function (Class) {
             this._configuration = {
                 ...this._configuration,
                 ...config,
-                callback: config.callback.bind(this)
+                callback: (config.callback)?config.callback.bind(this):null
             };
             if (config.play) {
                 this.loop();
             }
         },
         extract (config) {
-            let full = {...this._configuration, progress: this._p, delta: this._delta, value: this._value};
+            let full = {...this._configuration, progress: this._p, delta: this._delta, value: this._value, shined: this._shined};
             if (config === '*')
                 return full;
             else if (typeof config === 'object') {
                 let resp = {};
                 for (var k in config) {
-                    if (this.full[k])
-                        resp[k] = this._configuration[k];
+                    if (full[k] !== undefined) {
+                        resp[k] = full[k];
+                    }
                 }
                 return resp;
             }
@@ -62,7 +64,7 @@ export default function (Class) {
             this._configuration.set(this.value);
             if (this._p >= 1) {
                 this.do({play: false});
-                this._configuration.callback(this._configuration);
+                this._callback(this._configuration);
             }
             if (this._configuration.play) {
                 requestAnimFrame(this.loop.bind(this));
@@ -76,7 +78,8 @@ export default function (Class) {
         },
         _callback: {
             value () {
-                this._configuration.callback(this.extract('*'));
+                if (this._configuration.callback)
+                    this._configuration.callback(this.extract('*'));
             },
             visible: false,
             editable: false

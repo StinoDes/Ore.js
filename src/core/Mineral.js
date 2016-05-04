@@ -275,7 +275,7 @@ export default function (Class) {
             value (glimmers) {
                 console.log({ mineral: this, ...glimmers[0]});
                 for (var k in glimmers) {
-                    this._glimmers.push(EZI.Quarry.Glimmer.create({ mineral: this, ...glimmers[k]}));
+                    this._glimmers.push(EZI.Quarry.shineGlimmer({ mineral: this, ...glimmers[k]}));
                 }
             },
             editable: false,

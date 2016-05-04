@@ -3,12 +3,12 @@ import coreMaps  from './../maps/core';
 import maps from '../maps';
 import initQuarry from './Quarry';
 import initRefiner from './Refiner';
-import { initEasings } from '../glimmer';
+import initGlimmer from '../glimmer';
 export default EZI = Class.extend({
     init () {
-        this.Quarry = initQuarry(this.Class);
-        this.Refiner = initRefiner(this.Class);
-        this.easings = initEasings(this.Class).create();
+        this.newProperty('Quarry', {value: initQuarry(this.Class), visible: false, editable: false});
+        this.newProperty('Refiner', {value: initRefiner(this.Class), visible: false, editable: false});
+        initGlimmer.bind(this)(Class);
         return this;
     },
     _modules: {
@@ -39,13 +39,15 @@ export default EZI = Class.extend({
         editable: false
     },
     collect: {
-        value (selector, asArray) {
+        value (selector, asBatch) {
             let batch;
             if (typeof selector === 'string')
                 batch = this.Quarry.reclaim(document.querySelectorAll(selector));
+            else if (selector._mined)
+                batch = this.Quarry.Batch.create([selector]);
             else if (typeof selector === 'object')
                 batch = this.Quarry.reclaim([selector]);
-            if (batch.length === 1 && !asArray)
+            if (batch.length === 1 && !asBatch)
                 return batch.mineral(0);
             return batch;
         }
