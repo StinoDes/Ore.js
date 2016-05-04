@@ -8,6 +8,11 @@ export default function (Class) {
             visible: true,
             writable: true,
         },
+        _glimmers: {
+            value: [],
+            visible: false,
+            writable: true
+        },
         init (element, id) {
             this._element = element;
             this._mined = id;
@@ -24,12 +29,25 @@ export default function (Class) {
             }
         },
         extract (config) {
-            config = EZI.maps._extractConfigMap(config);
-            console.log(config);
+            if (config === '*')
+                config = {
+                    class: { get: ''},
+                    styles: '*',
+                    attr: '*',
+                    text: '',
+                    glimmers: '*',
+                    children: '*'
+                };
+            else
+                config = EZI.maps._extractConfigMap(config);
+            let text = (config.text !== undefined && config.text !== null)?this._extractText():undefined,
+                glimmers = (config.glimmers !== undefined && config.glimmers !== null)?this._extractGlimmers(config.glimmers):undefined,
+                children = (config.children !== undefined && config.children !== null)?this._extractChildren(config.children):undefined;
             return {
                 class: this._extractClass(config.class),
                 styles: this._extractStyles(config.styles),
-                attr: this._extractAttr(config.attr)
+                attr: this._extractAttr(config.attr),
+                text, glimmers, children
             }
         },
         do (config) {
@@ -45,7 +63,6 @@ export default function (Class) {
             this.apply(EZI.maps._doConfigMap(config));
         },
         apply (config) {
-            console.log(config.children);
             if (config.children.append.minerals.length || config.children.prepend.minerals.length)
                 this._applyChildren(config.children);
             if (Object.keys(config.styles).length)
@@ -58,6 +75,8 @@ export default function (Class) {
                 this._applyClass(config.class);
             if (Object.keys(config.events).length)
                 this._applyEvents(config.events);
+            if (config.glimmers)
+                this._initGlimmers(config.glimmers);
         },
         _styles: {
             value: {},
@@ -113,7 +132,9 @@ export default function (Class) {
         _extractStyles: {
             value (styles) {
                 let rtrnobj = {},
-                    computed = window.getComputedStyle(this._element);
+                    computed = window.getComputedStyle(this._element, null);
+                if (styles === '*')
+                    return { ...computed};
                 for (let k in styles) {
                     rtrnobj[k] = computed[k];
                 }
@@ -139,6 +160,13 @@ export default function (Class) {
             editable: false,
             visible: false
         },
+        _extractText: {
+            value (b) {
+                return this._element.textContent.replace(/\s+/g, ' ').trim();
+            },
+            editable: false,
+            visible: false
+        },
         _applyAttr: {
             value (attr) {
                 for (let k in attr) {
@@ -151,6 +179,12 @@ export default function (Class) {
         _extractAttr: {
             value (attr) {
                 let rtrnobj = {};
+                if (attr === '*') {
+                    Array.prototype.slice.call(this._element.attributes).forEach(function(item) {
+                        rtrnobj[item.name] = item.value;
+                    });
+                    return rtrnobj;
+                }
                 for (let k in attr) {
                     rtrnobj[k] = this._element.getAttribute(k);
                 }
@@ -188,29 +222,36 @@ export default function (Class) {
         },
         _applyChildren: {
             value (children) {
-                console.log(children);
                 let {append, prepend} = children,
                     appendChild = (mineral, index) => {
-                        if (!mineral._mined)
-                            mineral = EZI.collect(mineral);
-                        if (index === null)
+                        if (!mineral._mined) {
+                            let batch = EZI.collect(mineral, true);
+                            batch.loop((mineral, index) => { appendChild(mineral, null) });
+                            return;
+                        }
+                        if (index === null || index === undefined)
                             this._element.appendChild(mineral.getElement());
                         else {
-                            if (this._element.childNodes.item(index+1))
-                                this._element.insertBefore(mineral.getElement(), this._element.childNodes.item(index+1));
+                            if (this._element.children.item(index+1))
+                                this._element.insertBefore(mineral.getElement(), this._element.children.item(index+1));
                             else
                                 appendChild(mineral, null);
 
                         }
                     },
                     prependChild = (mineral, index) => {
-                        if (!this._element.firstElementChild || index >= this._element.childNodes.length)
+                        if (!mineral._mined) {
+                            let batch = EZI.collect(mineral, true);
+                            batch.loop((mineral, index) => { prependChild(mineral, null) });
+                            return;
+                        }
+                        if (!this._element.firstElementChild || index >= this._element.children.length)
                             appendChild(mineral, null);
-                        if (index === null)
+                        if (index === null || index === undefined)
                             this._element.insertBefore(mineral.getElement(), this._element.firstElementChild);
                         else
-                            this._element.insertBefore(mineral.getElement(), this._element.childNodes.item(index));
-                    }
+                            this._element.insertBefore(mineral.getElement(), this._element.children.item(index));
+                    };
                 for (var k in append.minerals) {
                     appendChild(append.minerals[k], append.index);
                 }
@@ -220,6 +261,35 @@ export default function (Class) {
             },
             editable: false,
             visible: false
+        },
+        _extractChildren: {
+            value (i) {
+                if (i === '*' || typeof i !== 'number')
+                    return Array.prototype.slice.call(this._element.children);
+                return Array.prototype.slice.call(this._element.children)[i];
+            },
+            editable: false,
+            visible: false
+        },
+        _initGlimmers: {
+            value (glimmers) {
+                console.log({ mineral: this, ...glimmers[0]});
+                for (var k in glimmers) {
+                    this._glimmers.push(EZI.Quarry.Glimmer.create({ mineral: this, ...glimmers[k]}));
+                }
+            },
+            editable: false,
+            visible: false
+        },
+        _extractGlimmers: {
+            value (i) {
+                if (i === '*') {
+                    return this._glimmers;
+                }
+                return this._glimmers[i];
+            },
+            editable: false,
+            visible:false
         }
     })
 }

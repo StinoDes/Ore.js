@@ -21,6 +21,11 @@ export default function (Class) {
             play: bool
         }
          */
+        _configuration: {
+            value: {},
+            visible: false,
+            editable: true
+        },
         init (config) {
             this._configuration = EZI.maps._glimmerConfigMap(config);
             if (config.play)
@@ -30,17 +35,34 @@ export default function (Class) {
         do (config) {
             this._configuration = {
                 ...this._configuration,
-                ...config
+                ...config,
+                callback: config.callback.bind(this)
             };
             if (config.play) {
                 this.loop();
             }
+        },
+        extract (config) {
+            let full = {...this._configuration, progress: this._p, delta: this._delta, value: this._value};
+            if (config === '*')
+                return full;
+            else if (typeof config === 'object') {
+                let resp = {};
+                for (var k in config) {
+                    if (this.full[k])
+                        resp[k] = this._configuration[k];
+                }
+                return resp;
+            }
+            else
+                console.error('Can\'t interpret config. Please pass an object or \'*\'', config);
         },
         loop () {
             this.calculate();
             this._configuration.set(this.value);
             if (this._p >= 1) {
                 this.do({play: false});
+                this._configuration.callback(this._configuration);
             }
             if (this._configuration.play) {
                 requestAnimFrame(this.loop.bind(this));
@@ -51,6 +73,13 @@ export default function (Class) {
                 this._previousTimestamp = this._currentTimestamp;
             this._p = this._p + (this._currentTimestamp - this._previousTimestamp) / this._configuration.duration;
             this._previousTimestamp = this._currentTimestamp;
+        },
+        _callback: {
+            value () {
+                this._configuration.callback(this.extract('*'));
+            },
+            visible: false,
+            editable: false
         },
         _delta: {
             get () {

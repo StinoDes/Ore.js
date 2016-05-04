@@ -15,18 +15,17 @@ export default function (Class) {
             }
         },
         set (config) {
-            for (var k in this._minerals) {
-                this._minerals[k].set(config);
-            }
+            this.loop(mineral => mineral.set(config));
         },
         do (config) {
-            for (var k in this._minerals) {
-                this._minerals[k].do(config);
-            }
+            this.loop(mineral => mineral.do(config));
         },
         apply (config) {
+            this.loop(mineral => mineral.apply(config));
+        },
+        loop (callback) {
             for (var k in this._minerals) {
-                this._minerals[k].apply(config);
+                callback(this._minerals[k], k);
             }
         },
         length: {

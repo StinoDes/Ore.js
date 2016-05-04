@@ -15,6 +15,8 @@ export const _glimmerConfigMap = config => {
     //    easing: easefunc,
     //    play: bool
     //}
+    if (config.style && !config.styles)
+        config.styles = config.style;
     if (config.styles && config.mineral) {
         config.set = _glimmerStyleToSetMap(config.mineral, config.styles);
     }
@@ -22,7 +24,7 @@ export const _glimmerConfigMap = config => {
         console.error('Pass both a mineral and style.');
     if (!config.set)
         console.error('Glimmers need to set something. Add a set function via `do` or initialisation, or add a style and mineral config.');
-    if (!config.get && !config.initial) {
+    if (!config.get && (!config.initial&&config.initial !== 0)) {
         config.initial = 0;
         console.warn('No initial value or get was passed. Defaulting to 0.');
     }
@@ -35,10 +37,12 @@ export const _glimmerConfigMap = config => {
     return {
         set: config.set,
         get: config.get || function () {return this.value},
+        mineral: config.mineral,
         duration: config.duration,
         initial: (config.initial!==undefined)?config.initial:config.get(),
         toValue: config.toValue,
         easing: (typeof config.easing === 'string')?EZI.easings[config.easing].bind(EZI.easings):config.easing.bind(EZI.easings),
+        callback: config.callback,
         play: (config.play !== undefined)?config.play:false
     }
 };
@@ -113,4 +117,15 @@ export const _glimmerObjectStyleMap = (style) => {
     }
     return props;
 };
-export default { _glimmerConfigMap, _glimmerConfigMap };
+export const _doAddon = (config) => {
+    let glimmers = [];
+    if (config.glimmer)
+        glimmers.push(config.glimmer);
+    if (config.glimmers && config.glimmers.constructor === Array)
+        glimmers = [...config.glimmers, ...glimmers];
+    return {glimmers};
+};
+export const _extractAddon = (config) => {
+    return {glimmers: config.glimmers};
+};
+export default { _glimmerConfigMap, _glimmerConfigMap, _doAddon, _extractAddon };
