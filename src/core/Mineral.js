@@ -191,6 +191,8 @@ export default function (Class) {
                 console.log(children);
                 let {append, prepend} = children,
                     appendChild = (mineral, index) => {
+                        if (!mineral._mined)
+                            mineral = EZI.collect(mineral);
                         if (index === null)
                             this._element.appendChild(mineral.getElement());
                         else {
