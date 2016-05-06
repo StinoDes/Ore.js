@@ -1,21 +1,17 @@
-# New version coming
-### I've reworked ezi from scratch. Check out the ezi-script1.0 branch for the changes.  
-### Readme will be updated after its release.
+# Ore.js
 
-# ezi-script
-
-Ezi-script is (yes, another) javascript library, which aims to make common processes as easy as possible, while still keeping it customisable.  
+**Ore.js** is (yes, another) javascript library, which aims to make common processes as easy as possible, while still keeping it customisable.  
 Using *configs*, you can manipulate any element in any way by calling just one method.
 
 ## Getting Started
 
 ### Installation
-To get started on using EZI, either install it using npm by executing `npm install ezi-script` in your project's root, or include a `<script>`-tag with
-EZI-script as its source.  
+To get started on using Ore, either install it using npm by executing `npm install ore-js` in your project's root, or include a `<script>`-tag with
+Ore.js as its source.  
   
 ### Writing your first code  
 #### Getting and manipulating an element
-EZI provides a method to easily get any element from the DOM-tree. `EZI.collect( <selector> )` returns an element-object, 
+Ore provides a method to easily get any element from the DOM-tree. `Ore.collect( <selector> )` returns an element-object, 
 called a Mineral, or a group, called Batch. A Batch has the same base methods as a Mineral, so you can generally mix their uses.  
 `do( <config> )` executes whatever you pass in your config onto the Mineral or Batch. Its uses can vary greatly.  
 These are all possible applications of `config` in `do()`:  
@@ -47,6 +43,6 @@ This is what the config-file looks like after being remapped. You can however wr
 the root of the object. Same goes for append and prepend.
 
 #### Creating a new element
-You can create a new element by calling `EZI.craft( <tag>, <config> )`. As tag, you pass the desired HTML-tag, and the config is similar to what
+You can create a new element by calling `Ore.craft( <tag>, <config> )`. As tag, you pass the desired HTML-tag, and the config is similar to what
 we've seen before. The main difference is that you should define *children* as `children: [ <Mineral>, <Mineral> ]` in the root of the config.  
 This method returns your newly created Mineral, which you can then append or manipulate further.
