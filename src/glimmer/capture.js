@@ -3,7 +3,7 @@ const capture  = (config, asRay) => {
         batch, glimmers = [];
     if (selector) {
         if (typeof selector === 'string' || selector._mined) {
-            batch = EZI.collect(selector, true);
+            batch = Ore.collect(selector, true);
         }
         let batchExtr = batch.extract({glimmers: '*'});
         for (var k in batchExtr) {
@@ -11,18 +11,18 @@ const capture  = (config, asRay) => {
         }
     }
     else {
-        for (var k in EZI.Quarry._cache._glimmers) {
-            glimmers.push(EZI.Quarry._cache._glimmers[k]);
+        for (var k in Ore.Quarry._cache._glimmers) {
+            glimmers.push(Ore.Quarry._cache._glimmers[k]);
         }
     }
     if (query)
-        glimmers = EZI.Quarry.screen(glimmers, query);
-    return EZI.Quarry.GlimmerRay.create(glimmers);
+        glimmers = Ore.Quarry.screen(glimmers, query);
+    return Ore.Quarry.GlimmerRay.create(glimmers);
 };
 const screen = (glimmers, query) => {
     let arr = [];
     for (var k in glimmers) {
-        if (EZI.maps._matchGlimmerQuery(glimmers[k], query))
+        if (Ore.maps._matchGlimmerQuery(glimmers[k], query))
             arr.push(glimmers[k])
     }
     return arr;

@@ -35,7 +35,7 @@ export const _glimmerConfigMap = config => {
     if (!config.duration)
         console.error('A duration is needed for Glimmers to shine.');
     if (!config.easing)
-        config.easing = EZI.easings.DEFAULT;
+        config.easing = Ore.easings.DEFAULT;
     return {
         set: config.set,
         get: config.get || function () {return this.value},
@@ -44,7 +44,7 @@ export const _glimmerConfigMap = config => {
         duration: config.duration,
         initial: (config.initial!==undefined)?config.initial:config.get(),
         toValue: config.toValue,
-        easing: (typeof config.easing === 'string')?EZI.easings[config.easing].bind(EZI.easings):config.easing.bind(EZI.easings),
+        easing: (typeof config.easing === 'string')?Ore.easings[config.easing].bind(Ore.easings):config.easing.bind(Ore.easings),
         callback: config.callback,
         play: (config.play !== undefined)?config.play:false
     }
@@ -65,7 +65,7 @@ export const _glimmerStyleToSetMap = (mineral, style) => {
     //    }
     let props = {};
     if (typeof mineral === 'string')
-        mineral = EZI.collect('mineral', true)[0];
+        mineral = Ore.collect('mineral', true)[0];
     if (!mineral || !mineral._mined)
         console.error('Pass a mineral-object to apply the styles to');
     if (typeof style === 'string') {
@@ -81,7 +81,7 @@ export const _glimmerStyleToSetMap = (mineral, style) => {
         for (let k in props) {
             mineral._styles[k] = props[k](value, constants.CSS_PROPERTIES[k]);
         }
-        EZI.Refiner.refineMineral(mineral);
+        Ore.Refiner.refineMineral(mineral);
     }
 };
 export const _glimmerStringStyleMap = (style) => {

@@ -39,7 +39,7 @@ export const _doConfigMap = (config) => {
         class: _doClassMap(config),
         children: _doChildrenMap(config),
         text,
-        ...EZI.maps._doAddon(config)
+        ...Ore.maps._doAddon(config)
     }
 };
 export const _extractConfigMap = (config) => {
@@ -55,7 +55,7 @@ export const _extractConfigMap = (config) => {
         }),
         class: _extractClassMap(config),
         children, text,
-        ...EZI.maps._extractAddon(config)
+        ...Ore.maps._extractAddon(config)
     }
 };
 export const _doChildrenMap = config => {

@@ -4,7 +4,7 @@ import maps from '../maps';
 import initQuarry from './Quarry';
 import initRefiner from './Refiner';
 import initGlimmer from '../glimmer';
-export default EZI = Class.extend({
+export default Ore = Class.extend({
     init () {
         this.newProperty('Quarry', {value: initQuarry(this.Class), visible: false, editable: false});
         this.newProperty('Refiner', {value: initRefiner(this.Class), visible: false, editable: false});

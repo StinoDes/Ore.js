@@ -1,8 +1,8 @@
 {
-  "name": "ezi-script",
+  "name": "ore-js",
   "version": "0.4.9",
-  "description": "A javascript library to simplify small, ui-related scripting and build your interface beautifully.",
-  "main": "ezi-script.js",
+  "description": "A configuration based library to createm, manipulate and build your interface beautifully.",
+  "main": "ore.js",
   "scripts": {
     "start": "webpack-dev-server --config webpack.config.js"
   },
@@ -12,7 +12,9 @@
   },
   "keywords": [
     "javascript",
-    "library"
+    "library",
+    "ore",
+    "js"
   ],
   "author": "Stijn Tytgat",
   "license": "ISC",

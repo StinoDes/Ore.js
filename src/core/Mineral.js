@@ -39,7 +39,7 @@ export default function (Class) {
                     children: '*'
                 };
             else
-                config = EZI.maps._extractConfigMap(config);
+                config = Ore.maps._extractConfigMap(config);
             let text = (config.text !== undefined && config.text !== null)?this._extractText():undefined,
                 glimmers = (config.glimmers !== undefined && config.glimmers !== null)?this._extractGlimmers(config.glimmers):undefined,
                 children = (config.children !== undefined && config.children !== null)?this._extractChildren(config.children):undefined;
@@ -60,7 +60,7 @@ export default function (Class) {
                     this.configurations[k].call(this, config[k]);
                 delete config[k];
             }
-            this.apply(EZI.maps._doConfigMap(config));
+            this.apply(Ore.maps._doConfigMap(config));
         },
         apply (config) {
             if (config.children.append.minerals.length || config.children.prepend.minerals.length)
@@ -124,7 +124,7 @@ export default function (Class) {
                     ...this._styles,
                     ...styles
                 };
-                EZI.Refiner.refineMineral(this);
+                Ore.Refiner.refineMineral(this);
             },
             editable: false,
             visible: false
@@ -225,7 +225,7 @@ export default function (Class) {
                 let {append, prepend} = children,
                     appendChild = (mineral, index) => {
                         if (!mineral._mined) {
-                            let batch = EZI.collect(mineral, true);
+                            let batch = Ore.collect(mineral, true);
                             batch.loop((mineral, index) => { appendChild(mineral, null) });
                             return;
                         }
@@ -241,7 +241,7 @@ export default function (Class) {
                     },
                     prependChild = (mineral, index) => {
                         if (!mineral._mined) {
-                            let batch = EZI.collect(mineral, true);
+                            let batch = Ore.collect(mineral, true);
                             batch.loop((mineral, index) => { prependChild(mineral, null) });
                             return;
                         }
@@ -275,7 +275,7 @@ export default function (Class) {
             value (glimmers) {
                 console.log({ mineral: this, ...glimmers[0]});
                 for (var k in glimmers) {
-                    this._glimmers.push(EZI.Quarry.shineGlimmer({ mineral: this, ...glimmers[k]}));
+                    this._glimmers.push(Ore.Quarry.shineGlimmer({ mineral: this, ...glimmers[k]}));
                 }
             },
             editable: false,

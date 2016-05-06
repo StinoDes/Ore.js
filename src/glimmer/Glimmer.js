@@ -28,7 +28,7 @@ export default function (Class) {
         },
         init (config) {
             this._shined = config.shined;
-            this._configuration = EZI.maps._glimmerConfigMap(config);
+            this._configuration = Ore.maps._glimmerConfigMap(config);
             if (config.play)
                 this.loop();
             return this;

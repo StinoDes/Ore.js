@@ -8,7 +8,7 @@ module.exports = {
         // export itself to a global var
         libraryTarget: "var",
         // name of the global var: "EZI"
-        library: "EZI"
+        library: "Ore"
     },
     module: {
         loaders: [
