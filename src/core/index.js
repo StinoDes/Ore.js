@@ -1,2 +1,2 @@
-import ezi from './ezi-script';
-export { ezi };
+import Ore from './Ore';
+export { Ore };

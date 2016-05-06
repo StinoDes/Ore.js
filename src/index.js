@@ -1,3 +1,3 @@
-import { ezi } from './core';
+import { Ore } from './core';
 
-module.exports = ezi;
+module.exports = Ore;
