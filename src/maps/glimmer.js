@@ -20,9 +20,10 @@ export const _glimmerConfigMap = config => {
     if (config.styles && config.mineral) {
         config.set = _glimmerStyleToSetMap(config.mineral, config.styles);
     }
-    else if (config.styles || config.mineral)
-        console.error('Pass both a mineral and style.');
-    config.styles = _glimmerStyleToArrayMap(config.styles);
+    else if (config.styles && !config.mineral)
+        console.error('Glimmers need minerals to animate styles.');
+    if (config.styles)
+        config.styles = _glimmerStyleToArrayMap(config.styles);
     if (!config.set)
         console.error('Glimmers need to set something. Add a set function via `do` or initialisation, or add a style and mineral config.');
     if (!config.get && (!config.initial&&config.initial !== 0)) {
@@ -49,7 +50,7 @@ export const _glimmerConfigMap = config => {
     }
 };
 export const _glimmerStyleToArrayMap = (styles) => {
-    if (styles.prototype = Array)
+    if (styles.prototype === Array)
         return styles;
     else if (typeof styles === 'object')
         return Object.keys(styles);
