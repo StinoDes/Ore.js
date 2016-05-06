@@ -20,7 +20,10 @@ export const _glimmerConfigMap = config => {
     if (config.styles && config.mineral) {
         config.set = _glimmerStyleToSetMap(config.mineral, config.styles);
     }
-    else if (config.styles && !config.mineral)
+    else {
+        config.set._do = config.set;
+    }
+    if (config.styles && !config.mineral)
         console.error('Glimmers need minerals to animate styles.');
     if (config.styles)
         config.styles = _glimmerStyleToArrayMap(config.styles);
@@ -78,11 +81,14 @@ export const _glimmerStyleToSetMap = (mineral, style) => {
     else if (typeof style === 'object') {
         props = _glimmerObjectStyleMap(style);
     }
-    return function (value) {
-        for (let k in props) {
-            mineral._styles[k] = props[k](value, constants.CSS_PROPERTIES[k]);
+    return {
+        ...props,
+        _do: function (value) {
+            for (let k in this._configuration.styles[k]) {
+                mineral._styles[k] = props[k](value, constants.CSS_PROPERTIES[k]);
+            }
+            Ore.Refiner.refineMineral(mineral);
         }
-        Ore.Refiner.refineMineral(mineral);
     }
 };
 export const _glimmerStringStyleMap = (style) => {

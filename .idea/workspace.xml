@@ -2,9 +2,8 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="d7531345-3885-4bc8-96d5-4ec10f21477a" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/core/Batch.js" afterPath="$PROJECT_DIR$/src/core/Batch.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/core/Ore.js" afterPath="$PROJECT_DIR$/src/core/Ore.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/glimmer/Glimmer.js" afterPath="$PROJECT_DIR$/src/glimmer/Glimmer.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/maps/glimmer.js" afterPath="$PROJECT_DIR$/src/maps/glimmer.js" />
     </list>
     <ignored path="~ezi-script.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -29,27 +28,27 @@
         <entry file="file://$PROJECT_DIR$/src/glimmer/Glimmer.js">
           <provider selected="true" editor-type-id="text-editor">
             <state vertical-scroll-proportion="0.0">
-              <caret line="64" column="68" selection-start-line="64" selection-start-column="68" selection-end-line="64" selection-end-column="68" />
+              <caret line="62" column="39" selection-start-line="62" selection-start-column="39" selection-end-line="62" selection-end-column="39" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="Ore.js" pinned="false" current-in-tab="true">
+      <file leaf-file-name="Ore.js" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/core/Ore.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.86129457">
+            <state vertical-scroll-proportion="0.0">
               <caret line="62" column="25" selection-start-line="62" selection-start-column="25" selection-end-line="62" selection-end-column="25" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="glimmer.js" pinned="false" current-in-tab="false">
+      <file leaf-file-name="glimmer.js" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/maps/glimmer.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0">
-              <caret line="37" column="44" selection-start-line="37" selection-start-column="44" selection-end-line="37" selection-end-column="44" />
+            <state vertical-scroll-proportion="0.19286658">
+              <caret line="25" column="4" selection-start-line="25" selection-start-column="4" selection-end-line="25" selection-end-column="4" />
               <folding />
             </state>
           </provider>
@@ -170,12 +169,12 @@
         <option value="$PROJECT_DIR$/src/core/index.js" />
         <option value="$PROJECT_DIR$/src/utils/constants.js" />
         <option value="$PROJECT_DIR$/src/glimmer/index.js" />
-        <option value="$PROJECT_DIR$/src/maps/glimmer.js" />
         <option value="$PROJECT_DIR$/src/core/Quarry.js" />
-        <option value="$PROJECT_DIR$/src/glimmer/Glimmer.js" />
         <option value="$PROJECT_DIR$/src/core/Mineral.js" />
         <option value="$PROJECT_DIR$/src/core/Batch.js" />
         <option value="$PROJECT_DIR$/src/core/Ore.js" />
+        <option value="$PROJECT_DIR$/src/glimmer/Glimmer.js" />
+        <option value="$PROJECT_DIR$/src/maps/glimmer.js" />
       </list>
     </option>
   </component>
@@ -800,22 +799,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/maps/glimmer.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="37" column="44" selection-start-line="37" selection-start-column="44" selection-end-line="37" selection-end-column="44" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/glimmer/Glimmer.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="64" column="68" selection-start-line="64" selection-start-column="68" selection-end-line="64" selection-end-column="68" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/utils/constants.js">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="-49.814816">
@@ -844,8 +827,24 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/core/Ore.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.86129457">
+        <state vertical-scroll-proportion="0.0">
           <caret line="62" column="25" selection-start-line="62" selection-start-column="25" selection-end-line="62" selection-end-column="25" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/glimmer/Glimmer.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="62" column="39" selection-start-line="62" selection-start-column="39" selection-end-line="62" selection-end-column="39" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/maps/glimmer.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.19286658">
+          <caret line="25" column="4" selection-start-line="25" selection-start-column="4" selection-end-line="25" selection-end-column="4" />
           <folding />
         </state>
       </provider>
