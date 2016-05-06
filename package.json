@@ -1,6 +1,6 @@
 {
   "name": "ore-js",
-  "version": "0.4.9",
+  "version": "0.5.0",
   "description": "A configuration based library to createm, manipulate and build your interface beautifully.",
   "main": "ore.js",
   "scripts": {
