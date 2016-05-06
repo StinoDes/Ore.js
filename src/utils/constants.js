@@ -328,6 +328,7 @@ export const
         'marginLeft': LENGTH,
         'marginRight': LENGTH,
         'marginTop': LENGTH,
+        'opacity': null,
         'overflow': null,
         'padding': LENGTH,
         'paddingBottom': LENGTH,
