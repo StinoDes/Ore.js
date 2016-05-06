@@ -151,7 +151,6 @@ export const _matchGlimmerQuery = (glimmer, config) => {
                 return false;
             else if (config.styles.constructor === Array) {
                 for (var k in config.styles) {
-                    console.log(k);
                     if (compareTo.styles.indexOf(config.styles[k]) == -1)
                         return false
                 }

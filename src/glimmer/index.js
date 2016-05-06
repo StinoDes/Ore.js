@@ -3,7 +3,6 @@ import initEasings from './Easings';
 import initGlimmerRay from './GlimmerRay';
 import { capture, screen } from './capture';
 export default function (Class) {
-    console.log('wtf mang');
     this.Quarry.newProperty('Glimmer', {
         value: initGlimmer(Class),
         editable: false

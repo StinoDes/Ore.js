@@ -108,7 +108,6 @@ export default function (Class) {
                         this._eventHandlers[k] = [];
                         this._element.addEventListener(k, this._generateHandler(k));
                     }
-                    console.log(events[k].prototype);
                     if (events[k].constructor === Array)
                         this._eventHandlers[k] = [...this._eventHandlers[k], ...events[k]]
                     else
@@ -273,7 +272,6 @@ export default function (Class) {
         },
         _initGlimmers: {
             value (glimmers) {
-                console.log({ mineral: this, ...glimmers[0]});
                 for (var k in glimmers) {
                     this._glimmers.push(Ore.Quarry.shineGlimmer({ mineral: this, ...glimmers[k]}));
                 }

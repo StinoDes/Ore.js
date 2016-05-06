@@ -45,7 +45,6 @@ export default function (Class) {
         shineGlimmer: {
             value (config) {
                 if (!config.shined) {
-                    console.log(this);
                     config.shined = this._genD('glimmer');
                     this._cache._glimmers[config.shined] = this.Glimmer.create(config);
                 }
