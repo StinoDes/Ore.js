@@ -2,7 +2,6 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="d7531345-3885-4bc8-96d5-4ec10f21477a" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/glimmer/Glimmer.js" afterPath="$PROJECT_DIR$/src/glimmer/Glimmer.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/maps/glimmer.js" afterPath="$PROJECT_DIR$/src/maps/glimmer.js" />
     </list>
     <ignored path="~ezi-script.iws" />
@@ -47,8 +46,8 @@
       <file leaf-file-name="glimmer.js" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/maps/glimmer.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.19286658">
-              <caret line="25" column="4" selection-start-line="25" selection-start-column="4" selection-end-line="25" selection-end-column="4" />
+            <state vertical-scroll-proportion="0.5693527">
+              <caret line="86" column="49" selection-start-line="86" selection-start-column="49" selection-end-line="86" selection-end-column="49" />
               <folding />
             </state>
           </provider>
@@ -843,8 +842,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/maps/glimmer.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.19286658">
-          <caret line="25" column="4" selection-start-line="25" selection-start-column="4" selection-end-line="25" selection-end-column="4" />
+        <state vertical-scroll-proportion="0.5693527">
+          <caret line="86" column="49" selection-start-line="86" selection-start-column="49" selection-end-line="86" selection-end-column="49" />
           <folding />
         </state>
       </provider>

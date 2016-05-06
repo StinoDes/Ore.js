@@ -84,7 +84,7 @@ export const _glimmerStyleToSetMap = (mineral, style) => {
     return {
         ...props,
         _do: function (value) {
-            for (let k in this._configuration.styles[k]) {
+            for (let k in this._configuration.set[k]) {
                 mineral._styles[k] = props[k](value, constants.CSS_PROPERTIES[k]);
             }
             Ore.Refiner.refineMineral(mineral);
