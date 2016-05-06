@@ -51,6 +51,17 @@ const Ore = Class.extend({
                 return batch.mineral(0);
             return batch;
         }
+    },
+    cloneConfig: {
+        value (config) {
+            if (typeof config !== 'object')
+                return config;
+            let clone = {};
+            for (var k in config) {
+                clone[k] = this.cloneConfig(config[k]);
+            }
+            return clone;
+        }
     }
 }).init();
 export default Ore;

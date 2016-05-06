@@ -18,7 +18,7 @@ export default function (Class) {
             this.loop(mineral => mineral.set(config));
         },
         do (config) {
-            this.loop(mineral => mineral.do(config));
+            this.loop(mineral => mineral.do(Ore.cloneConfig(config)));
         },
         apply (config) {
             this.loop(mineral => mineral.apply(config));
