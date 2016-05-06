@@ -73,7 +73,10 @@ export default function (Class) {
         calculate () {
             if (!this._previousTimestamp)
                 this._previousTimestamp = this._currentTimestamp;
-            this._p = this._p + (this._currentTimestamp - this._previousTimestamp) / this._configuration.duration;
+            if (this._d < 1)
+                this._d = this._d + (this._currentTimestamp - this._previousTimestamp) / this._configuration.delay;
+            else
+                this._p = this._p + (this._currentTimestamp - this._previousTimestamp) / this._configuration.duration;
             this._previousTimestamp = this._currentTimestamp;
         },
         _callback: {
@@ -88,6 +91,10 @@ export default function (Class) {
             get () {
                 return this._configuration.toValue - this._configuration.initial;
             },
+            visible: false
+        },
+        _d: {
+            value: 0,
             visible: false
         },
         _p: {

@@ -42,6 +42,7 @@ export const _glimmerConfigMap = config => {
         mineral: config.mineral,
         styles: config.styles,
         duration: config.duration,
+        delay: config.delay || 0,
         initial: (config.initial!==undefined)?config.initial:config.get(),
         toValue: config.toValue,
         easing: (typeof config.easing === 'string')?Ore.easings[config.easing].bind(Ore.easings):config.easing.bind(Ore.easings),
