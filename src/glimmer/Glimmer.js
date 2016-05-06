@@ -36,8 +36,7 @@ export default function (Class) {
         do (config) {
             this._configuration = {
                 ...this._configuration,
-                ...config,
-                callback: (config.callback)?config.callback.bind(this):null
+                ...config
             };
             if (config.play) {
                 this.loop();
@@ -63,8 +62,9 @@ export default function (Class) {
             this.calculate();
             this._configuration.set(this.value);
             if (this._p >= 1) {
+                this._configuration.set(this._configuration.toValue);
                 this.do({play: false});
-                this._callback(this._configuration);
+                this._callback();
             }
             if (this._configuration.play) {
                 requestAnimFrame(this.loop.bind(this));
@@ -81,8 +81,9 @@ export default function (Class) {
         },
         _callback: {
             value () {
-                if (this._configuration.callback)
-                    this._configuration.callback(this.extract('*'));
+                if (this._configuration.callback) {
+                    this._configuration.callback.call(this, this.extract('*'));
+                }
             },
             visible: false,
             editable: false
