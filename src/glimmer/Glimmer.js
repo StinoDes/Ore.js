@@ -60,7 +60,7 @@ export default function (Class) {
         },
         loop () {
             this.calculate();
-            this._configuration.set._do(this.value);
+            this._configuration.set._do.call(this, this.value);
             if (this._p >= 1) {
                 this._configuration.set(this._configuration.toValue);
                 this.do({play: false});
