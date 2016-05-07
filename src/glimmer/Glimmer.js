@@ -62,7 +62,7 @@ export default function (Class) {
             this.calculate();
             this._configuration.set._do.call(this, this.value);
             if (this._p >= 1) {
-                this._configuration.set._do.call(this._configuration.toValue);
+                this._configuration.set._do.call(this, this._configuration.toValue);
                 this.do({play: false});
                 this._callback();
             }
