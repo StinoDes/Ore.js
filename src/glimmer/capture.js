@@ -4,6 +4,7 @@ const capture  = (config, asRay) => {
     if (selector) {
         if (typeof selector === 'string' || selector._mined) {
             batch = Ore.collect(selector, true);
+            console.log(batch);
         }
         let batchExtr = batch.extract({glimmers: '*'});
         for (var k in batchExtr) {

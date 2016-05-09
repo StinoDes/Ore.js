@@ -13,10 +13,24 @@ export default function (Class) {
             visible: false,
             writable: true
         },
+        _styles: {
+            value: {},
+            editable: true,
+            visible: false
+        },
+        _eventHandlers: {
+            value: {},
+            editable: true,
+            visible: false
+        },
         init (element, id) {
             this._element = element;
             this._mined = id;
             this._element.setAttribute('mined', this._mined);
+            this.configurations = {};
+            this._glimmers = [];
+            this._styles = {};
+            this._eventHandlers = {};
             return this;
         },
         getElement () {
@@ -77,16 +91,6 @@ export default function (Class) {
                 this._applyEvents(config.events);
             if (config.glimmers)
                 this._initGlimmers(config.glimmers);
-        },
-        _styles: {
-            value: {},
-            editable: true,
-            visible: false
-        },
-        _eventHandlers: {
-            value: {},
-            editable: true,
-            visible: false
         },
         _generateHandler: {
             value () {
