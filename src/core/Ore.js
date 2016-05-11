@@ -4,11 +4,13 @@ import maps from '../maps';
 import initQuarry from './Quarry';
 import initRefiner from './Refiner';
 import initGlimmer from '../glimmer';
+import initBrick from '../brick';
 const Ore = Class.extend({
     init () {
         this.newProperty('Quarry', {value: initQuarry(this.Class), visible: false, editable: false});
         this.newProperty('Refiner', {value: initRefiner(this.Class), visible: false, editable: false});
         initGlimmer.bind(this)(Class);
+        initBrick.bind(this)(Class);
         return this;
     },
     _modules: {

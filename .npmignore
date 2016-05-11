@@ -1,1 +1,4 @@
 examples/
+dist/
+mode_modules/
+.gitignore

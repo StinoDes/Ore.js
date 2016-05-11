@@ -61,39 +61,7 @@
     <script>
         window.addEventListener('load', start);
         function start () {
-            var red = Ore.collect('.test.red'),
-                blue = Ore.collect('.test.blue');
-            red.set({
-                animate: function () {
-                    this.do({
-                        glimmer: {
-                            styles: 'top',
-                            initial: 100,
-                            toValue: 500,
-                            duration: 1000,
-                            easing: Ore.easings.BOUNCEOUT,
-                            play: true
-                        }
-                    });
-                }
-            });
-            blue.set({
-                animate: function () {
-                    this.do({
-                        glimmer: {
-                            styles: ['top', 'left'],
-                            initial: 100,
-                            toValue: 200,
-                            duration: 1000,
-                            easing: Ore.easings.BOUNCEOUT,
-                            play: true
-                        }
-                    });
-                }
-            });
-            Ore.collect('.test.red').do({animate: ''});
-            Ore.collect('.test.blue').do({animate: ''});
-            console.log(Ore.capture({selector: '.test.blue'}).glimmer(0)._configuration.set, Ore.capture({selector: '.test.red'}).glimmer(0)._configuration.set);
+
         }
     </script>
 </body>
