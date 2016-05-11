@@ -45,7 +45,6 @@ export default function (Class) {
                 let subconfig = {};
                 if (this._tree[k] && this._tree[k].config) {
                     subconfig = this._tree[k].config;
-                    delete this._tree[k].config;
                 }
                 mineral = this._processMineral(k, this._tree[k], subconfig);
             }
@@ -56,10 +55,11 @@ export default function (Class) {
                 let mineral = Ore.craft(this._parseTag(key), config),
                     children = [];
                 for (var k in subtree) {
+                    if (k === 'config')
+                        continue;
                     let subconfig = {};
                     if (subtree[k] && subtree[k].config) {
                         subconfig = subtree[k].config;
-                        delete subtree[k].config;
                     }
                     children.push(this._processMineral(k, subtree[k], subconfig));
                 }

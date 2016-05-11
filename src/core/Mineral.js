@@ -77,6 +77,8 @@ export default function (Class) {
             this.apply(Ore.maps._doConfigMap(config));
         },
         apply (config) {
+            if (config.replace !== undefined && config.replace !== null)
+                this._replace(config.replace);
             if (config.children.append.minerals.length || config.children.prepend.minerals.length)
                 this._applyChildren(config.children);
             if (Object.keys(config.styles).length)
@@ -91,6 +93,13 @@ export default function (Class) {
                 this._applyEvents(config.events);
             if (config.glimmers)
                 this._initGlimmers(config.glimmers);
+        },
+        _replace(subst) {
+            let index = Array.prototype.slice.call( this._element.parentNode.children ).indexOf(this._element);
+            if (subst) {
+                Ore.collect(this._element.parentNode).do({appendAt: {minerals: (subst._mined)?[subst]:subst, index}});
+            }
+            this._element.parentNode.removeChild(this._element);
         },
         _generateHandler: {
             value () {
@@ -113,7 +122,7 @@ export default function (Class) {
                         this._element.addEventListener(k, this._generateHandler(k));
                     }
                     if (events[k].constructor === Array)
-                        this._eventHandlers[k] = [...this._eventHandlers[k], ...events[k]]
+                        this._eventHandlers[k] = [...this._eventHandlers[k], ...events[k]];
                     else
                         this._eventHandlers[k].push(events[k]);
                 }

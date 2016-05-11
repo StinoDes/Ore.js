@@ -3,6 +3,11 @@ export default function (Class) {
         configurations: {
             value: {}
         },
+        _mineral: {
+            value: null,
+            visible: false,
+            editable: true
+        },
         init (config) {
             this.configurations = {};
             this.set(config);
@@ -56,8 +61,11 @@ export default function (Class) {
                         render = 'append';
                     let obj = {};
                     obj[render] = this.configurations.tree.process();
-                    //this._mineral = obj[render]._mined;
-                    this.configurations.rootMineral.do(obj);
+                    if (this._mineral)
+                        this._mineral.do({replace: obj[render]});
+                    else
+                        this.configurations.rootMineral.do(obj);
+                    this._mineral = obj[render];
                 }
             },
             editable: false,

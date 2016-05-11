@@ -39,6 +39,7 @@ export const _doConfigMap = (config) => {
         class: _doClassMap(config),
         children: _doChildrenMap(config),
         text,
+        ..._doReplaceMap(config),
         ...Ore.maps._doAddon(config)
     }
 };
@@ -57,6 +58,15 @@ export const _extractConfigMap = (config) => {
         children, text,
         ...Ore.maps._extractAddon(config)
     }
+};
+export const _doReplaceMap = config => {
+    let { replace, remove } = config,
+        obj = {};
+    if (remove !== undefined || remove !== null)
+        obj.replace = '';
+    if (replace !== undefined || replace !== null)
+        obj.replace = replace;
+    return obj;
 };
 export const _doChildrenMap = config => {
     // {

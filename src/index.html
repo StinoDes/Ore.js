@@ -16,17 +16,17 @@
     <script>
         window.addEventListener('load', start);
         function start () {
+            var conf = {
+                backgroundColor: '#0086b3',
+                height: '90px',
+                position: 'fixed',
+                top: '0',
+                left: '0',
+                right: '0'
+            };
             var nav = Ore.Quarry.Brick.create({
                 tree: function (tag) {
-                    return tag('nav',
-                            {
-                                backgroundColor: '#0086b3',
-                                height: '90px',
-                                position: 'fixed',
-                                top: '0',
-                                left: '0',
-                                right: '0'
-                            }, [
+                    return tag('nav', conf, [
                             tag('div', {class: 'logo'}, [
                                     tag('h1', {text: 'LOGO', fontSize: '30px', color: '#f5f5f5'})
                             ])
@@ -35,7 +35,9 @@
                 rootMineral: Ore.collect('body', false)
             });
             nav.do({render:'append'});
-
+            setTimeout(function(){
+                nav.do({render:'append'});
+            }, 2000);
         }
     </script>
 </body>
