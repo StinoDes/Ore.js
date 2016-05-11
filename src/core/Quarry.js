@@ -17,7 +17,7 @@ export default function (Class) {
             editable: true,
             visible: false
         },
-        init (element, id) {
+        init () {
             //console.log('test');
             var self = this;
             if (!window.Element.prototype.hasOwnProperty('mine')) {

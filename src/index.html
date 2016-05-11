@@ -9,68 +9,33 @@
             height: 100%;
             font-family: sans-serif;
         }
-        nav{
-            position: fixed;
-            top: 0; left: 0; right: 0;
-            height: 90px;
-            background-color: #0086b3;
-        }
-        nav .logo {
-            position: absolute;
-            top: 0;left: 0;bottom: 0;
-            padding: 30px;
-        }
-        nav .logo h1 {
-            margin: 0;
-            font-size: 30px;
-            letter-spacing: 2px;
-            color: white;
-        }
-        nav .links {
-            float: right;
-            height: 30px;
-            padding: 30px;
-        }
-        .test {
-            position: absolute;
-            top: 100px; width: 200px; height: 200px;
-        }
-        .test.blue {
-            left: 300px;
-            background: blue;
-        }
-        .test.red {
-            left: 300px;
-            background: red;
-        }
-        .test.black {
-            left: 300px;
-            background: black;
-        }
     </style>
 </head>
 <body>
-    <nav>
-        <div class="logo">
-            <h1>LOGO</h1>
-        </div>
-        <div class="links">
-        </div>
-    </nav>
 
     <script>
         window.addEventListener('load', start);
         function start () {
-            var brick = Ore.Quarry.Brick.create({
-                render: function (root, name) {
-                    root.do({append: Ore.craft('div', {class: 'test '+name})});
+            var nav = Ore.Quarry.Brick.create({
+                tree: function (tag) {
+                    return tag('nav',
+                            {
+                                backgroundColor: '#0086b3',
+                                height: '90px',
+                                position: 'fixed',
+                                top: '0',
+                                left: '0',
+                                right: '0'
+                            }, [
+                            tag('div', {class: 'logo'}, [
+                                    tag('h1', {text: 'LOGO', fontSize: '30px', color: '#f5f5f5'})
+                            ])
+                    ])
                 },
                 rootMineral: Ore.collect('body', false)
             });
-            brick.do({render: 'black'});
-            setTimeout(function () {
-                brick.do({render: 'red'});
-            }, 2000)
+            nav.do({render:'append'});
+
         }
     </script>
 </body>

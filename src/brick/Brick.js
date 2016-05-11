@@ -9,6 +9,11 @@ export default function (Class) {
             return this;
         },
         set (config) {
+            if (config.tree) {
+                if (typeof config.tree === 'function')
+                    config.tree = config.tree(this.Tree.tag.bind(this.Tree));
+                config.tree = this.Tree.create(config.tree);
+            }
             this.configurations = {...this.configurations, ...config};
         },
         do (config) {
@@ -25,7 +30,17 @@ export default function (Class) {
         },
         apply (config) {
 
+            this._callTree(config._method.tree);
             this._callRender(config._method.render);
+        },
+        _callTree: {
+            value (tree) {
+                if (tree !== undefined) {
+                    tree(this.configurations.tree);
+                }
+            },
+            visible: false,
+            editable: false
         },
         _callRender: {
             value (render) {
@@ -34,10 +49,15 @@ export default function (Class) {
                         console.error('Define a rootMineral by passing it in the config to set.');
                         return;
                     }
-                    if (render.constructor === Array)
-                        this.configurations.render.apply(this, [this.configurations.rootMineral, ...render]);
-                    else
-                        this.configurations.render.call(this, this.configurations.rootMineral, render);
+                    if (!this.configurations.tree) {
+                        console.warn('Using a tree to render your component might be easier.');
+                    }
+                    if (!render)
+                        render = 'append';
+                    let obj = {};
+                    obj[render] = this.configurations.tree.process();
+                    //this._mineral = obj[render]._mined;
+                    this.configurations.rootMineral.do(obj);
                 }
             },
             editable: false,
@@ -45,3 +65,19 @@ export default function (Class) {
         }
     })
 }
+/*
+TREE:
+
+root: {
+    <tag> : {
+        config: {},
+        <tag> : { ... }
+    },
+    <tag>: { ... }
+}
+
+
+
+
+
+ */

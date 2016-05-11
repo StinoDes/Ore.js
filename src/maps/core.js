@@ -73,13 +73,28 @@ export const _doChildrenMap = config => {
         if (config[type]) {
             if (config[type].constructor === Array)
                 return {minerals: config[type], index: null};
+            else if (config[type]._minerals)
+                return {minerals: config[type]._minerals, index: null};
             else
                 return { minerals: [config[type]], index: null };
         }
-        else if (config[type+'At'])
-            return { minerals: config[type+'At'].minerals, index: config[type+'At'].index };
+        else if (config[type+'At']) {
+            if (config[type+'At'].minerals._minerals) {
+                config[type+'At'].minerals = config[type+'At'].minerals._minerals;
+            }
+            return {minerals: config[type + 'At'].minerals, index: config[type + 'At'].index};
+        }
+        else if (typeof config.children === 'object') {
+            if(!config.children[type]) {
+                config.children[type] = { minerals: [], index: null };
+            }
+            if (config.children[type].minerals._minerals) {
+                config.children[type].minerals = config.children[type].minerals._minerals;
+            }
+            return config.children;
+        }
         else {
-            return (config.children)?config.children[type]: { minerals: [], index: null };
+            return { minerals: [], index: null };
         }
     };
     return {
