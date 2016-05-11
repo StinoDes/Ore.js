@@ -36,12 +36,16 @@
             top: 100px; width: 200px; height: 200px;
         }
         .test.blue {
-            left: 50px;
+            left: 300px;
             background: blue;
         }
         .test.red {
             left: 300px;
             background: red;
+        }
+        .test.black {
+            left: 300px;
+            background: black;
         }
     </style>
 </head>
@@ -53,15 +57,20 @@
         <div class="links">
         </div>
     </nav>
-    <div class="test red">
-    </div>
-    <div class="test blue">
-    </div>
 
     <script>
         window.addEventListener('load', start);
         function start () {
-
+            var brick = Ore.Quarry.Brick.create({
+                render: function (root, name) {
+                    root.do({append: Ore.craft('div', {class: 'test '+name})});
+                },
+                rootMineral: Ore.collect('body', false)
+            });
+            brick.do({render: 'black'});
+            setTimeout(function () {
+                brick.do({render: 'red'});
+            }, 2000)
         }
     </script>
 </body>

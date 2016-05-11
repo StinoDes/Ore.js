@@ -1,7 +1,8 @@
 import initBrick from './Brick';
 export default function (Class) {
-    this.Quarry.newProperty('Brick', initBrick(Class),
+    this.Quarry.newProperty('Brick',
         {
+            value: initBrick(Class),
             editable: false
         })
 }

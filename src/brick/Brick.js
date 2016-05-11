@@ -20,7 +20,28 @@ export default function (Class) {
                     else
                         this.configurations[k](config[k]);
                 }
-            }
+            };
+            this.apply(Ore.maps._doBrickConfigMap(config));
         },
+        apply (config) {
+
+            this._callRender(config._method.render);
+        },
+        _callRender: {
+            value (render) {
+                if (render !== undefined) {
+                    if (!this.configurations.rootMineral) {
+                        console.error('Define a rootMineral by passing it in the config to set.');
+                        return;
+                    }
+                    if (render.constructor === Array)
+                        this.configurations.render.apply(this, [this.configurations.rootMineral, ...render]);
+                    else
+                        this.configurations.render.call(this, this.configurations.rootMineral, render);
+                }
+            },
+            editable: false,
+            visible: false
+        }
     })
 }
