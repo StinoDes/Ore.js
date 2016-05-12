@@ -9,8 +9,8 @@ const Ore = Class.extend({
     init () {
         this.newProperty('Quarry', {value: initQuarry(this.Class), visible: false, editable: false});
         this.newProperty('Refiner', {value: initRefiner(this.Class), visible: false, editable: false});
-        initGlimmer.bind(this)(Class);
-        initBrick.bind(this)(Class);
+        initGlimmer.call(this, Class);
+        initBrick.call(this, Class);
         return this;
     },
     _modules: {

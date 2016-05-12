@@ -2,6 +2,17 @@ export default function (Class) {
     return Class.extend({
         configurations: {
             value: {}
+            //CONTAINS: TREE, ROOT
+        },
+        _refs: {
+            get () {
+                if (this.configurations.tree)
+                    return this.configurations.tree._refs;
+                else
+                    console.warn('Tried to access refs, but there is no tree to get them from.');
+                return {};
+            },
+            visible: false
         },
         _mineral: {
             value: null,
@@ -16,7 +27,7 @@ export default function (Class) {
         set (config) {
             if (config.tree) {
                 if (typeof config.tree === 'function')
-                    config.tree = config.tree(this.Tree.tag.bind(this.Tree));
+                    config.tree = config.tree(this.Tree.tag.bind(this.Tree), this.Tree.brick.bind(this.Tree));
                 config.tree = this.Tree.create(config.tree);
             }
             this.configurations = {...this.configurations, ...config};
@@ -26,9 +37,9 @@ export default function (Class) {
             for (var k in config) {
                 if (this.configurations[k]) {
                     if (config[k].constructor === Array)
-                        this.configurations[k].call(this, config[k]);
+                        this.configurations[k].apply(this, config[k]);
                     else
-                        this.configurations[k](config[k]);
+                        this.configurations[k].call(this, config[k]);
                 }
             };
             this.apply(Ore.maps._doBrickConfigMap(config));
@@ -50,21 +61,28 @@ export default function (Class) {
         _callRender: {
             value (render) {
                 if (render !== undefined) {
-                    if (!this.configurations.rootMineral) {
+                    //Warn and errors
+                    if (!this.configurations.tree)
+                        console.warn('Using a tree to render your component might be easier.');
+                    //Return if needed (eg when rendering from a tree
+                    else if (render === 'return')
+                        return this.configurations.tree.process();
+                    //Warn and errors
+                    else if (!this.configurations.rootMineral) {
                         console.error('Define a rootMineral by passing it in the config to set.');
                         return;
                     }
-                    if (!this.configurations.tree) {
-                        console.warn('Using a tree to render your component might be easier.');
-                    }
+                    //Append by default
                     if (!render)
                         render = 'append';
+                    //Append to root
                     let obj = {};
                     obj[render] = this.configurations.tree.process();
                     if (this._mineral)
                         this._mineral.do({replace: obj[render]});
-                    else
+                    else {
                         this.configurations.rootMineral.do(obj);
+                    }
                     this._mineral = obj[render];
                 }
             },

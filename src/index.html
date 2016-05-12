@@ -3,16 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <title>ORE | TEST-ENV</title>
-    <style></style>
-    <style>
-        body,html{
-            height: 100%;
-            font-family: sans-serif;
-        }
-    </style>
 </head>
 <body>
-
     <script>
         window.addEventListener('load', start);
         function start () {
@@ -23,21 +15,40 @@
                 top: '0',
                 left: '0',
                 right: '0'
-            };
+                },
+                body = Ore.collect('body');
+            body.do({fontFamily: 'sans-serif'});
             var nav = Ore.Quarry.Brick.create({
                 tree: function (tag) {
                     return tag('nav', conf, [
-                            tag('div', {class: 'logo'}, [
+                            tag('div', {class: 'logo', margin: '30px'}, [
                                     tag('h1', {text: 'LOGO', fontSize: '30px', color: '#f5f5f5'})
                             ])
                     ])
                 },
-                rootMineral: Ore.collect('body', false)
+                rootMineral: body
             });
-            nav.do({render:'append'});
-            setTimeout(function(){
-                nav.do({render:'append'});
-            }, 2000);
+            var todo = Ore.Quarry.Brick.create({
+                tree: function (tag) {
+                    return tag('h3', {text: 'manipulate minerals from bricks (eg refs in react)', color: '#43e175'}, [
+                        tag('p', {text: 'Brick.extract({refs: {}}).myRef.do({});', fontSize: '15px', fontWeight: 'normal'})
+                    ]);
+                }
+            });
+            var list = Ore.Quarry.Brick.create({
+                tree: function (tag, brick) {
+                    return tag('div', {marginTop: '150px', padding: '0 200px', textAlign: 'center'}, [
+                            tag('h2', {text: 'todo'}),
+                            brick(todo),
+                            tag('h3', {text: 'nesting bricks (passing a brick instead of tag', color: '#43e175'}),
+                            tag('h3', {text: 'use data inside of brick'}),
+                            tag('h3', {text: 'data store outside of brick with auto-render'})
+                    ])
+                },
+                rootMineral: body
+            });
+            nav.do({render:''});
+            list.do({render: ''});
         }
     </script>
 </body>

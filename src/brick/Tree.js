@@ -9,8 +9,13 @@ export default function (Class) {
             value: {},
             visible: false
         },
+        _refs: {
+            value: {},
+            visible: false,
+        },
         init (tree) {
             this._tree = tree||{};
+            this._refs = {};
             return this;
         },
         set (tree) {
@@ -28,11 +33,20 @@ export default function (Class) {
             //}
             let obj = {},
                 rtrn = {};
+            if (config.ref) {
+                obj.ref = config.ref;
+                delete config.ref;
+            }
             obj.config = config;
             for (var k in children) {
                 obj[Object.keys(children[k])[0]] = children[k][Object.keys(children[k])[0]];
             }
             rtrn[this._genTag(tag)] = obj;
+            return rtrn;
+        },
+        brick (brick) {
+            let rtrn = {};
+            rtrn[this._genTag('brick')] = brick;
             return rtrn;
         },
         process (config) {
@@ -55,15 +69,24 @@ export default function (Class) {
                 let mineral = Ore.craft(this._parseTag(key), config),
                     children = [];
                 for (var k in subtree) {
-                    if (k === 'config')
-                        continue;
                     let subconfig = {};
-                    if (subtree[k] && subtree[k].config) {
+                    if (subtree[k] && subtree[k].config)
                         subconfig = subtree[k].config;
+                    else
+                        subconfig = {};
+
+                    if (!/([a-z0-9]+\.[a-z0-9]{5})/i.test(k))
+                        continue;
+                    else if (/(brick\.[a-zA-Z0-9])/.test(k)) {
+                        console.log('should render brick', k, subtree[k]);
+                        children.push(subtree[k]._callRender('return'));
                     }
-                    children.push(this._processMineral(k, subtree[k], subconfig));
+                    else
+                        children.push(this._processMineral(k, subtree[k], subconfig));
                 }
                 mineral.do({append: children});
+                if (subtree.ref)
+                    this._refs[subtree.ref] = mineral;
                 return mineral;
             },
             visible: false,
