@@ -47,7 +47,7 @@ export default function (Class) {
         apply (config) {
 
             this._callTree(config._method.tree);
-            this._callRender(config._method.render);
+            this._callRender(config._method.render, config._method.props);
         },
         _callTree: {
             value (tree) {
@@ -59,14 +59,14 @@ export default function (Class) {
             editable: false
         },
         _callRender: {
-            value (render) {
+            value (render, props) {
                 if (render !== undefined) {
                     //Warn and errors
                     if (!this.configurations.tree)
                         console.warn('Using a tree to render your component might be easier.');
                     //Return if needed (eg when rendering from a tree
                     else if (render === 'return')
-                        return this.configurations.tree.process();
+                        return this.configurations.tree.process(props);
                     //Warn and errors
                     else if (!this.configurations.rootMineral) {
                         console.error('Define a rootMineral by passing it in the config to set.');
@@ -77,7 +77,7 @@ export default function (Class) {
                         render = 'append';
                     //Append to root
                     let obj = {};
-                    obj[render] = this.configurations.tree.process();
+                    obj[render] = this.configurations.tree.process(props);
                     if (this._mineral)
                         this._mineral.do({replace: obj[render]});
                     else {

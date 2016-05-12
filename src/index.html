@@ -16,39 +16,53 @@
                 left: '0',
                 right: '0'
                 },
-                body = Ore.collect('body');
-            body.do({fontFamily: 'sans-serif'});
+                bodyEl = Ore.collect('body');
+            bodyEl.do({fontFamily: 'sans-serif'});
+
             var nav = Ore.Quarry.Brick.create({
-                tree: function (tag) {
-                    return tag('nav', conf, [
-                            tag('div', {class: 'logo', margin: '30px'}, [
-                                    tag('h1', {text: 'LOGO', fontSize: '30px', color: '#f5f5f5'})
-                            ])
-                    ])
-                },
-                rootMineral: body
-            });
-            var todo = Ore.Quarry.Brick.create({
-                tree: function (tag) {
-                    return tag('h3', {text: 'manipulate minerals from bricks (eg refs in react)', color: '#43e175'}, [
-                        tag('p', {text: 'Brick.extract({refs: {}}).myRef.do({});', fontSize: '15px', fontWeight: 'normal'})
-                    ]);
-                }
-            });
-            var list = Ore.Quarry.Brick.create({
-                tree: function (tag, brick) {
-                    return tag('div', {marginTop: '150px', padding: '0 200px', textAlign: 'center'}, [
-                            tag('h2', {text: 'todo'}),
-                            brick(todo),
-                            tag('h3', {text: 'nesting bricks (passing a brick instead of tag', color: '#43e175'}),
-                            tag('h3', {text: 'use data inside of brick'}),
-                            tag('h3', {text: 'data store outside of brick with auto-render'})
-                    ])
-                },
-                rootMineral: body
-            });
-            nav.do({render:''});
-            list.do({render: ''});
+                    tree: function (tag) {
+                        return tag('nav', conf, [
+                                tag('div', {class: 'logo', margin: '30px'}, [
+                                        tag('h1', {text: 'LOGO', fontSize: '30px', color: '#f5f5f5'})
+                                ])
+                        ])
+                    },
+                    rootMineral: body
+                }),
+                list = Ore.Quarry.Brick.create({
+                    tree: function (tag, brick) {
+                        return tag('div', {marginTop: '150px', padding: '0 200px', textAlign: 'center'}, [
+                                tag('h2', {text: 'todo'}),
+                                brick(Ore.Quarry.Brick.create({
+                                    tree: function (tag) {
+                                        return tag('h3', {text: 'manipulate minerals from bricks (eg refs in react)', color: '#43e175'}, [
+                                            tag('p', {text: 'Brick.extract({refs: {}}).myRef.do({});', fontSize: '15px', fontWeight: 'normal'})
+                                        ]);
+                                    }
+                                })),
+                                tag('h3', {text: 'nesting bricks (passing a brick instead of tag', color: '#43e175'}),
+                                brick(Ore.Quarry.Brick.create({
+                                    tree: function (tag) {
+                                        return tag('h3', {text: 'pass text and other vars into bricks', color: '#43e175'}, [
+                                            tag('p', {text: '"text: {{referedVar}}"', fontSize: '{{fontsize}}', fontWeight: 'normal'})
+                                        ]);
+                                    }
+                                })),
+                                tag('h3', {text: 'use data inside of brick'}),
+                                tag('h3', {text: 'data store outside of brick with auto-render'}),
+                        ])
+                    }
+                }),
+                body = Ore.Quarry.Brick.create({
+                    tree: function (tag, brick) {
+                       return tag('div', {}, [
+                               brick(list),
+                               brick(nav)
+                       ])
+                    },
+                    rootMineral: bodyEl
+                });
+            body.do({render:'', props: {test: 'test', fontsize: '20px'}});
         }
     </script>
 </body>
