@@ -44,7 +44,7 @@ const Class = Object.create(Object.prototype, {
         value (objectToAdd) {
             let descriptor = {};
             for (var k in objectToAdd) {
-                if (typeof objectToAdd[k] === 'object') {
+                if (objectToAdd[k] && typeof objectToAdd[k] === 'object') {
                     let { value, get, set, visible, editable } = objectToAdd[k],
                         v = {};
                     if ((value !== undefined || editable !== undefined ) && (get || set))

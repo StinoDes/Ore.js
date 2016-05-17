@@ -54,6 +54,18 @@ const Ore = Class.extend({
             return batch;
         }
     },
+    depot: {
+        set (config) {
+            this._depot = this.Depot.create(config);
+        },
+        get () {
+            return this._depot;
+        }
+    },
+    _depot: {
+        value: null,
+        visible: false
+    },
     cloneConfig: {
         value (config) {
             if (typeof config !== 'object')
