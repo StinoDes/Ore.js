@@ -24,17 +24,24 @@ export default function (Class) {
             else if (typeof config === 'object')
                 return Object.keys(config).map(key => this._store[key].value === config[key]);
         },
+        /*
+        //  {
+        //      name: value,
+        //      name: {
+        //          newprops...
+        //      }
+        //  }
+         */
         dispatch (config) {
             if (typeof config !== 'object')
                 console.error('Dispatching to the Depot requires key-value pairs. Please pass an object.');
             else {
                 for (var k in config) {
-                    this._store[k].set(config[k]);
+                    this._store[k].do(config[k]);
                 }
             }
         },
         new (config) {
-            console.log(this.Container);
             this._store[config.name] = this.Container.create(config);
         }
     });

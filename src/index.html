@@ -27,31 +27,12 @@
                             margin: '30px',
                             display: 'inline-block',
                             click: function () {
-                                var mineral = menu._refs.menu,
-                                    initial, toValue;
-                                if (Ore.depot.retrieve('menuShown')) {
-                                    Ore.depot.dispatch({menuShown: false});
-                                    initial = 0;
-                                    toValue = -300;
-                                }
-                                else {
-                                    Ore.depot.dispatch({menuShown: true});
-                                    initial = -300;
-                                    toValue = 0;
-                                }
-                                mineral.do({glimmer: {
-                                    styles: 'left',
-                                    initial,
-                                    toValue,
-                                    duration: 800,
-                                    easing: Ore.easings.BOUNCEOUT,
-                                    play: true
-                                }});
+                                Ore.depot.dispatch({menuShown: !Ore.depot.retrieve('menuShown')});
                             }
                         },[
                             tag('img', {
                                 src: 'http://www.shamrocktechnologies.com/images/hamburger.png',
-                                height: '30px',
+                                height: '30px'
                             })
                         ])
                     }
@@ -84,7 +65,31 @@
                     },
                     rootMineral: bodyEl
                 });
-            Ore.depot = {menuWidth: {type: 'number', initial: 300}, menuShown: {type: 'boolean', initial: false}};
+            Ore.depot = {
+                menuWidth: {
+                    type: 'number',
+                    initial: 300
+                },
+                menuShown: {
+                    type: 'boolean',
+                    initial: false,
+                    reactions: [
+                        function (show) {
+                            var toValue = (show)?0:-1*Ore.depot.retrieve('menuWidth');
+                            menu._refs.menu.do({
+                                glimmer: {
+                                    styles: 'left',
+                                    initial: parseInt(menu._refs.menu.extract({styles: {'left': ''}}).styles.left),
+                                    toValue,
+                                    duration: 800,
+                                    easing: Ore.easings.BOUNCEOUT,
+                                    play: true
+                                }
+                            })
+                        }
+                    ]
+                }
+            };
             bodyEl.do({fontFamily: 'sans-serif'});
             body.do({render:'', props: {title: 'TEST-ENV'}});
         }
