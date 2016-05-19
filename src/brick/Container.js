@@ -6,6 +6,8 @@ export default function (Class) {
             this._get = config.get || this._get;
             this._set = config.set || this._set;
             this.name = config.name;
+            this._handlers = [];
+            this._listeners = [];
             if (config.reactions)
                 this.add(config.reactions);
             return this;
@@ -52,7 +54,7 @@ export default function (Class) {
         _react: {
             value () {
                 for (var k in this._listeners) {
-                    this._listeners[k].do({render: ''});
+                    this._listeners[k].do({render: 'replace'});
                 }
                 for (var k in this._handlers) {
                     this._handlers[k](this.value);
@@ -66,13 +68,14 @@ export default function (Class) {
                 return null;
             else if (typeof callbacks === 'function')
                 this._handlers.push(callbacks);
-            else if (callbacks._mined)
+            else if (callbacks._callRender || callbacks._mined)
                 this._listeners.push(callbacks);
             else if (callbacks.constructor === Array) {
                 for (var k in callbacks) {
                     this.add(callbacks[k]);
                 }
             }
+            console.log(this._listeners);
 
         },
         set (value) {
@@ -95,11 +98,13 @@ export default function (Class) {
             this._react();
         },
         do (config) {
-            if (typeof config !== 'object')
+            if (typeof config !== 'object' || (!config.value && !config.reactions))
                 this.set(config);
             else {
-                this.set(config.value);
-                this.add(config.reactions);
+                if (config.value)
+                    this.set(config.value);
+                if (config.reactions)
+                    this.add(config.reactions);
             }
         }
     });

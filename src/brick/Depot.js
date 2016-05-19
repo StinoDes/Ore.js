@@ -17,12 +17,18 @@ export default function (Class) {
             }
         },
         retrieve (config) {
-            if (typeof config === 'string')
-                return this._store[config].value;
+            if (typeof config === 'string') {
+                if (this._store[config])
+                    return this._store[config].value;
+                else {
+                    console.error('Couldn\'t find entry "' + config + '" in the depot.');
+                    return null;
+                }
+            }
             else if (config.constructor === Array)
-                return config.map(key => this._store[key].value);
+                return config.map(key => this.retrieve(key));
             else if (typeof config === 'object')
-                return Object.keys(config).map(key => this._store[key].value === config[key]);
+                return Object.keys(config).map(key => this.retrieve(key) === config[key]);
         },
         /*
         //  {

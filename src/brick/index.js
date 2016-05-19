@@ -17,6 +17,18 @@ export default function (Class) {
         value: initDepot(Class),
         editable: false
     });
+    this.newProperty('bakeBrick', {
+        value (config) {
+            return (function (root) {
+                let brick = this.Quarry.Brick.create(Ore.cloneConfig(config));
+                if (root)
+                    brick.set({rootMineral: root});
+                return brick;
+
+            }).bind(this);
+        },
+        editable: false
+    });
     this.Depot.newProperty('Container', {
         value: initContainer(Class),
         editable: false,

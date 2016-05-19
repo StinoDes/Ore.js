@@ -20,14 +20,17 @@ export default function (Class) {
             editable: true
         },
         init (config) {
+            //this.configurations = Ore.cloneConfig(this.configurations);
+            //console.log(this.configurations);
             this.configurations = {};
+            this._renderData = {};
             this.set(config);
             return this;
         },
         set (config) {
             if (config.tree) {
                 if (typeof config.tree === 'function')
-                    config.tree = config.tree(this.Tree.tag.bind(this.Tree), this.Tree.brick.bind(this.Tree));
+                    config.tree = config.tree(this.Tree.tag.bind(this.Tree), this.Tree.brick.bind(this.Tree), this.Tree.func.bind(this.Tree));
                 config.tree = this.Tree.create(config.tree);
             }
             this.configurations = {...this.configurations, ...config};
@@ -61,12 +64,21 @@ export default function (Class) {
         _callRender: {
             value (render, props) {
                 if (render !== undefined) {
+                    console.log('STARTING RENDER', this.configurations.tree, this._renderData);
                     //Warn and errors
                     if (!this.configurations.tree)
                         console.warn('Using a tree to render your component might be easier.');
                     //Return if needed (eg when rendering from a tree
-                    else if (render === 'return')
-                        return this.configurations.tree.process(props);
+                    else if (render === 'return') {
+                        this._mineral = this.configurations.tree.process(props, this._renderData);
+                        return this._mineral;
+                    }
+                    else if (render === 'replace') {
+                        let mineral = this.configurations.tree.process(props, this._renderData);
+                        this._mineral.do({replace: mineral});
+                        this._mineral = mineral;
+                        return;
+                    }
                     //Warn and errors
                     else if (!this.configurations.rootMineral) {
                         console.error('Define a rootMineral by passing it in the config to set.');
@@ -85,6 +97,10 @@ export default function (Class) {
                     }
                     this._mineral = obj[render];
                 }
+            },
+            _renderData: {
+                value: null,
+                visible: false
             },
             editable: false,
             visible: false

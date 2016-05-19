@@ -44,25 +44,34 @@ export default function (Class) {
             rtrn[this._genTag(tag)] = obj;
             return rtrn;
         },
-        brick (brick) {
-            let rtrn = {};
-            rtrn[this._genTag('brick')] = brick;
+        brick (brick, data) {
+            let rtrn = {},
+                tag = this._genTag('brick');
+            if (typeof brick === 'function')
+                rtrn[tag] = brick();
+            else
+                rtrn[tag] = brick;
+            console.log('BRICK:', rtrn[tag]);
+            rtrn[tag]._renderData = data;
             return rtrn;
         },
-        process (props) {
+        func (func) {
+            return func(this.tag, this.brick, this.func);
+        },
+        process (props, renderdata) {
             var mineral;
             if (Object.keys(this._tree).length > 1) {
                 console.error('There should only be one top-level tag per tree.');
                 return;
             }
             for ( var k in this._tree ) {
-                mineral = this._processMineral(k, this._tree[k], props);
+                mineral = this._processMineral(k, this._tree[k], props, renderdata);
             }
             return mineral;
         },
         _processMineral: {
-            value (key, subtree, props) {
-                let mineral = Ore.craft(this._parseTag(key), Ore.maps._propsToConfigMap(subtree.config, props)),
+            value (key, subtree, props, renderdata) {
+                let mineral = Ore.craft(this._parseTag(key), Ore.maps._propsToConfigMap(subtree.config, props, renderdata)),
                     children = [];
                 for (var k in subtree) {
                     if (!/([a-z0-9]+\.[a-z0-9]{5})/i.test(k))
@@ -72,7 +81,7 @@ export default function (Class) {
                         children.push(subtree[k]._callRender('return', props));
                     }
                     else {
-                        children.push(this._processMineral(k, subtree[k], props));
+                        children.push(this._processMineral(k, subtree[k], props, renderdata));
                     }
                 }
                 mineral.do({append: children});
