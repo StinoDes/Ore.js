@@ -9,7 +9,7 @@ Using *configs*, you can manipulate any element in any way by calling just one m
 To get started on using Ore, either install it using npm by executing `npm install ore-js` in your project's root, or include a `<script>`-tag with
 Ore.js as its source.  
   
-### Writing your first code  
+### How it works
 #### Getting and manipulating an element/mineral
 Ore provides a method to easily get any element from the DOM-tree. `Ore.collect( <selector> )` returns an element-object, 
 called a Mineral, or a group, called Batch. A Batch has the same base methods as a Mineral, so you can generally mix their uses.  
@@ -49,7 +49,8 @@ You can create a new element by calling `Ore.craft( <tag>, <config> )`. As tag, 
 we've seen before. The main difference is that you should define *children* as `children: [ <Mineral>, <Mineral> ]` in the root of the config.  
 This method returns your newly created Mineral, which you can then append or manipulate further.
 
-### Animating
+### Animating/Glimmers
+#### Creating and using animations/glimmers
 Animations are handled by seperate objects in Ore. These are called **Glimmers**. At their core, Glimmers merely animate a value from x to y over a specified duration.
 Glimmers are set up using a config file (somewhat like Minerals).  
 The possible applications of a Glimmer's config, look like this:
@@ -79,3 +80,24 @@ The possible applications of a Glimmer's config, look like this:
 }
 ```
 Glimmers can be easily initiated by passing `glimmer: <glimmer config>` to a mineral.
+
+#### Finding created glimmers
+Created glimmers are saved in Ore. So evidently a method is provided to retrieve them from cache as well. 
+`Ore.catch({ selector: <selector>, query: { <queries> }})` retrieves all matching glimmers for you and returns them in a wrapper.
+The *selector*-property should be a string containing a CSS-selector. This will narrow down the retrieval to only the animations of those elements.  
+The *query*-property should be an object of properties and values. The retrieval will be narrowed down to only glimmers whose properties match with those in the query. 
+For example:  
+`Ore.catch({ selector: '.overlay', query: { style: 'opacity' } })` will return all animations applied to `.overlay`-elements, who are animating the `opacity`-property.
+
+### Modularity
+Ore provides a way of building your site brick by brick. To make rendering the contents of these bricks easier, Ore offers some shorthands.  
+#### Shorthand functions
+The **Oven**-object, which is contained by Ore, can return you all default recipes, which in turn return Minerals for basic HTML-elements.
+``` javascript
+var sh = Ore.Oven.recipes;
+console.log( sh.div() );        // Will render a Mineral containing a div-element, which you can then append
+```
+These shorthands have 2 parameters. The first is the config-object you'd usually pass to a Mineral (check above). The other is an array of children.  
+This makes appending children easy.
+`sh.div({ class: 'container' }, [ sh.h1( {text: 'This is a h1-tag'} ), sh.p( {text: 'This is a paragraph with text!'} ) ]);`  
+Now we have made a div.container-element with a heading and paragraph. Easy as that.

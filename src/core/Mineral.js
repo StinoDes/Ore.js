@@ -77,8 +77,10 @@ export default function (Class) {
             this.apply(Ore.maps._doConfigMap(config));
         },
         apply (config) {
-            if (config.replace !== undefined && config.replace !== null)
+            if (config.replace)
                 this._replace(config.replace);
+            if (config.remove)
+                this._element.parentNode.removeChild(this._element);
             if (config.children.append.minerals.length || config.children.prepend.minerals.length)
                 this._applyChildren(config.children);
             if (Object.keys(config.styles).length)
@@ -95,11 +97,8 @@ export default function (Class) {
                 this._initGlimmers(config.glimmers);
         },
         _replace(subst) {
-            let index = Array.prototype.slice.call( this._element.parentNode.children ).indexOf(this._element);
-            if (subst) {
-                Ore.collect(this._element.parentNode).do({appendAt: {minerals: (subst._mined)?[subst]:subst, index}});
-            }
-            this._element.parentNode.removeChild(this._element);
+            this._element.parentNode.replaceChild(subst._element, this._element);
+            delete this;
         },
         _generateHandler: {
             value () {

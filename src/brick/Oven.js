@@ -87,11 +87,23 @@ export default function (Class) {
                 return (function (_config, children) {
                     if (!instance)
                         instance = this._bricks[name].create(config||{});
+                    if (_config === 'instance')
+                        return instance;
                     if (!_config)
                         _config = {};
                     _config.children = children;
+
                     return this.build(instance, _config);
                 }).bind(this);
+            },
+            editable: false
+        },
+        buildTo: {
+            value (brick, root) {
+                if (brick('instance')._mineral)
+                    brick('instance')._mineral.do({replace: brick()});
+                else
+                    root.do({append: brick()});
             },
             editable: false
         },
@@ -101,10 +113,12 @@ export default function (Class) {
                 brick.preBuild(config);
                 brick.conf = config;
                 built = brick.build();
+                brick._mineral = built;
                 brick.postBuild();
                 return built;
             },
-            editable: false
+            editable: false,
+            visible: false
         }
     });
 }

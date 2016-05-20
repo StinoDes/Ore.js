@@ -11,8 +11,8 @@
             var el = Ore.Oven.recipes,
                 Logo = Ore.Oven.bake('Logo', {
                     build: function () {
-                        return el.a({}, [
-                            el.h1({text: 'LOGO', color: '#f5f5f5', fontFamily: 'sans-serif'})
+                        return el.a({textDecoration: 'none', click: handler}, [
+                            el.h1({text: 'LOGO', color: '#f5f5f5', padding: '35px', fontSize: '20px', margin: '0', fontFamily: 'sans-serif'})
                         ]);
                     }
                 }),
@@ -22,10 +22,13 @@
                             Logo()
                         ]);
                     }
-                });
-            Ore.collect('body').do({
-                append: Nav()
-            })
+                }),
+                handler = function (e) {
+                    e.preventDefault();
+                    Ore.Oven.buildTo(Nav, Ore.collect('body'));
+                };
+            Ore.Oven.buildTo(Nav, Ore.collect('body'));
+
         }
     </script>
 </body>
