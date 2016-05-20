@@ -26,6 +26,7 @@ export default function (Class) {
         init (element, id) {
             this._element = element;
             this._mined = id;
+            console.log('ELEMENT:', element);
             this._element.setAttribute('mined', this._mined);
             this.configurations = {};
             this._glimmers = [];
