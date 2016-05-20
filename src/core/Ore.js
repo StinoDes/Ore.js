@@ -4,11 +4,13 @@ import maps from '../maps';
 import initQuarry from './Quarry';
 import initRefiner from './Refiner';
 import initGlimmer from '../glimmer';
+import initBrick from '../brick';
 const Ore = Class.extend({
     init () {
         this.newProperty('Quarry', {value: initQuarry(this.Class), visible: false, editable: false});
         this.newProperty('Refiner', {value: initRefiner(this.Class), visible: false, editable: false});
         initGlimmer.call(this, Class);
+        initBrick.call(this, Class);
         return this;
     },
     _modules: {
@@ -28,6 +30,7 @@ const Ore = Class.extend({
     },
     craft: {
         value (tag, config) {
+            console.log('CREATING ELEMENT', tag, config);
             var el = this.collect(document.createElement(tag));
             if (config) {
                 config = this.maps._craftConfigMap(config) || {};
