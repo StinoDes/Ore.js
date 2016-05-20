@@ -100,4 +100,18 @@ console.log( sh.div() );        // Will render a Mineral containing a div-elemen
 These shorthands have 2 parameters. The first is the config-object you'd usually pass to a Mineral (check above). The other is an array of children.  
 This makes appending children easy.
 `sh.div({ class: 'container' }, [ sh.h1( {text: 'This is a h1-tag'} ), sh.p( {text: 'This is a paragraph with text!'} ) ]);`  
-Now we have made a div.container-element with a heading and paragraph. Easy as that.
+Now we have made a div.container-element with a heading and paragraph. Easy as that.  
+  
+You can create custom shorthands as well.
+`Ore.Oven.bake( <tag>, <config> )` will return you a similar shorthand. The return of your shorthand will be 
+a mineral containing your an element with the tag you provided and the config baked into the preset.
+Example - creating a floating-button shorthand:
+``` javascript
+// Define our button shorthand. It will return an 'a'-tag with some preset values.
+button = Ore.Oven.bake('a', { position: 'fixed', width: '100px', height: '100px', borderRadius: '50%', right: '150px', bottom: '150px', display: 'block'});
+
+// Append the newly created button onto the body. Some more config can be passed here ( background and click in this example )
+Ore.collect('body').do({ 
+    append: button({ click: function () { alert("I've been clicked!"); }, backgroundColor: '#324398' })
+});
+```

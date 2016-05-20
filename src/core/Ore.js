@@ -30,7 +30,6 @@ const Ore = Class.extend({
     },
     craft: {
         value (tag, config) {
-            console.log('CREATING ELEMENT', tag, config);
             var el = this.collect(document.createElement(tag));
             if (config) {
                 config = this.maps._craftConfigMap(config) || {};

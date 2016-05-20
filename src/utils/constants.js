@@ -293,6 +293,7 @@ export const
         'borderLeftColor': COLOR,
         'borderLeftStyle': null,
         'borderLeftWidth': LENGTH,
+        'borderRadius': LENGTH,
         'borderRight': null,
         'borderRightColor': COLOR,
         'borderRightStyle': null,

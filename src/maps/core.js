@@ -168,11 +168,12 @@ export const _extractAttrMap = config => {
 export const _doStyleMap = config => {
     let obj = {};
     for (var k in config) {
-        if (k in constants.CSS_PROPERTIES)
+        if (k in constants.CSS_PROPERTIES) {
             if (validate(constants.CSS_PROPERTIES[k], config[k]))
                 obj[k] = config[k];
             else
-                console.error(k+' is not a valid '+constants.CSS_PROPERTIES[k]+'.');
+                console.error(k + ' is not a valid ' + constants.CSS_PROPERTIES[k] + '.');
+        }
     }
     return obj;
 };
