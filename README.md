@@ -105,7 +105,7 @@ Now we have made a div.container-element with a heading and paragraph. Easy as t
 You can create custom shorthands as well.
 `Ore.Oven.bake( <tag>, <config> )` will return you a similar shorthand. The return of your shorthand will be 
 a mineral containing your an element with the tag you provided and the config baked into the preset.  
-**Example - creating a floating-button shorthand:**
+**Example - creating a floating-button shorthand:**  
 ``` javascript
 // Define our button shorthand. It will return an 'a'-tag with some preset values.
 button = Ore.Oven.bake('a', { position: 'fixed', width: '100px', height: '100px', borderRadius: '50%', right: '150px', bottom: '150px', display: 'block'});
@@ -120,7 +120,7 @@ Ore.collect('body').do({
 Bricks are the component-objects in Ore. They are, at their very core, classes with a `build`-method. This build method returns Minerals, which will make up your UI.  
 You can define bricks using the same method as you define new shorthands. To tell the Oven that you want a brick, not a new shorthand, start your tag with a capital letter.  
 Then, instead of a config-object, you should pass an object containing how you'd like to extend the standard brick. Generally you'd want to override the `build`-method. The rest is up to you.  
-**Example - creating a navigation brick:**
+**Example - creating a navigation brick:**  
 ``` javascript
 var sh = Ore.Oven.recipes;
 
@@ -137,7 +137,7 @@ After you have defined your Brick, you can render is by executing the function i
   
 Bricks don't have to be that static though. When executing the shorthand returned from `.bake`, you can pass it an object, which will be saved in your brick.
 These can then be used in, for example, the build-method.  
-**Example - creating a navigation brick with custom title:**
+**Example - creating a navigation brick with custom title:**  
 ``` javascript
 var sh = Ore.Oven.recipes;
 
