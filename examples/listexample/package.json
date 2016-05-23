@@ -1,6 +1,6 @@
 {
   "name": "ore-js-listexample",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "An example of a dynamic list using Ore.js.",
   "main": "index.js",
   "scripts": {

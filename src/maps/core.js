@@ -1,4 +1,5 @@
 import { constants, validate } from '../utils';
+import maps from '../maps';
 
 export const _craftConfigMap = (config) => {
     let append = config.children || [],
@@ -40,7 +41,7 @@ export const _doConfigMap = (config) => {
         children: _doChildrenMap(config),
         text,
         ..._doReplaceMap(config),
-        ...Ore.maps._doAddon(config)
+        ...maps._doAddon(config)
     }
 };
 export const _extractConfigMap = (config) => {
@@ -56,7 +57,7 @@ export const _extractConfigMap = (config) => {
         }),
         class: _extractClassMap(config),
         children, text,
-        ...Ore.maps._extractAddon(config)
+        ...maps._extractAddon(config)
     }
 };
 export const _doReplaceMap = config => {
