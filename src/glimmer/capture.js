@@ -1,3 +1,6 @@
+
+import maps from '../maps';
+
 const capture  = (config, asRay) => {
     let { selector, query } = config,
         batch, glimmers = [];
@@ -23,7 +26,7 @@ const capture  = (config, asRay) => {
 const screen = (glimmers, query) => {
     let arr = [];
     for (var k in glimmers) {
-        if (Ore.maps._matchGlimmerQuery(glimmers[k], query))
+        if (maps._matchGlimmerQuery(glimmers[k], query))
             arr.push(glimmers[k])
     }
     return arr;

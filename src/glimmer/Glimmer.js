@@ -1,3 +1,6 @@
+
+import maps from '../maps';
+
 export default function (Class) {
     if (!window.requestAnimFrame) {
         window.requestAnimFrame = (function(){
@@ -28,7 +31,7 @@ export default function (Class) {
         },
         init (config) {
             this._shined = config.shined;
-            this._configuration = Ore.maps._glimmerConfigMap(config);
+            this._configuration = maps._glimmerConfigMap(config);
             if (config.play)
                 this.loop();
             return this;

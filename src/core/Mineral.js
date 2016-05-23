@@ -1,6 +1,8 @@
 /**
  * Created by Stijn on 28/04/16.
  */
+import maps from '../maps';
+
 export default function (Class) {
     return Class.extend({
         configurations: {
@@ -54,7 +56,7 @@ export default function (Class) {
                     children: '*'
                 };
             else
-                config = Ore.maps._extractConfigMap(config);
+                config = maps._extractConfigMap(config);
             let text = (config.text !== undefined && config.text !== null)?this._extractText():undefined,
                 glimmers = (config.glimmers !== undefined && config.glimmers !== null)?this._extractGlimmers(config.glimmers):undefined,
                 children = (config.children !== undefined && config.children !== null)?this._extractChildren(config.children):undefined;
@@ -75,7 +77,7 @@ export default function (Class) {
                     this.configurations[k].call(this, config[k]);
                 delete config[k];
             }
-            this.apply(Ore.maps._doConfigMap(config));
+            this.apply(maps._doConfigMap(config));
         },
         apply (config) {
             if (config.replace)
