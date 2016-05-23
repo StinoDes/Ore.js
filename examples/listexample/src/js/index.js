@@ -1,5 +1,4 @@
 import Ore from 'ore-js';
-window.Ore = Ore;
 
 const { div, h1, p, nav, input, a } = Ore.Oven.recipes;
 

@@ -9,7 +9,7 @@
   "author": "Stijn Tytgat",
   "license": "ISC",
   "dependencies": {
-    "ore-js": "^0.6.0"
+    "ore-js": "^0.6.1"
   },
   "devDependencies": {
     "babel-loader": "^6.2.4",
