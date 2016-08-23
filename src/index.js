@@ -1,3 +1,15 @@
-import { Ore } from './core';
+import mediator from './core/mediator'
+import quarry from './core/quarry'
+import mapper from './mapping'
 
-module.exports = Ore;
+export default (() => {
+
+  mediator.installTo(mapper)
+  mapper.registerAction('doMap', mapper.doMap)
+
+  return {
+    mapper,
+    quarry,
+  }
+
+})()

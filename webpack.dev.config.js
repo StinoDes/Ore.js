@@ -11,6 +11,13 @@ module.exports = {
         library: "Ore"
     },
     module: {
+        preLoaders: [
+            {
+                test:/\.js$/,
+                loader: 'eslint',
+                exclude: /node_modules/
+            }
+        ],
         loaders: [
         {
             test: /\.js$/,
@@ -21,11 +28,15 @@ module.exports = {
             }
         }]
     },
+    eslint: {
+        failOnWarning: false,
+        failOnError: true
+    },
     plugins: [
         new HtmlWebpackPlugin({
             filename: 'index.html',
             template: './src/index.html',
             inject: 'body'
-        })
+        }),
     ]
 };
