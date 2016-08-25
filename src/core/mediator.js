@@ -34,6 +34,18 @@ const mediator = (() => {
     if (!actions[action]) return false
     let args = Array.prototype.slice.call(arguments, 1)
     return actions[action].callback.apply(actions[action].context, args)
+  },
+
+      installMultiple = function (arr) {
+    for(let k in arr)
+      installSingle(arr[k])
+  },
+
+      installSingle = function (module) {
+      module.subscribe = subscribe
+      module.publish = publish
+      module.registerAction = registerAction
+      module.doFor = doFor
   }
 
 
@@ -45,10 +57,9 @@ const mediator = (() => {
     registerAction,
     doFor,
     installTo (module) {
-      module.subscribe = subscribe
-      module.publish = publish
-      module.registerAction = registerAction
-      module.doFor = doFor
+      if (arguments.length > 1)
+        installMultiple(Array.prototype.slice.call(arguments))
+      installSingle(module)
       return this
     },
   }

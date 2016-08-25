@@ -1,3 +1,5 @@
+import mineral from './mineral'
+
 const quarry = (() => {
 
   let loaded = false
@@ -16,18 +18,18 @@ const quarry = (() => {
       }
     },
 
-    _genD = function() {
-      const str = randomString(8, 'aA')
+    genMineId = function() {
+      const str = quarry.doFor('randomString', 8, 'aA')
       if (cache[str])
-        return this._genD()
+        return genMineId()
       return str
     },
 
     mineMineral = function(element) {
       if (element._mineid)
         return cache[element._mineid]
-      element._mineid = _genD()
-      cache[element._mindeid] = element
+      element._mineid = genMineId()
+      cache[element._mineid] = mineral(element)
       return cache[element._mineid]
     },
 

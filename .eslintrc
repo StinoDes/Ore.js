@@ -255,7 +255,7 @@
     ],
     "operator-assignment": [
       1,
-      "never"
+      "always"
     ],
     "padded-blocks": [
       0,
@@ -324,7 +324,7 @@
     "max-params": 0,
     "max-statements": 0,
     "no-bitwise": 1,
-    "no-plusplus": 1,
+    "no-plusplus": 0,
     /* Babel */
     // "babel/block-scoped-var": 1,
     "babel/object-shorthand": [
