@@ -1,62 +1,57 @@
 const mediator = (() => {
 
   const channels = {},
-        actions = {},
-        subscribe = function (channel, fn) {
-    if (!channels[channel]) channels[channel] = []
-    channels[channel].push({
-      context: this,
-      callback: fn
-    })
-    return this
-  },
+    subscribe = function(channel, fn, isSingle) {
+      const subscription = {
+        context: this,
+        callback: fn,
+      }
+      if (!isSingle) {
+        if (!channels[channel]) channels[channel] = []
+        channels[channel].push(subscription)
+      }
+      else {
+        if (channels[channel]) {
+          console.error('Channel is already defined. Can\'t redefine as a single channel.')
+          return false
+        }
+        channels[channel] = subscription
+      }
+      return this
+    },
 
-        publish = function (channel) {
-    if (!channels[channel]) return false
-    let args = Array.prototype.slice.call(arguments, 1)
-    for (var i in channels[channel]) {
-      let subscription = channels[channel][i]
-      subscription.callback.apply(subscription.context, args)
-    }
-    return this
-  },
+    publish = function(channel) {
+      const args = Array.prototype.slice.call(arguments, 1)
+      if (!channels[channel]) return false
+      if (channels[channel].constructor !== Array) {
+        const subscription = channels[channel],
+          returnVal = subscription.callback.apply(subscription.context, args)
+        if (typeof returnVal === 'undefined')
+          return this
+        return returnVal
+      }
+      for (const i in channels[channel]) {
+        const subscription = channels[channel][i]
+        subscription.callback.apply(subscription.context, args)
+      }
+      return this
+    },
 
-       registerAction  = function (action, fn) {
-    actions[action] = {
-      action,
-      callback: fn,
-      context: this,
-    }
-    return this
-  },
+    installMultiple = function(arr) {
+      for (const k in arr)
+        installSingle(arr[k])
+    },
 
-      doFor = function (action) {
-    if (!actions[action]) return false
-    let args = Array.prototype.slice.call(arguments, 1)
-    return actions[action].callback.apply(actions[action].context, args)
-  },
-
-      installMultiple = function (arr) {
-    for(let k in arr)
-      installSingle(arr[k])
-  },
-
-      installSingle = function (module) {
+    installSingle = function(module) {
       module.subscribe = subscribe
       module.publish = publish
-      module.registerAction = registerAction
-      module.doFor = doFor
-  }
-
+    }
 
   return {
     channels,
-    actions,
     subscribe,
     publish,
-    registerAction,
-    doFor,
-    installTo (module) {
+    installTo(module) {
       if (arguments.length > 1)
         installMultiple(Array.prototype.slice.call(arguments))
       installSingle(module)

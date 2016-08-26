@@ -19,17 +19,22 @@ const quarry = (() => {
     },
 
     genMineId = function() {
-      const str = quarry.doFor('randomString', 8, 'aA')
+      const str = quarry.publish('util', 'randomString', 8, 'aA')
       if (cache[str])
         return genMineId()
       return str
+    },
+
+    installMediatorOnMineral = function(target) {
+      target.publish = api.publish
+      return target
     },
 
     mineMineral = function(element) {
       if (element._mineid)
         return cache[element._mineid]
       element._mineid = genMineId()
-      cache[element._mineid] = mineral(element)
+      cache[element._mineid] = installMediatorOnMineral(mineral(element))
       return cache[element._mineid]
     },
 

@@ -8,7 +8,7 @@ describe('Mapper', () => {
 
   it('Registers new mapping', () => {
 
-    mapper.registerMap('testMap', (config) => {
+    mapper.registerMap('testMap', publish => config => {
       return {
         test: config.valueToMap
       }
@@ -17,12 +17,6 @@ describe('Mapper', () => {
       valueToMap: 'test'
     }))
           .to.deep.equal({test: 'test'})
-  })
-
-  it('Removes a mapping', () => {
-    mapper.removeMap('testMap')
-    expect(mapper.doMap)
-          .to.throw(Error)
   })
 
 })

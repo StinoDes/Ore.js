@@ -15,8 +15,16 @@ const util = (() => {
         result += mask[Math.floor(Math.random() * mask.length)]
       return result
     },
+    capitalizeFirstLetter = string => {
+      return string.charAt(0).toUpperCase() + string.slice(1)
+    },
     api = {
       randomString,
+      capitalizeFirstLetter,
+      useTool(name) {
+        const args = Array.prototype.slice.call(arguments, 1)
+        return api[name](...args)
+      },
     }
 
   return api

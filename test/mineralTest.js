@@ -33,7 +33,45 @@ describe('Minerals', () => {
 
             expect(api.quarry.mineMineral(element))
                 .to.equal(mineral)
+        })
 
+    })
+
+    describe('On labor', () => {
+
+        it('The element\'s attributes will be modified', () => {
+
+            const element = document.createElement('div'),
+              mineral = api.quarry.mineMineral(element)
+
+            mineral.labor({
+                attr: {
+                    id: 'an_id'
+                }
+            })
+
+            expect(element.getAttribute('id'))
+              .to.equal('an_id')
+        })
+
+        it('the element\'s styles will be modified', () => {
+
+            const element = document.createElement('div'),
+              mineral = api.quarry.mineMineral(element)
+
+            mineral.labor({
+                styles: {
+                    backgroundColor: 'white',
+                    height: '20px',
+                    display: 'block',
+                }
+            })
+            expect(element.style.backgroundColor)
+              .to.equal('white')
+            expect(element.style.height)
+              .to.equal('20px')
+            expect(element.style.display)
+              .to.equal('block')
         })
 
     })
