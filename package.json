@@ -36,8 +36,10 @@
     "html-loader": "^0.4.3",
     "html-webpack-plugin": "^2.14.0",
     "jsdom": "^9.4.2",
+    "jsdom-global": "^2.1.0",
     "mocha": "^3.0.2",
-    "mocha-jsdom": "^1.1.0",
+    "sinon": "^1.17.5",
+    "sinon-chai": "^2.8.0",
     "webpack": "^1.12.14",
     "webpack-dev-server": "^1.14.1"
   },

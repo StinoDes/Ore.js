@@ -3,7 +3,7 @@ const laborMap = publish => {
   const attrMap = config => {
       const attrConf = {}
       for (const k in config)
-        if (publish('getVar', 'attribute', k) !== false)
+        if (publish('getVar', 'attr', k) !== false)
           attrConf[k] = config[k]
       return {
         ...{},
@@ -14,7 +14,7 @@ const laborMap = publish => {
     stylesMap = config => {
       const stylesConf = {}
       for (const k in config)
-        if (publish('getVar', 'attribute', k) !== false)
+        if (publish('getVar', 'css', k) !== false)
           stylesConf[k] = config[k]
       return {
         ...{},
@@ -25,9 +25,11 @@ const laborMap = publish => {
     eventsMap = config => {
       const eventsConf = {}
       for (const k in config) {
-        const onE = `on${publish('util', 'capitalizeFirstLetter', k)}`
-        if (publish('getVar', 'event', k) !== false || k === onE)
+        const onE = k.replace(/(on)/, '').toLowerCase()
+        if (publish('getVar', 'event', k) !== false)
           eventsConf[k] = config[k]
+        else if (publish('getVar', 'event', onE) !== false)
+          eventsConf[onE] = config[k]
       }
       return {
         ...{},

@@ -3,6 +3,11 @@ module.exports = {
     output: {
         path: 'lib',
         filename: "ore.js",
+
+        // export itself to a global var
+        libraryTarget: "var",
+        // name of the global var: "EZI"
+        library: "Ore"
     },
     module: {
         loaders: [

@@ -1,4 +1,4 @@
-const events = () => {
+const events = (() => {
   const es = {
     'abort': null,
     'afterprint': null,
@@ -157,7 +157,7 @@ const events = () => {
     'visibilitychange': null,
     'volumechange': null,
     'waiting': null,
-    'wheel': null
+    'wheel': null,
   }
 
   return eventname => {
@@ -165,5 +165,5 @@ const events = () => {
       return false
     return es[eventname]
   }
-
-}
+})
+export default events

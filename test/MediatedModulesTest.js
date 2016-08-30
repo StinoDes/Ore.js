@@ -1,16 +1,14 @@
-import jsdom from 'mocha-jsdom'
+import 'jsdom-global/register'
 import chai, { expect } from 'chai'
 
-let api;
+import api from '../src/'
 import mediator from '../src/core/mediator'
 
 describe('Mediated modules', () => {
 
-  jsdom()
-
-  before(() => {
-    api = require('../src/index').default
-  })
+  // before(() => {
+  //   api = require('../src/index')
+  // })
 
   describe('Util', () => {
     it ('Returns a random string when triggered', () => {
@@ -43,6 +41,22 @@ describe('Mediated modules', () => {
     it('Returns the correct value from the constants-maps', () => {
       expect(mediator.publish('getVar', 'css', 'width'))
         .to.equal('LENGTH')
+    })
+  })
+
+  describe('Mine', () => {
+    it('Returns a mineral containing the passed element', () => {
+      const element = document.createElement('div')
+      expect(api.mine(element))
+        .to.be.an('object')
+      expect(api.mine(element).getElement())
+        .to.eql(element)
+    })
+    it('Returns a mineral containing the element matching the selector', () => {
+      const element = document.createElement('div')
+      document.body.appendChild(element)
+      expect(api.mine('div').getElement())
+        .to.eql(element)
     })
   })
 
