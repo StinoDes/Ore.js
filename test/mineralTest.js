@@ -36,7 +36,6 @@ describe('Minerals', () => {
     })
 
     describe('On labor', () => {
-
         it('The element\'s attributes will be modified', () => {
 
             const element = document.createElement('div'),
@@ -53,9 +52,7 @@ describe('Minerals', () => {
               .to.equal('an_id')
             expect(element.getAttribute('data'))
               .to.equal('some_data')
-
         })
-
         it('the element\'s styles will be modified', () => {
 
             const element = document.createElement('div'),
@@ -75,7 +72,6 @@ describe('Minerals', () => {
             expect(element.style.display)
               .to.equal('block')
         })
-
         it('the element will register events', done => {
 
             const calledEvents = [],
@@ -128,6 +124,31 @@ describe('Minerals', () => {
                 }
             })
         })
-
+    })
+    describe('On retrieve', () => {
+        it('Should return the set properties', () => {
+            const element = document.createElement('div'),
+              mineral = api.mine(element)
+                .labor({
+                    height: '20px',
+                }),
+              retrieval = mineral.retrieve()
+            expect(retrieval.get(['styles', 'height']))
+              .to.equal('20px')
+            expect(retrieval.get('styles').height)
+              .to.equal('20px')
+        })
+        it('Should return the set attributes', () => {
+            const element = document.createElement('div'),
+              mineral = api.mine(element)
+                .labor({
+                    id: 'element_id',
+                }),
+              retrieval = mineral.retrieve()
+            expect(retrieval.get(['attr', 'id']))
+              .to.equal('element_id')
+            expect(retrieval.get('attr').id)
+              .to.equal('element_id')
+        })
     })
 })

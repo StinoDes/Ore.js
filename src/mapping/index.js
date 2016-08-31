@@ -18,6 +18,7 @@ const mapper = (() => {
     setDefault = () => {
       // todo
       registerMap('labor', laborMap)
+      registerMap('retrieve', laborMap)
     },
     api = {
       registerMap,
