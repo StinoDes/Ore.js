@@ -1,11 +1,7 @@
 import 'jsdom-global/register'
 import chai, { expect } from 'chai'
-import sinon from 'sinon'
-import sinonChai from 'sinon-chai'
 
 import api from '../src/'
-
-chai.use(sinonChai)
 
 describe('Minerals', () => {
 
@@ -130,13 +126,14 @@ describe('Minerals', () => {
             const element = document.createElement('div'),
               mineral = api.mine(element)
                 .labor({
-                    height: '20px',
+                    background: 'red',
+                    height: '20px'
                 }),
               retrieval = mineral.retrieve()
             expect(retrieval.get(['styles', 'height']))
               .to.equal('20px')
-            expect(retrieval.get('styles').height)
-              .to.equal('20px')
+            expect(retrieval.get('styles').background)
+              .to.equal('red')
         })
         it('Should return the set attributes', () => {
             const element = document.createElement('div'),
@@ -149,6 +146,27 @@ describe('Minerals', () => {
               .to.equal('element_id')
             expect(retrieval.get('attr').id)
               .to.equal('element_id')
+        })
+    })
+    describe('On routine', () => {
+        it('Should execute the passed function when passed in config', done => {
+            let test = 'test'
+            const element = document.createElement('div'),
+              mineral = api.mine(element)
+                .routine({
+                    test (newTest, callback) {
+                        test = newTest
+                        callback()
+                    }
+                })
+                .labor({
+                    test: ['newvar', () => {
+                        console.log('executing callback')
+                        expect(test)
+                          .to.equal('newvar')
+                        done()
+                    }]
+                })
         })
     })
 })
