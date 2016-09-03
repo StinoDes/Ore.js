@@ -1,11 +1,11 @@
 //Test imports
 import chai, { expect } from 'chai'
 
-//Tested imports
-import mediator from '../src/core/mediator'
 
 
 describe('Mediator', () => {
+
+  let mediator  = require('../src/core/mediator').default
 
   const obj = {
     changedVar: 'notChanged',

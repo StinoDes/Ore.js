@@ -102,8 +102,7 @@ const mineral = (element) => (() => {
     },
     /**
      *
-     * @param {string} name - The name for your new routine.
-     * @param {function} fn - A function to execute.
+     * @param {object} config - A key-value map of routines and their callbacks.
      * @returns {mineral} - Returns the mineral it was called from.
      */
     routine = function(config = {}) {
@@ -142,6 +141,12 @@ const mineral = (element) => (() => {
         else
           events[k] = eventWrapper(k, config[k])
     },
+    laborDom = function(config = {}) {
+      if (config.prepend)
+        config.prepend.map(child => element.insertBefore(child.getElement(), element.firstChild))
+      if (config.append)
+        config.append.map(child => element.appendChild(child.getElement()))
+    },
 
     /**
      * The main function for applying changes onto an element.
@@ -159,6 +164,7 @@ const mineral = (element) => (() => {
       laborAttributes(mappedConfig.attr)
       laborStyles(mappedConfig.styles)
       laborEvents(mappedConfig.events)
+      laborDom(mappedConfig.dom)
       return this
     },
     /**

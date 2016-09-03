@@ -1,14 +1,11 @@
 import 'jsdom-global/register'
 import chai, { expect } from 'chai'
 
-import api from '../src/'
-import mediator from '../src/core/mediator'
 
 describe('Mediated modules', () => {
 
-  // before(() => {
-  //   api = require('../src/index')
-  // })
+  let api = require('../src/')
+  let mediator = require('../src/core/mediator').default
 
   describe('Util', () => {
     it ('Returns a random string when triggered', () => {

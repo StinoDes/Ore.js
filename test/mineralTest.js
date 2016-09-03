@@ -1,9 +1,10 @@
 import 'jsdom-global/register'
 import chai, { expect } from 'chai'
 
-import api from '../src/'
 
 describe('Minerals', () => {
+
+    let api = require('../src/')
 
     describe('From Quarry', () => {
 
@@ -120,6 +121,26 @@ describe('Minerals', () => {
                 }
             })
         })
+        it('the element will append children', () => {
+            const mineral = api.mine(document.createElement('div'))
+              .labor({
+                  append: [
+                    document.createElement('h1'),
+                    document.createElement('p'),
+                  ]
+              })
+            expect(mineral.getElement().children)
+              .to.have.property('length', 2)
+        })
+        it('the element will prepend children', () => {
+            const mineral = api.mine(document.createElement('div'))
+              .labor({
+                  append: document.createElement('h1'),
+                  prepend: document.createElement('nav')
+              })
+            expect(mineral.getElement().children.item(0))
+              .to.have.property('tagName', 'NAV')
+        })
     })
     describe('On retrieve', () => {
         it('Should return the set properties', () => {
@@ -161,7 +182,6 @@ describe('Minerals', () => {
                 })
                 .labor({
                     test: ['newvar', () => {
-                        console.log('executing callback')
                         expect(test)
                           .to.equal('newvar')
                         done()

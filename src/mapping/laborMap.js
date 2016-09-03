@@ -65,7 +65,7 @@ const laborMap = publish => {
           else
             domConfig[key] = [...domConfig[key], ...parsedObj]
         },
-        mapFor  = configToMap => {
+        mapFor = configToMap => {
           for (const k in configToMap)
             switch (k) {
             case 'append':

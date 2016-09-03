@@ -1,11 +1,9 @@
-//Test imports
 import chai, { expect } from 'chai'
 import sinon from 'sinon'
 
-//Tested imports
-import mapper from '../src/mapping'
-
 describe('Mapper', () => {
+
+  let mapper = require('../src/mapping').default
 
   it('Registers new mapping', () => {
 
