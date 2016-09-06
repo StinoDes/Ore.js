@@ -18,8 +18,16 @@ const util = (() => {
     capitalizeFirstLetter = string => {
       return string.charAt(0).toUpperCase() + string.slice(1)
     },
+    clone = object => {
+      const newObj = (object.constructor === Array) ? [] : {}
+      Object.keys(object).map( k =>
+        newObj[k] = (typeof object[k] === 'object') ? clone(object[k]) : object[k]
+      )
+      return newObj
+    },
     api = {
       randomString,
+      clone,
       capitalizeFirstLetter,
       useTool(name) {
         const args = Array.prototype.slice.call(arguments, 1)

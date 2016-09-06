@@ -1,12 +1,13 @@
 const depotWrapper = (publish, subscribe) => {
 
   const transactors = {},
-    depot = (obj) => {
+    notify = () => {
+
+    },
+    depot = (obj = {}) => {
       let data
       if (typeof obj === 'object')
-        data = obj
-      else if (typeof obj === 'undefined')
-        data = {}
+        data = publish('util', 'clone', obj)
       else
         data = { data: obj }
       return {
@@ -16,7 +17,7 @@ const depotWrapper = (publish, subscribe) => {
          * @returns {*}
          */
         get (key = false) {
-          let returnVal = data,
+          let returnVal = publish('util', 'clone', data),
             keys = []
           if (key.constructor === Array)
             keys = key
@@ -36,7 +37,8 @@ const depotWrapper = (publish, subscribe) => {
          * @returns {depot} - Is chainable.
          */
         set (key = false, value) {
-          let editValue = data,
+          let clone = publish('util', 'clone', data),
+            editValue = clone,
             keys = [],
             lastKey
           if (key.constructor === Array)
@@ -52,6 +54,9 @@ const depotWrapper = (publish, subscribe) => {
             editValue = editValue[key]
           )
           editValue[lastKey] = Array.prototype.pop.call(arguments)
+          data = clone
+          console.log(clone)
+          notify()
           return this
         },
         /**
@@ -61,6 +66,25 @@ const depotWrapper = (publish, subscribe) => {
          * @returns {depot} - Is chainable.
          */
         update (key, fn) {
+          let clone = publish('util', 'clone', data),
+            editValue = clone,
+            keys = [],
+            lastKey
+          if (key.constructor === Array)
+            keys = key
+          else if (arguments.length > 2) {
+            keys = Array.prototype.slice.call(arguments)
+            keys.pop()
+          }
+          else if (arguments.length === 2 && key)
+            keys = [key]
+          lastKey = keys.pop()
+          keys.map(key =>
+            editValue = editValue[key]
+          )
+          editValue[lastKey] = Array.prototype.pop.call(arguments)(editValue[lastKey])
+          data = clone
+          notify()
           return this
         }
       }
