@@ -20,9 +20,9 @@ const util = (() => {
     },
     clone = object => {
       const newObj = (object.constructor === Array) ? [] : {}
-      Object.keys(object).map( k =>
+      Object.keys(object).map(k => {
         newObj[k] = (typeof object[k] === 'object') ? clone(object[k]) : object[k]
-      )
+      })
       return newObj
     },
     api = {
