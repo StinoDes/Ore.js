@@ -45,6 +45,35 @@ const laborMap = publish => {
         ...config.events,
       }
     },
+    classMap = config => {
+      const keysToMap = [ 'toggleClass', 'addClass', 'removeClass' ],
+        classConfig = {}
+      keysToMap.map(k => {
+        if (config[k]) {
+          let shortkey = k.substr(0, k.length-5)
+          if (config[k].constructor === Array)
+            classConfig[shortkey] = config[k]
+          else if (typeof config[k] === 'string')
+            classConfig[shortkey] = [config[k]]
+          delete config[k]
+        }
+      })
+      if (typeof config.class === 'object')
+        Object.keys(config.class).map(k => {
+          let valToAdd
+          if (config.class[k])
+            if (config.class[k].constructor === Array)
+              valToAdd = config.class[k]
+            else if (typeof config.class[k] === 'string')
+              valToAdd = [config.class[k]]
+          if (classConfig[k])
+            classConfig[k].concat(valToAdd)
+          else
+            classConfig[k] = valToAdd
+        })
+      delete config.class
+      return classConfig
+    },
     domMap = config => {
       const domConfig = {},
         addTo = (key, obj) => {
@@ -100,6 +129,7 @@ const laborMap = publish => {
       styles: stylesMap(config),
       attr: attrMap(config),
       events: eventsMap(config),
+      class: classMap(config),
       dom: domMap(config),
       ...rootMap(config),
     })

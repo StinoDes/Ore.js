@@ -141,6 +141,26 @@ describe('Minerals', () => {
             expect(mineral.getElement().children.item(0))
               .to.have.property('tagName', 'NAV')
         })
+        it('the element will modify its classes', () => {
+            const mineral = api.mine(document.createElement('div'))
+              .labor({
+                  addClass: 'test'
+              })
+            expect(mineral.getElement().classList.contains('test'))
+              .to.be.ok
+
+            mineral.labor({
+                removeClass: 'test'
+            })
+            expect(mineral.getElement().classList.contains('test'))
+              .to.not.be.ok
+
+            mineral.labor({
+                toggleClass: ['test', 'class']
+            })
+            expect(mineral.getElement().classList.contains('test') && mineral.getElement().classList.contains('class'))
+              .to.be.ok
+        })
     })
     describe('On retrieve', () => {
         it('Should return the set properties', () => {

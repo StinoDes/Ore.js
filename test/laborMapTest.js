@@ -7,7 +7,7 @@ chai.use(chaiThings);
 
 describe('LaborMap', () => {
 
-  let map = require('../src/mapping/laborMap').default
+  let laborMap
 
   const getStub = (conf = {}) => {
     return function (name) {
@@ -30,15 +30,11 @@ describe('LaborMap', () => {
     }
   }
 
-  afterEach = () => {
-    publishStub.restore()
-
-  }
+  beforeEach(() => {
+    laborMap = require('../src/mapping/laborMap').default(getStub())
+  })
 
   it('maps dom.append correctly', () => {
-    const publishStub = getStub()
-    let laborMap = map(publishStub)
-
     const testElement = nodeType => ({nodeType}),
       mapped = laborMap({
         dom: {
@@ -56,9 +52,6 @@ describe('LaborMap', () => {
 
   })
   it('maps dom.prepend correctly', () => {
-    const publishStub = getStub()
-    let laborMap = map(publishStub)
-
     const testElement = nodeType => ({nodeType}),
       mapped = laborMap({
         dom: {
@@ -74,6 +67,21 @@ describe('LaborMap', () => {
     expect(mapped.dom.prepend)
       .to.all.have.property('getElement')
 
+  })
+  it('maps class actions', () => {
+    const mapped = laborMap({
+      toggleClass: 'toggledClass',
+      addClass: 'addedClass',
+      class: {
+        remove: ['removedClass', 'anotherRemovedClass']
+      }
+    })
+    expect(mapped.class)
+      .to.eql({
+        toggle: ['toggledClass'],
+        add: ['addedClass'],
+        remove: ['removedClass', 'anotherRemovedClass']
+    })
   })
 
 })
