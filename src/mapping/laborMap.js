@@ -46,11 +46,11 @@ const laborMap = publish => {
       }
     },
     classMap = config => {
-      const keysToMap = [ 'toggleClass', 'addClass', 'removeClass' ],
+      const keysToMap = ['toggleClass', 'addClass', 'removeClass'],
         classConfig = {}
       keysToMap.map(k => {
         if (config[k]) {
-          let shortkey = k.substr(0, k.length-5)
+          const shortkey = k.substr(0, k.length - 5)
           if (config[k].constructor === Array)
             classConfig[shortkey] = config[k]
           else if (typeof config[k] === 'string')

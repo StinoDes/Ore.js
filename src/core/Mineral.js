@@ -1,5 +1,5 @@
 // MINERAL OBJ
-
+// todo: add text to labor
 const mineral = (element) => (() => {
 
   /**
@@ -48,7 +48,7 @@ const mineral = (element) => (() => {
               .toLowerCase().replace(/-(.)/g, function(match, group1) {
                 return group1.toUpperCase()
               })
-            v[ key ] = r.getPropertyValue(r[i])
+            v[key] = r.getPropertyValue(r[i])
           }
           return v
         })(),
@@ -59,6 +59,7 @@ const mineral = (element) => (() => {
             v[ r[i].name ] = element.getAttribute(r[i].name)
           return v
         })(),
+        classes = Array.prototype.slice.call(element.classList),
         returnStyles = prop => {
           if (!prop)
             return styles
@@ -68,6 +69,9 @@ const mineral = (element) => (() => {
           if (!name)
             return attr
           return attr[name]
+        },
+        returnClasses = () => {
+          return classes
         },
         /**
          * @param {string|array} path - The key or path to the value you want returned.
@@ -82,6 +86,8 @@ const mineral = (element) => (() => {
             return returnStyles(path[1])
           case 'attr':
             return returnAttr(path[1])
+          case 'class':
+            return returnClasses()
           default:
             return null
           }
@@ -141,6 +147,29 @@ const mineral = (element) => (() => {
         else
           events[k] = eventWrapper(k, config[k])
     },
+    laborText = function(config = null) {
+      if (typeof config === 'string')
+        element.textContent = config
+    },
+    laborClasses = function(config = {}) {
+      if (config.add)
+        config.add.map(c => {
+          if (!element.classList.contains(c))
+            element.classList.add(c)
+        })
+      if (config.remove)
+        config.remove.map(c => {
+          if (element.classList.contains(c))
+            element.classList.remove(c)
+        })
+      if (config.toggle)
+        config.toggle.map(c => {
+          if (element.classList.contains(c))
+            element.classList.remove(c)
+          else
+            element.classList.add(c)
+        })
+    },
     laborDom = function(config = {}) {
       if (config.prepend)
         config.prepend.map(child => element.insertBefore(child.getElement(), element.firstChild))
@@ -164,6 +193,8 @@ const mineral = (element) => (() => {
       laborAttributes(mappedConfig.attr)
       laborStyles(mappedConfig.styles)
       laborEvents(mappedConfig.events)
+      laborClasses(mappedConfig.class)
+      laborText(mappedConfig.text)
       laborDom(mappedConfig.dom)
       return this
     },
