@@ -60,21 +60,50 @@
         </h1>
     </nav>
     <div class="list" id="list-container">
+        <div class="input-container">
+            <input type="text"/>
+            <a class="submit" href="#">Enter</a>
+        </div>
         <ul>
             <li>Item1</li>
             <li>Item2</li>
             <li>Item3</li>
         </ul>
-        <div class="input-container">
-            <input type="text"/>
-            <a class="submit" href="#">Enter</a>
-        </div>
     </div>
 </section>
 <script src="../../lib/ore.js"></script>
 <script>
 
-
+var depot = Ore
+        .depot({ inputValue: '' })
+        .trade('inputValue', function (text) {
+            listContainer
+                    .labor({ addItem: [text] })
+        })
+var listContainer = Ore
+        .mine('#list-container')
+        .routine({
+            addItem: function (text) {
+                this.labor({
+                    append: Ore.mine('newli', {text: text})
+                })
+                depot.set('inputValue', '')
+            }
+        })
+var input = Ore
+        .mine('.input-container input')
+        .labor({
+            onInput: function () {
+                depot.set('inputValue', this.getElement().value)
+            }
+        })
+var btn = Ore
+        .mine('.input-container a')
+        .labor({
+            onClick: function () {
+                depot.transact()
+            }
+        })
 
 </script>
 </body>

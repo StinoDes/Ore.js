@@ -16,7 +16,7 @@ const mineral = (element) => (() => {
       const name = event,
         fire = function() {
           handlers.map(fn =>
-            fn(...arguments)
+            fn.apply(mineralApi, arguments)
           )
         },
         /**
@@ -126,9 +126,9 @@ const mineral = (element) => (() => {
       for (const k in config)
         if (routines[k]) {
           if (config[k].constructor === Array)
-            routines[k].apply(api, config[k])
+            routines[k].apply(mineralApi, config[k])
           else
-            routines[k].call(api, config[k])
+            routines[k].call(mineralApi, config[k])
           delete config[k]
         }
     },
@@ -211,14 +211,14 @@ const mineral = (element) => (() => {
       const mappedConfig = this.publish('doMap', 'retrieve', config)
       return retrieval(mappedConfig)
     },
-    api = {
+    mineralApi = {
       getElement,
       labor,
       routine,
       retrieve,
     }
 
-  return api
+  return mineralApi
 })()
 
 export default mineral
