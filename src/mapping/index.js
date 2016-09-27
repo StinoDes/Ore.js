@@ -1,4 +1,5 @@
 import laborMap from './laborMap'
+import glimmerMap from './glimmerMap'
 
 const mapper = (() => {
 
@@ -19,6 +20,7 @@ const mapper = (() => {
       // todo
       registerMap('labor', laborMap)
       registerMap('retrieve', laborMap)
+      registerMap('glimmer', glimmerMap)
     },
     api = {
       registerMap,

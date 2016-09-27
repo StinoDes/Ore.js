@@ -16,7 +16,7 @@ export const mine = publish =>
         return publish('mineMineral', element).labor(config)
       }
       const elements = document.querySelectorAll(selector)
-      return publish('mineMineral', elements[0])
+      return publish('mineMineral', elements[0]).labor(config)
     }
     return false
   }

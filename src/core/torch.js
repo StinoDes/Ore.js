@@ -4,13 +4,13 @@ const torch = (() => {
 
   const cache = {},
     genGlimmerId = function() {
-      const str = quarry.publish('util', 'randomString', 8, 'aA')
+      const str = torch.publish('util', 'randomString', 8, 'aA')
       if (cache[str])
         return genGlimmerId()
       return str
     },
     installMediatorOnGlimmer = function(target) {
-      target.publish = api.publish
+      target.publish = torch.publish
       return target
     },
     /**
@@ -18,7 +18,7 @@ const torch = (() => {
      * existing one from your id
      * @param {object} [config] - A configuration based on which a glimmer should be created
      * @param {string} [id] - A string that is the id of an existing glimmer
-     * @returns {glimmer}
+     * @return {glimmer}
      */
     catchGlimmer = function(config) {
       if (typeof config === 'string') {

@@ -1,5 +1,4 @@
-// MINERAL OBJ
-// todo: add text to labor
+// todo: Make styles object for faster retrieving. Add style parsing.
 const mineral = (element) => (() => {
 
   /**
