@@ -14,7 +14,7 @@ is the root of the library, containing a minimalist API.
  These glimmers and minerals are interfaced with by passing configurations. These
  are maps / literal objects which you can just inline in your function calls.  
    
-  #### List of objects and their API 
+#### List of objects and their API 
 * **`Ore`**:  
 The library's variable. This contains the main functions to get you started.
     * `mine( selector[string], config[Object] )`:  
