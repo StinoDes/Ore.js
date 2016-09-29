@@ -14,7 +14,7 @@ is the root of the library, containing a minimalist API.
  These glimmers and minerals are interfaced with by passing configurations. These
  are maps / literal objects which you can just inline in your function calls.  
    
-  ####List of objects and their API 
+  #### List of objects and their API 
 * **`Ore`**:  
 The library's variable. This contains the main functions to get you started.
     * `mine( selector[string], config[Object] )`:  
@@ -65,64 +65,22 @@ They'll be accompanied by examples demonstrating their use and variations.
  should be camel-cased.  
  **Alternatively**, styles can be set in the root of the config. They'll be 
  picked up in the default mapper if they are a recognised css-property. 
-    ```javascript
-    configuration = {
-        styles: {
-            opacity: 1,
-            width: '100%',
-            height: '200px',
-        },
-        background: 'white',
-        marginLeft: '20px'
-    }
-    ```
 * `attr[Object]`:  
  A key-value map, containing attributes to set.
  Keys being the attribute to set, values being their new value.  
  **Alternatively**, attributes be set in the root of the config. They'll be 
  picked up by the default mapper if they are recognised as valid attributes.
-    ```javascript
-    configuration = {
-        attr: {
-            id: 'foo',
-            placeholder: 'placeholder-text'
-        }
-    }
-    ```
 * `events[Object]`:
  A key-value map containing events to add to the mineral.
  Keys being the event to handle, values being either a function or an 
  array of functions to handle the event.  
  **Alternatively**, events can be set in the root of the config. Their
  notation should then be changed from `<eventname>` to `on<Eventname>`
-    ```javascript
-    configuration = {
-        events: {
-            click: [
-              function(e) { /*...*/ }, 
-              function(e) { /*...*/ }
-            ],
-            mouseenter: function() { /*...*/ }
-        },
-        onFocus: function(e) { /*...*/ }
-    }
-    ```
 * `text[string]`:  
  A string to set as text.
-    ```javascript
-    configuration = {
-        text: 'foobar'
-    }
-    ```
 * `append/prepend[Array, Mineral, Element]`:  
  A mineral or element or array of either to append to the mineral the configuration
  is passed to.
-    ```javascript
-    configuration = {
-        append: [ someMineral, someElement ],
-        prepend: anotherMineral
-    }
-    ```
 ##### Glimmer-configuration
 ###### Properties
 Here, all properties the glimmer-configuration can hold will be listed. At the end,
@@ -171,63 +129,63 @@ you'd pass `easeInCubic` for the `cubic` easing.
         In this example, a variable will be animated from 0 to 200 over 500ms.
         The value will **not** be applied to a style. Only saved as a variable.
         The glimmer will start immediately after passing the config.
-        ```javascript
-        var animatedVariable,
-            config = {
-              from: 0,
-              to: 200,
-              duration: 500,
-              set: function (value) { animatedVariable = value },
-              play: true
-            }
-        glimmer.labor(config)
-        ```
+```javascript
+var animatedVariable,
+  config = {
+    from: 0,
+    to: 200,
+    duration: 500,
+    set: function (value) { animatedVariable = value },
+    play: true
+  }
+glimmer.labor(config)
+```
     * **Animating a style:**  
         Same as previous example, except for the value being applied to a style
         instead of being assigned to a variable.  
         Don't forget to pass the mineral you wish to animate.
-        ```javascript
-        var config = {
-              from: 0,
-              to: 1,
-              duration: 500,
-              style: 'opacity',
-              mineral: mineral,
-              play: true
-            }
-        glimmer.labor(config)
-        ```
+```javascript
+var config = {
+    from: 0,
+    to: 1,
+    duration: 500,
+    style: 'opacity',
+    mineral: mineral,
+    play: true
+  }
+glimmer.labor(config)
+```
     * **Animating a style with a unit:**  
         In this case, a function is passed to add a unit to the value.
-        ```javascript
-        var config = {
-              from: 0,
-              to: 200,
-              duration: 500,
-              style: {
-                'top': function (value) { return value + 'px' }
-              },
-              mineral: mineral,
-              play: true
-            }
-        glimmer.labor(config)
-        ```
+```javascript
+var config = {
+    from: 0,
+    to: 200,
+    duration: 500,
+    style: {
+      'top': function (value) { return value + 'px' }
+    },
+    mineral: mineral,
+    play: true
+  }
+glimmer.labor(config)
+```
     * **Animating with an easing:**  
         Now we'll add an easing to make the animation feel more natural.
-        ```javascript
-        var config = {
-              from: 0,
-              to: 200,
-              duration: 500,
-              style: {
-                'top': function (value) { return value + 'px' }
-              },
-              mineral: mineral,
-              easing: 'bounceOut',
-              play: true
-            }
-        glimmer.labor(config)
-        ```
+```
+var config = {
+    from: 0,
+    to: 200,
+    duration: 500,
+    style: {
+      'top': function (value) { return value + 'px' }
+    },
+    mineral: mineral,
+    easing: 'bounceOut',
+    play: true
+  }
+glimmer.labor(config)
+```
 * **Advanced:**  
     We can now start adding looping or interactivity.
     * **Looping a glimmer:**   
@@ -235,35 +193,35 @@ you'd pass `easeInCubic` for the `cubic` easing.
         the glimmer and starts it again. For simplicity's sake, we'll do nothing
         with the animated value. You can of course leave out the `reverse`-property
         that's not needed in your case.
-        ```javascript
-        var config = {
-              from: 0,
-              to: 200,
-              duration: 500,
-              onEnd: function () {
-                this.labor({ reverse: true, play: true })
-              },
-              play: true
-            }
-        glimmer.labor(config)
-        ```
+```
+var config = {
+    from: 0,
+    to: 200,
+    duration: 500,
+    onEnd: function () {
+      this.labor({ reverse: true, play: true })
+    },
+    play: true
+  }
+glimmer.labor(config)
+```
     * **Animating multiple styles:**  
         We can make multiple styles animate with different values by passing
         an object to the `styles`-property that interpolates the animated value.
         This way, multiple styles will be assigned different values.
-        ```javascript
-        var config = {
-              from: 0,
-              to: 200,
-              duration: 500,
-              styles: {
-                'top': function (value) { return value + 'px' },
-                'opacity': function (value) { return value / 200 }
-              },
-              mineral: mineral,
-              play: true
-            }
-        glimmer.labor(config)
-        ```
+```
+var config = {
+    from: 0,
+    to: 200,
+    duration: 500,
+    styles: {
+      'top': function (value) { return value + 'px' },
+      'opacity': function (value) { return value / 200 }
+    },
+    mineral: mineral,
+    play: true
+  }
+glimmer.labor(config)
+```
 ### WIP
 This library, as well as this README is a work in progress. Input is always appreciated.
