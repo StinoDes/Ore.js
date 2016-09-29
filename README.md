@@ -175,7 +175,7 @@ glimmer.labor(config)
 
 * **Animating with an easing:**  
     Now we'll add an easing to make the animation feel more natural.
-```
+```javascript
 var config = {
     from: 0,
     to: 200,
@@ -197,7 +197,7 @@ We can now start adding looping or interactivity.
     the glimmer and starts it again. For simplicity's sake, we'll do nothing
     with the animated value. You can of course leave out the `reverse`-property
     that's not needed in your case.
-```
+```javascript
 var config = {
     from: 0,
     to: 200,
@@ -214,7 +214,7 @@ glimmer.labor(config)
     We can make multiple styles animate with different values by passing
     an object to the `styles`-property that interpolates the animated value.
     This way, multiple styles will be assigned different values.
-```
+```javascript
 var config = {
     from: 0,
     to: 200,
