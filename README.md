@@ -124,11 +124,11 @@ you'd pass `easeInCubic` for the `cubic` easing.
 * `quint`
 
 ###### Examples
-* **Basic:**  
-    * **Animating a variable:**  
-        In this example, a variable will be animated from 0 to 200 over 500ms.
-        The value will **not** be applied to a style. Only saved as a variable.
-        The glimmer will start immediately after passing the config.
+**Basic:**  
+* **Animating a variable:**  
+    In this example, a variable will be animated from 0 to 200 over 500ms.
+    The value will **not** be applied to a style. Only saved as a variable.
+    The glimmer will start immediately after passing the config.
 ```javascript
 var animatedVariable,
   config = {
@@ -140,10 +140,11 @@ var animatedVariable,
   }
 glimmer.labor(config)
 ```
-    * **Animating a style:**  
-        Same as previous example, except for the value being applied to a style
-        instead of being assigned to a variable.  
-        Don't forget to pass the mineral you wish to animate.
+
+* **Animating a style:**  
+    Same as previous example, except for the value being applied to a style
+    instead of being assigned to a variable.  
+    Don't forget to pass the mineral you wish to animate.     
 ```javascript
 var config = {
     from: 0,
@@ -155,8 +156,9 @@ var config = {
   }
 glimmer.labor(config)
 ```
-    * **Animating a style with a unit:**  
-        In this case, a function is passed to add a unit to the value.
+
+* **Animating a style with a unit:**  
+    In this case, a function is passed to add a unit to the value.
 ```javascript
 var config = {
     from: 0,
@@ -170,8 +172,9 @@ var config = {
   }
 glimmer.labor(config)
 ```
-    * **Animating with an easing:**  
-        Now we'll add an easing to make the animation feel more natural.
+
+* **Animating with an easing:**  
+    Now we'll add an easing to make the animation feel more natural.
 ```
 var config = {
     from: 0,
@@ -186,13 +189,14 @@ var config = {
   }
 glimmer.labor(config)
 ```
-* **Advanced:**  
-    We can now start adding looping or interactivity.
-    * **Looping a glimmer:**   
-        Here, we make the `onEnd`-property apply a new configuration that reverses
-        the glimmer and starts it again. For simplicity's sake, we'll do nothing
-        with the animated value. You can of course leave out the `reverse`-property
-        that's not needed in your case.
+
+**Advanced:**  
+We can now start adding looping or interactivity.
+* **Looping a glimmer:**   
+    Here, we make the `onEnd`-property apply a new configuration that reverses
+    the glimmer and starts it again. For simplicity's sake, we'll do nothing
+    with the animated value. You can of course leave out the `reverse`-property
+    that's not needed in your case.
 ```
 var config = {
     from: 0,
@@ -205,10 +209,11 @@ var config = {
   }
 glimmer.labor(config)
 ```
-    * **Animating multiple styles:**  
-        We can make multiple styles animate with different values by passing
-        an object to the `styles`-property that interpolates the animated value.
-        This way, multiple styles will be assigned different values.
+
+* **Animating multiple styles:**  
+    We can make multiple styles animate with different values by passing
+    an object to the `styles`-property that interpolates the animated value.
+    This way, multiple styles will be assigned different values.
 ```
 var config = {
     from: 0,
