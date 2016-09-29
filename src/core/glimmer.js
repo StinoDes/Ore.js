@@ -18,7 +18,7 @@ const glimmer = (initConfig = {}) => (() => {
     value = () => configuration.from + api.publish('ease', progress, configuration.easing ? configuration.easing : 'LINEAR') * delta(),
     onEnd = () => {
       if (configuration.onEnd)
-        configuration.onEnd(configuration.to)
+        configuration.onEnd.call(api, configuration.to)
     },
     /**
      * The animation loop. Keeps going as long as play is truthy.

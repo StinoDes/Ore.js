@@ -1,154 +1,269 @@
-# Ore.js
+# Ore-js
 
-**Ore.js** is (yes, another) javascript library, which aims to make common processes as easy as possible, while still keeping it customisable.  
-Using *configs*, you can manipulate any element in any way by calling just one method.
+A *javascript-library* for *front-end* development with a **minimal API** that 
+functions mostly through **configurations**.
 
-## Getting Started
-
-### Installation
-To get started on using Ore, either install it using npm by executing `npm install ore-js` in your project's root, or include a `<script>`-tag with
-Ore.js as its source.  
-  
-### How it works
-#### Getting and manipulating an element/mineral
-Ore provides a method to easily get any element from the DOM-tree. `Ore.collect( <selector> )` returns an element-object, 
-called a Mineral, or a group, called Batch. A Batch has the same base methods as a Mineral, so you can generally mix their uses.  
-`do( <config> )` executes whatever you pass in your config onto the Mineral or Batch. Its uses can vary greatly.  
-These are all possible applications of `config` in `do()`:  
-``` javascript
-{    
-    styles: {
-        <css-property>: <value>     //applies the css-property with value onto the mineral or batch
-    },
-    attr: {
-        <html-attribute>: <value>   //applies the html-attribute with value onto the mineral or batch
-    },
-    events: {
-        <event>: <handler>          //binds the handler to the given event on the mineral or batch
-    },
-    children: {
-        append: {                   //appends the array of elements behind the given index
-            minerals: [],
-            index: ,
+### Objects
+Ore has some objects you'll be using throughout development. The *Ore* object 
+is the root of the library, containing a minimalist API.  
+ Being a front-end library, you'll be provided with some ways to manipulate 
+ and create elements. These are wrapped in custom objects, called *Minerals*.
+ These implement Ore's functionality, once again with a minimalist API, allowing you
+ to build your site and make it interactive.  
+ Ore also provides you with *glimmers*, which are animations.  
+ These glimmers and minerals are interfaced with by passing configurations. These
+ are maps / literal objects which you can just inline in your function calls.  
+   
+  ####List of objects and their API 
+* **`Ore`**:  
+The library's variable. This contains the main functions to get you started.
+    * `mine( selector[string], config[Object] )`:  
+    **selector**: either a css-selector refering to the element you wish to get
+    the mineral of, or `new<tagname>` to create a mineral containing a new element.  
+    **config**: a configuration-object to pass to a newly created mineral.  
+    **Returns** a mineral containing a new element or one matching the passed selector.
+* **`mineral`**:  
+  A wrapper around HTML-elements.
+    * `getElement()`:  
+    **Returns** the element it contains, in case you need some finer tuning.
+    * `labor( config[Object] )`:  
+    Method that takes a configuration and applies what is passed 
+    onto the mineral's element.  
+    **Returns** the mineral so that methods can be chained.
+    * `retrieve()`:  
+    **Returns** an object containing *all* data of the element that is 
+     deemed useful.  
+     Has the following methods:
+        * `get( path[string], prop[string] )`:  
+        **path**: a string containing the type of data you want returned.
+        Can be one of the following: `[styles, attr, class]`.  
+        **prop**: a string containing the name of the prop you want returned.
+        This will be the name of the css-property or attribute, depending on
+        what the `path`-parameter was. Retrieving classes requires no `prop`-param.  
+        **Returns** the requested value.
+* **`glimmer`**:  
+An animation object.
+    * `labor( config[Object] )`:  
+    Method that takes a configuration and applies it to the glimmer-object.  
+    **Returns** the glimmer so that methods can be chained.
+    
+#### Configurations
+There has been a lot of talk about configurations. These are used to interface with
+most API's Ore provides.  
+Configurations are plain maps / object literals. Ther don't require instantiation.  
+For now, there are 2 types of configurations. One for minerals and one for glimmers.
+##### Mineral-configuration
+The mineral configuration allows you to manipulate an element to a great extent.
+Before being processed, it gets mapped from whichever you pass to something the
+mineral can interpret.
+###### Properties
+Here you'll see a list of properties that the mineral can understand.
+They'll be accompanied by examples demonstrating their use and variations.  
+* `styles[Object]`:  
+ A key-value map containing styles to set.  
+ Keys being the css-property, values being their new value. The properties 
+ should be camel-cased.  
+ **Alternatively**, styles can be set in the root of the config. They'll be 
+ picked up in the default mapper if they are a recognised css-property. 
+    ```javascript
+    configuration = {
+        styles: {
+            opacity: 1,
+            width: '100%',
+            height: '200px',
         },
-        prepend: {                  //prepends the array of elements before the given index
-            minerals: [],
-            index: ,
+        background: 'white',
+        marginLeft: '20px'
+    }
+    ```
+* `attr[Object]`:  
+ A key-value map, containing attributes to set.
+ Keys being the attribute to set, values being their new value.  
+ **Alternatively**, attributes be set in the root of the config. They'll be 
+ picked up by the default mapper if they are recognised as valid attributes.
+    ```javascript
+    configuration = {
+        attr: {
+            id: 'foo',
+            placeholder: 'placeholder-text'
         }
-    },
-    text: <string>,                 //sets the string as the element's text
-    
-    glimmer: <glimmer config>       //creates a glimmer (check below for documentation)
-}
-```
-This is what the config-file looks like after being remapped. You can however write your attributes, css-properties and events directly in
-the root of the object. Same goes for append and prepend.
-
-#### Creating a new element/mineral
-You can create a new element by calling `Ore.craft( <tag>, <config> )`. As tag, you pass the desired HTML-tag, and the config is similar to what
-we've seen before. The main difference is that you should define *children* as `children: [ <Mineral>, <Mineral> ]` in the root of the config.  
-This method returns your newly created Mineral, which you can then append or manipulate further.
-
-### Animating/Glimmers
-#### Creating and using animations/glimmers
-Animations are handled by seperate objects in Ore. These are called **Glimmers**. At their core, Glimmers merely animate a value from x to y over a specified duration.
-Glimmers are set up using a config file (somewhat like Minerals).  
-The possible applications of a Glimmer's config, look like this:
-``` javascript
-{
-    set: function (val),         // A function specifying what you want to do with the animated value.
-    
-    styles: <styles>,            // The styles you want to animate. This generates a set function which will edit the styles.
-                                 // This can be a string for just a single style(e.g. 'width'),
-                                 // an array for multiple styles (e.g. ['width', 'height'],
-                                 // or an object, where the keys are the styles and the values functions that return
-                                 // the new value for the styles (e.g. {'width': function (val) { return val + '%' } }
-                                 
-    mineral: <Mineral>           // the mineral whose styles you want to edit. This isn't needed when not animated styles.
-                                 // This is added automatically when initialising glimmers through a Mineral
-                                 
-    initial: <num>,              // The initial value of the animation
-    get: func (),                // Alternative to initial. Should return an initial value.
-    
-    toValue: <num>,              // The value to which will be animated
-    
-    duration: <num>,             // The duration of the animation in miliseconds
-    
-    easing: func (progress),     // A function transforming the animations progress. This will always be a value between 0 and 1
-    
-    play: <boolean>              // If this is set to true, the animation will play. If it is set to false, it will pause.
-}
-```
-Glimmers can be easily initiated by passing `glimmer: <glimmer config>` to a mineral.
-
-#### Finding created glimmers
-Created glimmers are saved in Ore. So evidently a method is provided to retrieve them from cache as well. 
-`Ore.catch({ selector: <selector>, query: { <queries> }})` retrieves all matching glimmers for you and returns them in a wrapper.
-The *selector*-property should be a string containing a CSS-selector. This will narrow down the retrieval to only the animations of those elements.  
-The *query*-property should be an object of properties and values. The retrieval will be narrowed down to only glimmers whose properties match with those in the query. 
-For example:  
-`Ore.catch({ selector: '.overlay', query: { style: 'opacity' } })` will return all animations applied to `.overlay`-elements, who are animating the `opacity`-property.
-
-### Modularity
-Ore provides a way of building your site brick by brick. To make rendering the contents of these bricks easier, Ore offers some shorthands.  
-#### Shorthand functions
-The **Oven**-object, which is contained by Ore, can return you all default recipes, which in turn return Minerals for basic HTML-elements.
-``` javascript
-var sh = Ore.Oven.recipes;
-console.log( sh.div() );        // Will render a Mineral containing a div-element, which you can then append
-```
-These shorthands have 2 parameters. The first is the config-object you'd usually pass to a Mineral (check above). The other is an array of children.  
-This makes appending children easy.
-`sh.div({ class: 'container' }, [ sh.h1( {text: 'This is a h1-tag'} ), sh.p( {text: 'This is a paragraph with text!'} ) ]);`  
-Now we have made a div.container-element with a heading and paragraph. Easy as that.  
-  
-You can create custom shorthands as well.
-`Ore.Oven.bake( <tag>, <config> )` will return you a similar shorthand. The return of your shorthand will be 
-a mineral containing your an element with the tag you provided and the config baked into the preset.  
-**Example - creating a floating-button shorthand:**  
-``` javascript
-// Define our button shorthand. It will return an 'a'-tag with some preset values.
-button = Ore.Oven.bake('a', { position: 'fixed', width: '100px', height: '100px', borderRadius: '50%', right: '150px', bottom: '150px', display: 'block'});
-
-// Append the newly created button onto the body. Some more config can be passed here ( background and click in this example )
-Ore.collect('body').do({ 
-    append: button({ click: function () { alert("I've been clicked!"); }, backgroundColor: '#324398' })
-});
-```
-
-#### Bricks
-Bricks are the component-objects in Ore. They are, at their very core, classes with a `build`-method. This build method returns Minerals, which will make up your UI.  
-You can define bricks using the same method as you define new shorthands. To tell the Oven that you want a brick, not a new shorthand, start your tag with a capital letter.  
-Then, instead of a config-object, you should pass an object containing how you'd like to extend the standard brick. Generally you'd want to override the `build`-method. The rest is up to you.  
-**Example - creating a navigation brick:**  
-``` javascript
-var sh = Ore.Oven.recipes;
-
-//Generate the shorthand for your brick.
-var Nav = Ore.Oven.bake('Nav', {
-    build: function () {
-        return sh.nav({ position: 'fixed', background: '#329843', right: 0, left: 0, top: 0, height: '90px'}, [ 
-            sh.h1({text: 'LOGO'}) 
-        ]);
     }
-});
-```
-After you have defined your Brick, you can render is by executing the function it returns.  
-  
-Bricks don't have to be that static though. When executing the shorthand returned from `.bake`, you can pass it an object, which will be saved in your brick.
-These can then be used in, for example, the build-method.  
-**Example - creating a navigation brick with custom title:**  
-``` javascript
-var sh = Ore.Oven.recipes;
-
-//Generate the shorthand for your brick.
-var Nav = Ore.Oven.bake('Nav', {
-    build: function () {
-        return sh.nav({ position: 'fixed', background: '#329843', right: 0, left: 0, top: 0, height: '90px'}, [ 
-            sh.h1({text: this.conf.title})          //Get title from conf, use it as text 
-        ]);
+    ```
+* `events[Object]`:
+ A key-value map containing events to add to the mineral.
+ Keys being the event to handle, values being either a function or an 
+ array of functions to handle the event.  
+ **Alternatively**, events can be set in the root of the config. Their
+ notation should then be changed from `<eventname>` to `on<Eventname>`
+    ```javascript
+    configuration = {
+        events: {
+            click: [
+              function(e) { /*...*/ }, 
+              function(e) { /*...*/ }
+            ],
+            mouseenter: function() { /*...*/ }
+        },
+        onFocus: function(e) { /*...*/ }
     }
-});
-Nav({title: 'LOGO'})                                //These will both generate the same nav, but with different titles.
-Nav({title: 'ORE.JS'})                                 
-```
+    ```
+* `text[string]`:  
+ A string to set as text.
+    ```javascript
+    configuration = {
+        text: 'foobar'
+    }
+    ```
+* `append/prepend[Array, Mineral, Element]`:  
+ A mineral or element or array of either to append to the mineral the configuration
+ is passed to.
+    ```javascript
+    configuration = {
+        append: [ someMineral, someElement ],
+        prepend: anotherMineral
+    }
+    ```
+##### Glimmer-configuration
+###### Properties
+Here, all properties the glimmer-configuration can hold will be listed. At the end,
+there will be some examples illustrating them.
+* `set[function, Array]`:  
+ A function or array of functions to do something with the animated value.
+* `styles[string, Arra, Object]`:
+ A string or array of strings on which the animated value should be applied.  
+ Alternatively, you can pass an key-value map of which the keys are the styles
+ and the values are functions further altering the value.
+* `from[number]`:  
+ The initial value.
+* `to[number]`:  
+ The value to animate towards.
+* `duration[number]`:  
+ The animation's duration. This should be in miliseconds.
+* `delay[number]`:  
+ The delay before the animation takes effect.
+* `onEnd[function]`:  
+ A function to execute when the animation is finished.
+* `play[boolean]`:  
+ A boolean indicating whether the animation should play or not.
+* `reverse[boolean]`:  
+ A boolean that, if set to true, will trigger the animation to turn around.
+* `reset[boolean]`:
+ A boolean that, if set to true, will trigger the animation to reset.
+* `easing[string]`:  
+ A string refering to an easing.
+###### Supported Easings
+This is a list of all supported easings. It's suggested to play around with them
+and find the best one for your use-case.  
+Every easing-function has a `easeIn`, `easeOut` and `easeInOut` variation. To use these,
+you'd pass `easeInCubic` for the `cubic` easing.  
+**`linear`, `bounceIn` and `bounceOut` do not have these variations**
+* **`linear`**: has no variations - default
+* **`bounceIn`**: has no variations
+* **`bounceOut`**: has no variations
+* `quad`
+* `cubic`
+* `quart`
+* `quint`
+
+###### Examples
+* **Basic:**  
+    * **Animating a variable:**  
+        In this example, a variable will be animated from 0 to 200 over 500ms.
+        The value will **not** be applied to a style. Only saved as a variable.
+        The glimmer will start immediately after passing the config.
+        ```javascript
+        var animatedVariable,
+            config = {
+              from: 0,
+              to: 200,
+              duration: 500,
+              set: function (value) { animatedVariable = value },
+              play: true
+            }
+        glimmer.labor(config)
+        ```
+    * **Animating a style:**  
+        Same as previous example, except for the value being applied to a style
+        instead of being assigned to a variable.  
+        Don't forget to pass the mineral you wish to animate.
+        ```javascript
+        var config = {
+              from: 0,
+              to: 1,
+              duration: 500,
+              style: 'opacity',
+              mineral: mineral,
+              play: true
+            }
+        glimmer.labor(config)
+        ```
+    * **Animating a style with a unit:**  
+        In this case, a function is passed to add a unit to the value.
+        ```javascript
+        var config = {
+              from: 0,
+              to: 200,
+              duration: 500,
+              style: {
+                'top': function (value) { return value + 'px' }
+              },
+              mineral: mineral,
+              play: true
+            }
+        glimmer.labor(config)
+        ```
+    * **Animating with an easing:**  
+        Now we'll add an easing to make the animation feel more natural.
+        ```javascript
+        var config = {
+              from: 0,
+              to: 200,
+              duration: 500,
+              style: {
+                'top': function (value) { return value + 'px' }
+              },
+              mineral: mineral,
+              easing: 'bounceOut',
+              play: true
+            }
+        glimmer.labor(config)
+        ```
+* **Advanced:**  
+    We can now start adding looping or interactivity.
+    * **Looping a glimmer:**   
+        Here, we make the `onEnd`-property apply a new configuration that reverses
+        the glimmer and starts it again. For simplicity's sake, we'll do nothing
+        with the animated value. You can of course leave out the `reverse`-property
+        that's not needed in your case.
+        ```javascript
+        var config = {
+              from: 0,
+              to: 200,
+              duration: 500,
+              onEnd: function () {
+                this.labor({ reverse: true, play: true })
+              },
+              play: true
+            }
+        glimmer.labor(config)
+        ```
+    * **Animating multiple styles:**  
+        We can make multiple styles animate with different values by passing
+        an object to the `styles`-property that interpolates the animated value.
+        This way, multiple styles will be assigned different values.
+        ```javascript
+        var config = {
+              from: 0,
+              to: 200,
+              duration: 500,
+              styles: {
+                'top': function (value) { return value + 'px' },
+                'opacity': function (value) { return value / 200 }
+              },
+              mineral: mineral,
+              play: true
+            }
+        glimmer.labor(config)
+        ```
+### WIP
+This library, as well as this README is a work in progress. Input is always appreciated.
