@@ -80,9 +80,10 @@ They'll be accompanied by examples demonstrating their use and variations.
  A string to set as text.
 * `append/prepend[Array, Mineral, Element]`:  
  A mineral or element or array of either to append to the mineral the configuration
- is passed to.
-##### Glimmer-configuration
-###### Properties
+ is passed to.  
+ 
+##### Glimmer-configuration  
+###### Properties  
 Here, all properties the glimmer-configuration can hold will be listed. At the end,
 there will be some examples illustrating them.
 * `set[function, Array]`:  
@@ -109,7 +110,8 @@ there will be some examples illustrating them.
  A boolean that, if set to true, will trigger the animation to reset.
 * `easing[string]`:  
  A string refering to an easing.
-###### Supported Easings
+ 
+###### Supported Easings  
 This is a list of all supported easings. It's suggested to play around with them
 and find the best one for your use-case.  
 Every easing-function has a `easeIn`, `easeOut` and `easeInOut` variation. To use these,
@@ -123,7 +125,7 @@ you'd pass `easeInCubic` for the `cubic` easing.
 * `quart`
 * `quint`
 
-###### Examples
+###### Examples  
 **Basic:**  
 * **Animating a variable:**  
     In this example, a variable will be animated from 0 to 200 over 500ms.
