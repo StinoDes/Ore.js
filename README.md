@@ -59,7 +59,7 @@ For now, there are 2 types of configurations. One for minerals and one for glimm
 ##### Mineral-configuration
 The mineral configuration allows you to manipulate an element to a great extent.
 Before being processed, it gets mapped from whichever you pass to something the
-mineral can interpret.
+mineral can interpret.  
 ###### Properties
 Here you'll see a list of properties that the mineral can understand.
 They'll be accompanied by examples demonstrating their use and variations.  
@@ -85,6 +85,7 @@ They'll be accompanied by examples demonstrating their use and variations.
 * `append/prepend[Array, Mineral, Element]`:  
  A mineral or element or array of either to append to the mineral the configuration
  is passed to.  
+
 ###### Routines  
 Routines are functions that are assigned to a mineral and can be easily called from `labor`.
 They can be added by calling a mineral's `routine`-function, which accepts an object.
