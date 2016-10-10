@@ -85,7 +85,7 @@ They'll be accompanied by examples demonstrating their use and variations.
 * `append/prepend[Array, Mineral, Element]`:  
  A mineral or element or array of either to append to the mineral the configuration
  is passed to.  
-###### Routines
+###### Routines  
 Routines are functions that are assigned to a mineral and can be easily called from `labor`.
 They can be added by calling a mineral's `routine`-function, which accepts an object.
 The object's keys should be the names of the routine you want to add, the value should be the
