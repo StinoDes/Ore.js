@@ -30,6 +30,10 @@ The library's variable. This contains the main functions to get you started.
     Method that takes a configuration and applies what is passed 
     onto the mineral's element.  
     **Returns** the mineral so that methods can be chained.
+    * `routine( config[Object] )`:
+    Method that takes a configuration of functions to be added to 
+    routines.  
+    Routines allow you to call minrals' functions through `labor`.
     * `retrieve()`:  
     **Returns** an object containing *all* data of the element that is 
      deemed useful.  
@@ -55,7 +59,7 @@ For now, there are 2 types of configurations. One for minerals and one for glimm
 ##### Mineral-configuration
 The mineral configuration allows you to manipulate an element to a great extent.
 Before being processed, it gets mapped from whichever you pass to something the
-mineral can interpret.
+mineral can interpret.  
 ###### Properties
 Here you'll see a list of properties that the mineral can understand.
 They'll be accompanied by examples demonstrating their use and variations.  
@@ -81,7 +85,34 @@ They'll be accompanied by examples demonstrating their use and variations.
 * `append/prepend[Array, Mineral, Element]`:  
  A mineral or element or array of either to append to the mineral the configuration
  is passed to.  
- 
+
+###### Routines  
+Routines are functions that are assigned to a mineral and can be easily called from `labor`.
+They can be added by calling a mineral's `routine`-function, which accepts an object.
+The object's keys should be the names of the routine you want to add, the value should be the
+corresponding function.  
+Routines can be called by using their name as a key inside of the `labor`-config, passing the 
+arguments for your routine as the value, or as an array if there are more than one.  
+```javascript
+// Creating a new mineral containing a div-element
+// and adding a routine, 'show', that will alter
+// the div's display property based on the passed bool.
+var mineral = Ore.mine('newdiv')
+        .routine({
+          show: function (bool) {
+            this.labor({ display: bool ? 'block': 'none' });
+          }
+        })
+        
+/*...*/
+
+// Hiding the div using the routine. This will put
+// the div's display-prop on none.
+mineral.labor({
+  show: false
+})
+
+```
 ##### Glimmer-configuration  
 ###### Properties  
 Here, all properties the glimmer-configuration can hold will be listed. At the end,
@@ -230,5 +261,7 @@ var config = {
   }
 glimmer.labor(config)
 ```
+
+
 ### WIP
 This library, as well as this README is a work in progress. Input is always appreciated.
