@@ -39,39 +39,40 @@ const mineral = (element) => (() => {
      * @returns {retrieval} - An instance of a retrieval object, offering an api to get the contained data.
      */
     retrieval = function(config = {}) {
-      const styles = (() => {
-          const r = window.getComputedStyle(element, null),
-            v = {}
-          for (let i = 0; i < r.length; i++) {
-            const key = r[i]
-              .toLowerCase().replace(/-(.)/g, function(match, group1) {
-                return group1.toUpperCase()
-              })
-            v[key] = r.getPropertyValue(r[i])
-          }
-          return v
-        })(),
-        attr = (() => {
-          const r = element.attributes,
-            v = {}
-          for (let i = 0; i < r.length; i++)
-            v[ r[i].name ] = element.getAttribute(r[i].name)
-          return v
-        })(),
-        classes = Array.prototype.slice.call(element.classList),
+        // styles
+      const s = () => {
+          if (element.currentStyle)
+            return element.currentStyle
+          else if (window.getComputedStyle)
+            return document.defaultView.getComputedStyle(element,null)
+          return null
+        },
+        // attributes
+        a = () => {
+          const obj = {}
+          Array.prototype.slice.call(element.attributes).map(entry => obj[entry.name] = entry.value)
+          return obj
+        },
+        // classes
+        c = () => Array.prototype.slice.call(element.classList),
         returnStyles = prop => {
-          if (!prop)
-            return styles
-          return styles[prop]
+          if (!prop) {
+            const obj = Object.assign({}, styles)
+            delete obj.dirty
+            return obj
+          }
+          return s().getPropertyValue(prop)
         },
         returnAttr = name => {
           if (!name)
-            return attr
-          return attr[name]
+            return a()
+          return element.getAttribute(name)
         },
         returnClasses = () => {
-          return classes
+          return c()
         },
+        returnChildren = () => Array.prototype
+          .map.call(element.children, function (child) { return child.mine }),
         /**
          * @param {string|array} path - The key or path to the value you want returned.
          * @param {string=} prop - The nested property you want returned.
@@ -81,24 +82,32 @@ const mineral = (element) => (() => {
         get = (path, prop) => {
           path = (path.constructor === Array) ? path : [path, prop]
           switch (path[0]) {
-          case 'styles':
-            return returnStyles(path[1])
-          case 'attr':
-            return returnAttr(path[1])
-          case 'class':
-            return returnClasses()
-          default:
-            return null
+            case 'children':
+              return returnChildren()
+            case 'styles':
+              return returnStyles(path[1])
+            case 'attr':
+              return returnAttr(path[1])
+            case 'class':
+              return returnClasses()
+            default:
+              return null
           }
         },
         api = {
+          styles: returnStyles,
+          attr: returnAttr,
+          classes: returnClasses,
+          children: returnChildren,
           get,
         }
       return api
     },
     routines = {},
     events = {},
-
+    styles = {
+      dirty: {}
+    },
     /**
      * @returns {HTMLElement} - returns the enclosed element.
      */
@@ -136,8 +145,18 @@ const mineral = (element) => (() => {
         element.setAttribute(k, config[k])
     },
     laborStyles = function(config = {}) {
-      for (const k in config)
-        element.style[k] = config[k]
+      Object.assign(styles.dirty, config)
+      flushStyles()
+    },
+    flushStyles = function() {
+      if (styles.dirty) {
+        Object.keys(styles.dirty).map(key => {
+          element.style[key] = styles.dirty[key]
+        })
+        Object.assign(styles, styles.dirty)
+        styles.dirty = {}
+      }
+
     },
     laborEvents = function(config = {}) {
       for (const k in config)

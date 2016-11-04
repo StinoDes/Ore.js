@@ -193,6 +193,8 @@ describe('Minerals', () => {
               .to.equal('20px')
             expect(retrieval.get('styles').background)
               .to.equal('red')
+            expect(retrieval.styles())
+              .to.eql({'background': 'red', 'height': '20px'})
         })
         it('Should return the set attributes', () => {
             const mineral = api.mine('newdiv')
@@ -204,6 +206,14 @@ describe('Minerals', () => {
               .to.equal('element_id')
             expect(retrieval.get('attr').id)
               .to.equal('element_id')
+            expect(retrieval.attr())
+              .to.eql({'id': 'element_id'})
+        })
+        it('Should return the mineral\'s children', () => {
+            const mineral = api.mine('newdiv', {
+                append: [
+                  api.mine('newdiv'), api.mine('newp')
+                ]})
         })
     })
     describe('On routine', () => {
