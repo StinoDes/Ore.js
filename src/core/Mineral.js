@@ -1,5 +1,5 @@
 // todo: Make styles object for faster retrieving. Add style parsing.
-const mineral = (element) => (() => {
+const mineral = element => (() => {
 
   /**
    * Creates a wrapper for events, returning a simple api. Binds to the scoped element.
