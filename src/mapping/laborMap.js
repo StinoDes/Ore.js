@@ -67,10 +67,21 @@ const laborMap = publish => {
             else if (typeof config.class[k] === 'string')
               valToAdd = [config.class[k]]
           if (classConfig[k])
-            classConfig[k].concat(valToAdd)
+            classConfig[k] = classConfig[k].concat(valToAdd)
           else
             classConfig[k] = valToAdd
         })
+      else if (typeof config.class === 'string' || (config.class && config.class.constructor === Array)) {
+        if (typeof config.class === 'string' )
+            config.class = /.*\ .*/.test(config.class) ? config.class.split(' ') : [config.class]
+
+        if (classConfig.add)
+          classConfig.add = classConfig.add.concat(config.class)
+        else
+          classConfig.add = config.class
+      }
+
+
       delete config.class
       return classConfig
     },
@@ -107,11 +118,14 @@ const laborMap = publish => {
               break
             }
         }
-
       mapFor(config)
       if (config.dom) {
         mapFor(config.dom)
         delete config.dom
+      }
+      if (config.empty) {
+        domConfig.empty = config.empty
+        delete config.empty
       }
 
       return domConfig

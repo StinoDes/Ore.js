@@ -13,7 +13,7 @@ describe('Minerals', () => {
         })
         it('should create a new mineral and apply the config', () => {
             const mineral = api.mine('newdiv', {
-                addClass: 'test'
+                class: 'test'
             })
             expect(mineral.getElement().classList.contains('test'))
               .to.be.ok
@@ -149,6 +149,23 @@ describe('Minerals', () => {
               })
             expect(mineral.getElement().children.item(0))
               .to.have.property('tagName', 'NAV')
+        })
+        it('the element will clear its children', () => {
+            const mineral = api.mine('newdiv')
+              .labor({
+                  append: [
+                      document.createElement('h1'),
+                      document.createElement('p'),
+                  ]
+              })
+            expect(mineral.getElement().children)
+              .to.have.property('length', 2)
+
+            mineral
+              .labor({empty: true})
+
+            expect(mineral.getElement().children)
+              .to.have.property('length', 0)
         })
         it('the element will modify its classes', () => {
             const mineral = api.mine('newdiv')

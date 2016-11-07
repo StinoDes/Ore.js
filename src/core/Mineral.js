@@ -189,6 +189,10 @@ const mineral = element => (() => {
         })
     },
     laborDom = function(config = {}) {
+      if (config.empty)
+        while (element.firstChild) {
+          element.removeChild(element.firstChild)
+        }
       if (config.prepend)
         config.prepend.map(child => element.insertBefore(child.getElement(), element.firstChild))
       if (config.append)
