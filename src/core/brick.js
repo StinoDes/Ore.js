@@ -54,7 +54,6 @@ const brick = (name, c) => (() => {
       didBuild,
       willUnmount
     } = setConfiguration(c),
-
     /**
      * Transactional methods.
      */
@@ -101,7 +100,7 @@ const brick = (name, c) => (() => {
      */
   api.isBrick = () => true
 
-
+  init(configuration)
 
   return api
 
