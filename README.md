@@ -101,7 +101,7 @@ arguments for your routine as the value, or as an array if there are more than o
 var mineral = Ore.mine('newdiv')
         .add({
           show: function (bool) {
-            this.labor({ display: bool ? 'block': 'none' });
+            this({ display: bool ? 'block': 'none' });
           }
         })
         
