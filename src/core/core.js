@@ -7,16 +7,16 @@ export const mine = publish =>
    * @param {object} [config] - A config to be passed when creating a new mineral.
    * @returns {*}
    */
-  (selector, config) => {
+  (selector, config = {}) => {
     if (selector.nodeType)
       return publish('mineMineral', selector)
     else if (typeof selector === 'string') {
       if (/(new[a-zA-Z]+)/.test(selector)) {
         const element = document.createElement(selector.substr(3, selector.length - 1))
-        return publish('mineMineral', element).labor(config)
+        return publish('mineMineral', element)(config)
       }
       const elements = document.querySelectorAll(selector)
-      return publish('mineMineral', elements[0]).labor(config)
+      return publish('mineMineral', elements[0])(config)
     }
     return false
   }

@@ -89,21 +89,23 @@ const laborMap = publish => {
       const domConfig = {},
         addTo = (key, obj) => {
           let parsedObj
-          if (obj.constructor === Array) {
-            obj = obj.map(v => {
-              return v.hasOwnProperty('getElement') ? v : publish('mineMineral', v)
-            })
-            parsedObj = obj
-          }
-          else if (obj.hasOwnProperty('getElement'))
-            parsedObj = [obj]
-          else if (obj.nodeType)
-            parsedObj = [publish('mineMineral', obj)]
+          if (obj) {
+            if (obj.constructor === Array) {
+              obj = obj.map(v => {
+                return v.hasOwnProperty('element') ? v : publish('mineMineral', v)
+              })
+              parsedObj = obj
+            }
+            else if (obj.hasOwnProperty('element'))
+              parsedObj = [obj]
+            else if (obj.nodeType)
+              parsedObj = [publish('mineMineral', obj)]
 
-          if (!domConfig[key])
-            domConfig[key] = parsedObj
-          else
-            domConfig[key] = [...domConfig[key], ...parsedObj]
+            if (!domConfig[key])
+              domConfig[key] = parsedObj
+            else
+              domConfig[key] = [...domConfig[key], ...parsedObj]
+          }
         },
         mapFor = configToMap => {
           for (const k in configToMap)

@@ -8,14 +8,14 @@ describe('Minerals', () => {
     describe('mine', () => {
         it('should create a new mineral if the selector has the correct form', () => {
             const mineral = api.mine('newdiv')
-            expect(mineral.getElement().tagName)
+            expect(mineral.element().tagName)
               .to.equal('DIV')
         })
         it('should create a new mineral and apply the config', () => {
             const mineral = api.mine('newdiv', {
                 class: 'test'
             })
-            expect(mineral.getElement().classList.contains('test'))
+            expect(mineral.element().classList.contains('test'))
               .to.be.ok
         })
     })
@@ -27,9 +27,9 @@ describe('Minerals', () => {
               mineral = api.mine(element)
 
             expect(mineral)
-                .to.have.property('getElement')
+                .to.have.property('element')
                 .that.is.a('function')
-            expect(mineral.getElement())
+            expect(mineral.element())
                 .to.eql(element)
 
         })
@@ -49,43 +49,40 @@ describe('Minerals', () => {
         it('The element\'s attributes will be modified', () => {
 
             const mineral = api
-              .mine('newdiv')
-              .labor({
+              .mine('newdiv')({
                   data: 'some_data',
                   attr: {
                     id: 'an_id'
                   }
               })
 
-            expect(mineral.getElement().getAttribute('id'))
+            expect(mineral.element().getAttribute('id'))
               .to.equal('an_id')
-            expect(mineral.getElement().getAttribute('data'))
+            expect(mineral.element().getAttribute('data'))
               .to.equal('some_data')
         })
         it('the element\'s styles will be modified', () => {
 
             const mineral = api
-              .mine('newdiv')
-              .labor({
+              .mine('newdiv')({
                 styles: {
                     backgroundColor: 'white',
                     height: '20px',
                     display: 'block',
                 }
             })
-            expect(mineral.getElement().style.backgroundColor)
+            expect(mineral.element().style.backgroundColor)
               .to.equal('white')
-            expect(mineral.getElement().style.height)
+            expect(mineral.element().style.height)
               .to.equal('20px')
-            expect(mineral.getElement().style.display)
+            expect(mineral.element().style.display)
               .to.equal('block')
         })
         it('the element will register events', done => {
 
             const calledEvents = [],
               handler = e => calledEvents.push(e),
-              mineral = api.mine('newdiv')
-                .labor({
+              mineral = api.mine('newdiv')({
                     onClick () {
                         handler('click')
                     },
@@ -95,7 +92,7 @@ describe('Minerals', () => {
                 }),
               events = ['click', 'click', 'mouseenter']
             events.map(e => {
-                mineral.getElement().dispatchEvent(new Event(e))
+                mineral.element().dispatchEvent(new Event(e))
                 if (events.indexOf(e) == events.length - 1) {
                     expect(calledEvents).to.eql(['click', 'click', 'enter'])
                     done()
@@ -105,16 +102,14 @@ describe('Minerals', () => {
         it('the element will register additional events', done => {
             const calledEvents = [],
               handler = e => calledEvents.push(e),
-              mineral = api.mine('newdiv')
-                .labor({
+              mineral = api.mine('newdiv')({
                     onClick () {
                         handler('click')
                     },
                     mouseenter () {
                         handler('enter')
                     }
-                })
-                .labor({
+                })({
                     events: {
                         click () {
                             handler('click')
@@ -123,7 +118,7 @@ describe('Minerals', () => {
                 }),
               events = ['click', 'click', 'mouseenter']
             events.map(e => {
-                mineral.getElement().dispatchEvent(new Event(e))
+                mineral.element().dispatchEvent(new Event(e))
                 if (events.indexOf(e) == events.length - 1) {
                     expect(calledEvents).to.eql(['click','click','click','click','enter'])
                     done()
@@ -131,81 +126,74 @@ describe('Minerals', () => {
             })
         })
         it('the element will append children', () => {
-            const mineral = api.mine('newdiv')
-              .labor({
+            const mineral = api.mine('newdiv')({
                   append: [
                     document.createElement('h1'),
                     document.createElement('p'),
                   ]
               })
-            expect(mineral.getElement().children)
+            expect(mineral.element().children)
               .to.have.property('length', 2)
         })
         it('the element will prepend children', () => {
-            const mineral = api.mine('newdiv')
-              .labor({
+            const mineral = api.mine('newdiv')({
                   append: document.createElement('h1'),
                   prepend: document.createElement('nav')
               })
-            expect(mineral.getElement().children.item(0))
+            expect(mineral.element().children.item(0))
               .to.have.property('tagName', 'NAV')
         })
         it('the element will clear its children', () => {
-            const mineral = api.mine('newdiv')
-              .labor({
+            const mineral = api.mine('newdiv')({
                   append: [
                       document.createElement('h1'),
                       document.createElement('p'),
                   ]
               })
-            expect(mineral.getElement().children)
+            expect(mineral.element().children)
               .to.have.property('length', 2)
 
-            mineral
-              .labor({empty: true})
+            mineral({empty: true})
 
-            expect(mineral.getElement().children)
+            expect(mineral.element().children)
               .to.have.property('length', 0)
         })
         it('the element will modify its classes', () => {
-            const mineral = api.mine('newdiv')
-              .labor({
+            const mineral = api.mine('newdiv')({
                   addClass: 'test'
               })
-            expect(mineral.getElement().classList.contains('test'))
+            expect(mineral.element().classList.contains('test'))
               .to.be.ok
 
-            mineral.labor({
+            mineral({
                 removeClass: 'test'
             })
-            expect(mineral.getElement().classList.contains('test'))
+            expect(mineral.element().classList.contains('test'))
               .to.not.be.ok
 
-            mineral.labor({
+            mineral({
                 toggleClass: ['test', 'class']
             })
-            expect(mineral.getElement().classList.contains('test') && mineral.getElement().classList.contains('class'))
+            expect(mineral.element().classList.contains('test') && mineral.element().classList.contains('class'))
               .to.be.ok
         })
         it('the element will change its text', () => {
             expect(
               api
-                .mine('newdiv')
-                .labor({
+                .mine('newdiv')({
                     text: 'This is new text'
                 })
-                .getElement().textContent
+                .element().textContent
             ).to.equal('This is new text')
         })
     })
     describe('On retrieve', () => {
         it('Should return the set properties', () => {
-            const mineral = api.mine('newdiv')
-                .labor({
+            const mineral = api.mine('newdiv')({
                     background: 'red',
                     height: '20px'
                 }),
-              retrieval = mineral.retrieve()
+              retrieval = mineral()
             expect(retrieval.get(['styles', 'height']))
               .to.equal('20px')
             expect(retrieval.get('styles').background)
@@ -214,11 +202,10 @@ describe('Minerals', () => {
               .to.eql({'background': 'red', 'height': '20px'})
         })
         it('Should return the set attributes', () => {
-            const mineral = api.mine('newdiv')
-                .labor({
+            const mineral = api.mine('newdiv')({
                     id: 'element_id',
                 }),
-              retrieval = mineral.retrieve()
+              retrieval = mineral()
             expect(retrieval.get(['attr', 'id']))
               .to.equal('element_id')
             expect(retrieval.get('attr').id)
@@ -231,19 +218,19 @@ describe('Minerals', () => {
                 append: [
                   api.mine('newdiv'), api.mine('newp')
                 ]})
+            // todo
         })
     })
     describe('On routine', () => {
         it('Should execute the passed function when passed in config', done => {
             let test = 'test'
             const mineral = api.mine('newdiv')
-                .routine({
+                .add({
                     test (newTest, callback) {
                         test = newTest
                         callback()
                     }
-                })
-                .labor({
+                })({
                     test: ['newvar', () => {
                         expect(test)
                           .to.equal('newvar')

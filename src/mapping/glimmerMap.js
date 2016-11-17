@@ -14,7 +14,7 @@
 const glimmerMap = publish => {
 
   const rootKeys = {
-      'from': 'number', 'to': 'number', 'duration': 'number', 'mineral': 'object',
+      'from': 'number', 'to': 'number', 'duration': 'number', 'mineral': 'function',
       'delay': 'number', 'easing': 'string', 'play': 'boolean', 'onEnd': 'function',
       'reverse': 'boolean', 'reset': 'boolean'
     },
@@ -63,7 +63,7 @@ const glimmerMap = publish => {
             doStyles[key] = set[key](v)
         })
         if (Object.keys(doStyles).length)
-          mineral.labor({ styles: doStyles })
+          mineral({ styles: doStyles })
       }
       delete config.set
       delete config.styles

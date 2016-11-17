@@ -25,8 +25,7 @@ const COMPONENT_REGEX = /(^[A-Z\_\$])/,
 
       elementBrick = (tag, config) =>
         (_config = {}, children = []) =>
-          api.publish('mineMineral', document.createElement(tag))
-            .labor({
+          api.publish('mineMineral', document.createElement(tag))({
               ...config,
               ..._config,
               append: children,

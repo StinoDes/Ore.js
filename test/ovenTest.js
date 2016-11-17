@@ -29,7 +29,7 @@ describe('Oven', () => {
 
       const div = api.bake('div')
 
-      expect(div().getElement().tagName).to.equal('DIV')
+      expect(div().element().tagName).to.equal('DIV')
 
     })
     it('brick', () => {
@@ -41,7 +41,7 @@ describe('Oven', () => {
           }
         })
 
-      expect(brick().getElement().tagName).to.equal('DIV')
+      expect(brick().element().tagName).to.equal('DIV')
 
     })
     it('with children', () => {
@@ -53,7 +53,7 @@ describe('Oven', () => {
           div(),
           div()
         ])
-          .getElement()
+          .element()
           .children.length
       ).to.equal(2)
 

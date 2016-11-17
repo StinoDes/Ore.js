@@ -75,7 +75,7 @@ const mineral = element => (() => {
           .map.call(element.children, function (child) { return child.mine }),
         /**
          * @param {string|array} path - The key or path to the value you want returned.
-         * @param {string=} prop - The nested property you want returned.
+         * @param {string} prop - The nested property you want returned.
          *                         Should only be used when not using a path array.
          * @return {var} - Returns the requested property
          */
@@ -128,7 +128,7 @@ const mineral = element => (() => {
             routines[name] = config[name]
           else
             console.error('Routine should be a function.')
-      return this
+      return mineralApi
     },
     laborRoutines = function(config = {}) {
       for (const k in config)
@@ -194,9 +194,10 @@ const mineral = element => (() => {
           element.removeChild(element.firstChild)
         }
       if (config.prepend)
-        config.prepend.map(child => element.insertBefore(child.getElement(), element.firstChild))
-      if (config.append)
-        config.append.map(child => element.appendChild(child.getElement()))
+        config.prepend.forEach(child => element.insertBefore(child.element(), element.firstChild))
+      if (config.append) {
+        config.append.forEach(child => element.appendChild(child.element()))
+      }
     },
 
     /**
@@ -210,7 +211,7 @@ const mineral = element => (() => {
      * @returns {mineral} - Returns itself.
      */
     labor = function(config = {}) {
-      const mappedConfig = this.publish('doMap', 'labor', config)
+      const mappedConfig = mineralApi.publish('doMap', 'labor', config)
       laborRoutines(mappedConfig)
       laborAttributes(mappedConfig.attr)
       laborStyles(mappedConfig.styles)
@@ -218,7 +219,7 @@ const mineral = element => (() => {
       laborClasses(mappedConfig.class)
       laborText(mappedConfig.text)
       laborDom(mappedConfig.dom)
-      return this
+      return mineralApi
     },
     /**
      * The main function for retrieving changes from an element.
@@ -230,15 +231,29 @@ const mineral = element => (() => {
      * @returns {retrieval} - Returns a retrieval with the mineral's data.
      */
     retrieve = function(config = {}) {
-      const mappedConfig = this.publish('doMap', 'retrieve', config)
+      const mappedConfig = publish('doMap', 'retrieve', config)
       return retrieval(mappedConfig)
     },
-    mineralApi = {
-      getElement,
-      labor,
-      routine,
-      retrieve,
+    /**
+     * The mineral-API, wrapping all functionality minerals have to offer.
+     * It in itself is a function, with some methods to add further functionality (routines).
+     * @param {object} [ config ] - An optional parameter. Whether or not you passed it, will decide
+     * what the mineral will do.
+     * When nothing is passed, a data-object will be returned for you to retrieve data.
+     * When a config is passed, it will be executed on the contained HTMLElement, and return itself.
+     * @returns {mineral|retrieval}
+     */
+    mineralApi = function(config = false) {
+      if (!config)
+        return retrieval()
+      labor(config)
+      return mineralApi
     }
+
+  mineralApi.add        = routine
+  mineralApi.isMinreral = () => true
+  mineralApi.element    = getElement
+  mineralApi.get        = getElement
 
   return mineralApi
 })()

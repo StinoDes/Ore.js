@@ -8,13 +8,12 @@ describe('Glimmers:', () => {
   describe('created glimmers', () => {
 
     it('should be returned from torch', () => {
-      expect(api.torch.catchGlimmer())
-        .to.include.keys('labor')
+      expect(api.torch.catchGlimmer().isGlimmer())
+        .to.be.ok
     })
 
     it('should start playing correctly', done => {
-      api.torch.catchGlimmer()
-        .labor({
+      api.torch.catchGlimmer()({
           from: 0,
           to: 200,
           duration: 200,
@@ -26,8 +25,7 @@ describe('Glimmers:', () => {
 
     it('should be executed on a mineral', done => {
       const mineral = api.mine('newdiv')
-      api.torch.catchGlimmer()
-        .labor({
+      api.torch.catchGlimmer()({
           mineral,
           from: 0,
           to: 200,
@@ -38,7 +36,7 @@ describe('Glimmers:', () => {
           set: v => { expect(v).to.be.within(0, 200) },
           onEnd: v => {
             expect(mineral
-              .getElement().style.opacity)
+              .element().style.opacity)
               .to.equal('1')
             done()
           },
@@ -47,15 +45,14 @@ describe('Glimmers:', () => {
     })
 
     it('should reverse when passed reverse flag', done => {
-      const glimmer = api.torch.catchGlimmer()
-        .labor({
+      const glimmer = api.torch.catchGlimmer()({
           from: 0,
           to: 200,
           duration: 20,
           onEnd: v1 => {
             expect(v1)
               .to.equal(200)
-            glimmer.labor({
+            glimmer({
               reverse: true,
               play: true,
               onEnd: v2 => {

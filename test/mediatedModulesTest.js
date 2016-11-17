@@ -45,14 +45,14 @@ describe('Mediated modules', () => {
     it('Returns a mineral containing the passed element', () => {
       const element = document.createElement('div')
       expect(api.mine(element))
-        .to.be.an('object')
-      expect(api.mine(element).getElement())
+        .to.be.a('function')
+      expect(api.mine(element).element())
         .to.eql(element)
     })
     it('Returns a mineral containing the element matching the selector', () => {
       const element = document.createElement('div')
       document.body.appendChild(element)
-      expect(api.mine('div').getElement())
+      expect(api.mine('div').element())
         .to.eql(element)
     })
   })

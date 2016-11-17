@@ -15,10 +15,10 @@ const glimmer = (initConfig = {}) => (() => {
     previousTimestamp = null,
     configuration = {}
   const delta = () => configuration.to - configuration.from,
-    value = () => configuration.from + api.publish('ease', progress, configuration.easing ? configuration.easing : 'LINEAR') * delta(),
+    value = () => configuration.from + glimmerApi.publish('ease', progress, configuration.easing ? configuration.easing : 'LINEAR') * delta(),
     onEnd = () => {
       if (configuration.onEnd)
-        configuration.onEnd.call(api, configuration.to)
+        configuration.onEnd.call(glimmerApi, configuration.to)
     },
     /**
      * The animation loop. Keeps going as long as play is truthy.
@@ -28,11 +28,11 @@ const glimmer = (initConfig = {}) => (() => {
       calculate()
       if (progress < 1) {
         if (configuration.set)
-          configuration.set.do.call(api, value(), configuration.mineral)
+          configuration.set.do.call(glimmerApi, value(), configuration.mineral)
       }
       else {
         if (configuration.set)
-          configuration.set.do.call(api, configuration.to, configuration.mineral)
+          configuration.set.do.call(glimmerApi, configuration.to, configuration.mineral)
         reset()
         onEnd()
       }
@@ -73,11 +73,11 @@ const glimmer = (initConfig = {}) => (() => {
     /**
      * Applies the config to the glimmer.
      * @param {object} config - Config to be passed
-     * @return {api} - Returns itself for chaining purposes.
+     * @return {glimmer} - Returns itself for chaining purposes.
      */
     labor = function(config = {}) {
       const playAfter = !configuration.play && config.play,
-        mappedConfig = this.publish('doMap', 'glimmer', config)
+        mappedConfig = glimmerApi.publish('doMap', 'glimmer', config)
       // if (!mappedConfig.set && !configuration.set) {
       //   console.warn('No set-function was passed. Reverting to default.')
       //   mappedConfig.set = this.publish('doMap', 'glimmer', {set: v => v}).set
@@ -92,16 +92,18 @@ const glimmer = (initConfig = {}) => (() => {
       }
       if (playAfter)
         loop()
-      return this
+      return glimmerApi
     },
-    api = {
-      labor,
+    glimmerApi = function (config) {
+      return labor(config)
     }
+
+    glimmerApi.isGlimmer = () => true
 
   if (configuration.play)
     loop()
 
-  return api
+  return glimmerApi
 
 })()
 
