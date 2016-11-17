@@ -21,34 +21,35 @@ The library's variable. This contains the main functions to get you started.
     **selector**: either a css-selector refering to the element you wish to get
     the mineral of, or `new<tagname>` to create a mineral containing a new element.  
     **config**: a configuration-object to pass to a newly created mineral.  
-    **Returns** a mineral containing a new element or one matching the passed selector.
+    **Returns** a mineral containing a new element or one matching the passed selector.  
 * **`mineral`**:  
-  A wrapper around HTML-elements.
-    * `getElement()`:  
-    **Returns** the element it contains, in case you need some finer tuning.
-    * `labor( config[Object] )`:  
-    Method that takes a configuration and applies what is passed 
-    onto the mineral's element.  
-    **Returns** the mineral so that methods can be chained.
-    * `routine( config[Object] )`:
-    Method that takes a configuration of functions to be added to 
-    routines.  
-    Routines allow you to call minrals' functions through `labor`.
-    * `retrieve()`:  
-    **Returns** an object containing *all* data of the element that is 
+  A wrapper-function around HTML-elements, allowing you to either manipulate them or retrieve data from them.
+  Calling it **with** configuration allows you to manipulate the wrapped element.  
+  Calling without arguments, will retrieve data for you.
+  * `mineral( config[Object] )`:
+  **Returns** itself after applying your changes to the element.
+  * `mineral()`:
+  **Returns** an object containing *all* data of the element that is 
      deemed useful.  
      Has the following methods:
-        * `get( path[string], prop[string] )`:  
+        * `.get( path[string], prop[string] )`:  
         **path**: a string containing the type of data you want returned.
         Can be one of the following: `[styles, attr, class]`.  
         **prop**: a string containing the name of the prop you want returned.
         This will be the name of the css-property or attribute, depending on
         what the `path`-parameter was. Retrieving classes requires no `prop`-param.  
         **Returns** the requested value.
+    * `.element()`:  
+    **Returns** the element it contains, in case you need some finer tuning.
+    * `.add( config[Object] )`:
+    Method that takes a configuration of functions to be added to 
+    routines.  
+    Routines can be called through a mineral by passing configuration.
+   
 * **`glimmer`**:  
-An animation object.
-    * `labor( config[Object] )`:  
-    Method that takes a configuration and applies it to the glimmer-object.  
+An animation object with a similar API as minerals.
+    * `glimmer( config[Object] )`:  
+    Takes a configuration and applies it to the glimmer-object.  
     **Returns** the glimmer so that methods can be chained.
     
 #### Configurations
@@ -98,7 +99,7 @@ arguments for your routine as the value, or as an array if there are more than o
 // and adding a routine, 'show', that will alter
 // the div's display property based on the passed bool.
 var mineral = Ore.mine('newdiv')
-        .routine({
+        .add({
           show: function (bool) {
             this.labor({ display: bool ? 'block': 'none' });
           }
@@ -108,7 +109,7 @@ var mineral = Ore.mine('newdiv')
 
 // Hiding the div using the routine. This will put
 // the div's display-prop on none.
-mineral.labor({
+mineral({
   show: false
 })
 
@@ -171,7 +172,7 @@ var animatedVariable,
     set: function (value) { animatedVariable = value },
     play: true
   }
-glimmer.labor(config)
+glimmer(config)
 ```
 
 * **Animating a style:**  
@@ -187,7 +188,7 @@ var config = {
     mineral: mineral,
     play: true
   }
-glimmer.labor(config)
+glimmer(config)
 ```
 
 * **Animating a style with a unit:**  
@@ -203,7 +204,7 @@ var config = {
     mineral: mineral,
     play: true
   }
-glimmer.labor(config)
+glimmer(config)
 ```
 
 * **Animating with an easing:**  
@@ -220,7 +221,7 @@ var config = {
     easing: 'bounceOut',
     play: true
   }
-glimmer.labor(config)
+glimmer(config)
 ```
 
 **Advanced:**  
@@ -236,11 +237,11 @@ var config = {
     to: 200,
     duration: 500,
     onEnd: function () {
-      this.labor({ reverse: true, play: true })
+      this({ reverse: true, play: true })
     },
     play: true
   }
-glimmer.labor(config)
+glimmer(config)
 ```
 
 * **Animating multiple styles:**  
@@ -259,7 +260,7 @@ var config = {
     mineral: mineral,
     play: true
   }
-glimmer.labor(config)
+glimmer(config)
 ```
 
 
