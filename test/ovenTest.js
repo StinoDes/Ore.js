@@ -59,4 +59,23 @@ describe('Oven', () => {
 
     })
   })
+  describe('bricks', () => {
+    it('rerenders when needed', () => {
+
+      const div = api.bake('div'),
+        brick   = api.bake('Brick', {
+          build (config) {
+            return div(config, [])
+          }
+        })
+      const firstbuild = brick().element()
+      const secondBuild= brick({styles: { color: 'red'}}).element()
+
+      expect(firstbuild).to.equal(secondBuild)
+      expect(secondBuild.style.color).to.equal('red')
+
+
+
+    })
+  })
 })

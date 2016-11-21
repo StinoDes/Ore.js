@@ -63,13 +63,35 @@ const brick = (_name, c) => (() => {
       virtual : null,
       actual  : null,
     },
-    renderVirtual = config => build(config),
+    renderVirtual = config => build([config]),
     compare = () => {
-      return {}
+      const virtual = refs.virtual(),
+        actual      = refs.actual(),
+        comparation = {},
+        diff        = (a, b) => {
+          if (typeof a === 'string')
+            return a === b ? null : b
+          else if (a.constructor === Array)
+            return b.every((v, i) => v === a[i]) ? [] : b
+          else if (typeof a === 'object') {
+            const c = {...a, ...b},
+              d     = {}
+            Object.keys(c).forEach(v => {
+              if(a[v] !== b[v])
+                d[v] = b[v]
+            })
+            return Object.keys(d).length ? d : null
+          }
+        }
+      Object.keys(virtual).forEach(v => {
+        const o = diff(actual[v], virtual[v])
+        if (o)
+          comparation[v] = o
+      })
+      return comparation
     },
     transact = comparation => {
-      const mineral = refs.actual
-        .labor(comparation)
+      const mineral = refs.actual(comparation)
       didBuild([configuration])
       return mineral
     },
@@ -80,28 +102,28 @@ const brick = (_name, c) => (() => {
      * @param {array} children - array of child-minerals for this build
      * @return {mineral} - built
      */
-    api = (config, children) => {
-      !refs.virtual ? willMount([configuration]) : willBuild([configuration])
-
-      refs.virtual = renderVirtual({
+    api = (config, children = []) => {
+      const mergedConfig = {
         ...configuration,
         ...config,
         append: children,
-      })
+      }
 
-      // todo delete
-      refs.actual = null
+      !refs.virtual ? willMount([configuration]) : willBuild([configuration])
+
+      refs.virtual = renderVirtual(mergedConfig)
+
       if (!refs.actual) {
         refs.actual = refs.virtual
-        didMount([configuration])
+        didMount([mergedConfig])
         return refs.virtual
       }
       return transact(compare())
     }
 
-    /**
-     * @return {boolean} - returns true.
-     */
+  /**
+   * @return {boolean} - returns true.
+   */
   api.isBrick = () => true
 
   init(configuration)
