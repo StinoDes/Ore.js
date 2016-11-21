@@ -8,7 +8,7 @@ const vars = (() => {
     attr = attributes(),
     es = events(),
     api = {
-      get(type, name) {
+      get (type, name) {
         switch (type) {
         case 'css':
           return css(name)

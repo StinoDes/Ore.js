@@ -17,7 +17,7 @@ const depotWrapper = (publish, subscribe) => {
     trader = (keys, fn) => {
       return {
         _id: publish('util', 'randomString', 16, 'aA'),
-        call(store) {
+        call (store) {
           let subStore = store
           keys.map(k => { subStore = subStore[k] })
           fn(subStore)
@@ -45,10 +45,10 @@ const depotWrapper = (publish, subscribe) => {
 
         /**
          * Returns the requested deep-nested value.
-         * @param {string[]|...string} [key] - An array of keys, or the first key.
-         * @returns {depot}
+         * @param {string[]|string} [key] - An array of keys, or the first key.
+         * @returns {int|string|object} - returns the saved data
          */
-        get(key = false) {
+        get (key = false) {
           let returnVal = publish('util', 'clone', data),
             keys = []
           if (key.constructor === Array)
@@ -65,11 +65,11 @@ const depotWrapper = (publish, subscribe) => {
 
         /**
          * Sets the requested deep-nested value.
-         * @param {string[]|...string} [key] - An array of keys, or the first key.
+         * @param {string[]|string} [key] - An array of keys, or the first key.
          * @param {*} value - The new value to be set. Should always be the last argument.
          * @returns {depot} - Is chainable.
          */
-        set(key = false, value) {
+        set (key = false, value) {
           const clone = publish('util', 'clone', data)
           let editValue = clone,
             keys = [],
@@ -93,12 +93,12 @@ const depotWrapper = (publish, subscribe) => {
         },
         /**
          * Updates a deep-nested value using a function.
-         * @param {string[]|...string} [key] - An array of keys, or the first key.
+         * @param {string[]|string} [key] - An array of keys, or the first key.
          * @param {function} fn - The function that will perform the update.
          * Should always be the last argument and return something.
          * @returns {depot} - Is chainable.
          */
-        update(key, fn) {
+        update (key, fn) {
           const clone = publish('util', 'clone', data)
           let editValue = clone,
             keys = [],
@@ -122,9 +122,9 @@ const depotWrapper = (publish, subscribe) => {
         },
         /**
          * Calls traders to be executed.
-         * @returns {depot} - returns itself
+         * @returns {depot} - Is chainable
          */
-        transact() {
+        transact () {
           notify(dirtyKeys, data)
           dirtyKeys = []
           return this
@@ -132,11 +132,11 @@ const depotWrapper = (publish, subscribe) => {
 
         /**
          * Adds a function to handle store changes
-         * @param {string[]|...string} [key] - An array of keys, or the first key
+         * @param {string[]|string} [key] - An array of keys, or the first key
          * @param {function} fn - The function to be called
-         * @returns {depot}
+         * @returns {depot} - Is chainable
          */
-        trade(key, fn) {
+        trade (key, fn) {
           let listenTo = [],
             keystring = null
           if (typeof key === 'function')

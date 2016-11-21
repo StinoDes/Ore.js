@@ -14,14 +14,23 @@
 const glimmerMap = publish => {
 
   const rootKeys = {
-      'from': 'number', 'to': 'number', 'duration': 'number', 'mineral': 'function',
-      'delay': 'number', 'easing': 'string', 'play': 'boolean', 'onEnd': 'function',
-      'reverse': 'boolean', 'reset': 'boolean'
+      'from'     : 'number',
+      'to'       : 'number',
+      'duration' : 'number',
+      'mineral'  : 'function',
+      'delay'    : 'number',
+      'easing'   : 'string',
+      'play'     : 'boolean',
+      'onEnd'    : 'function',
+      'reverse'  : 'boolean',
+      'reset'    : 'boolean',
     },
     setMap = config => {
       const set = {}
       let functions = [],
-        styles = {}
+        styles      = {},
+        i           = 0
+
       // Normalise styles to k-v map
       if (config.styles && config.mineral)
         if (typeof config.styles === 'string')
@@ -39,16 +48,15 @@ const glimmerMap = publish => {
         else if (config.set.constructor === Array)
           functions = config.set
 
-      let i = 0
       set.functions = []
-      functions.map(entry => {
+      functions.forEach(entry => {
         if (!entry)
           return functions.splice(functions.indexOf(entry), 1)
         set.functions[i] = entry
         i++
         return entry
       })
-      Object.keys(styles).map(key => {
+      Object.keys(styles).forEach(key => {
         if (publish('getVar', 'css', key) !== false)
           if (!styles[key])
             set[key] = v => v
@@ -57,8 +65,8 @@ const glimmerMap = publish => {
       })
       set.do = (v, mineral) => {
         const doStyles = {}
-        set.functions.map(fn => { fn(v) })
-        Object.keys(set).map(key => {
+        set.functions.forEach(fn => { fn(v) })
+        Object.keys(set).forEach(key => {
           if (key !== 'do' && key !== 'functions')
             doStyles[key] = set[key](v)
         })
@@ -71,17 +79,17 @@ const glimmerMap = publish => {
     },
 
     addSetFunction = (mappedConfig, config) => {
-      if (config.set || config.styles )
+      if (config.set || config.styles)
         return {
           set: setMap(config),
-          ...mappedConfig
+          ...mappedConfig,
         }
       return mappedConfig
     },
 
     rootMap = config => {
       const root = {}
-      Object.keys(rootKeys).map(k => {
+      Object.keys(rootKeys).forEach(k => {
         if (typeof config[k] !== 'undefined' && typeof config[k] === rootKeys[k])
           root[k] = config[k]
       })

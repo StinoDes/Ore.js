@@ -1,19 +1,21 @@
-const brick = (name, c) => (() => {
+const brick = (_name, c) => (() => {
 
-  const name = name,
+  const name = _name,
 
     /**
      * Lifecycle methods
+     * @param {object} config - Configuration containing hooks
+     * @return {object} - Brick's lifecycle-hooks
      */
     setConfiguration = config => {
       const lifecycles = {
-          init:         config.init,
-          willMount:    config.willMount,
-          didMount:     config.didMount,
-          willBuild:    config.willBuild,
-          build:        config.build,
-          didBuild:     config.didBuild,
-          willUnmount:  config.willUnmount
+          init        : config.init,
+          willMount   : config.willMount,
+          didMount    : config.didMount,
+          willBuild   : config.willBuild,
+          build       : config.build,
+          didBuild    : config.didBuild,
+          willUnmount : config.willUnmount,
         },
         lifecycleWrapper = fn => args => fn ? fn.apply(configuration, args) : null,
         init = lifecycleWrapper(lifecycles.init),
@@ -52,14 +54,14 @@ const brick = (name, c) => (() => {
       build,
       willBuild,
       didBuild,
-      willUnmount
+      willUnmount,
     } = setConfiguration(c),
     /**
      * Transactional methods.
      */
     refs = {
-      virtual: null,
-      actual: null
+      virtual : null,
+      actual  : null,
     },
     renderVirtual = config => build(config),
     compare = () => {
@@ -74,6 +76,9 @@ const brick = (name, c) => (() => {
 
     /**
      * Building methods.
+     * @param {object} config - configuration passed for this build
+     * @param {array} children - array of child-minerals for this build
+     * @return {mineral} - built
      */
     api = (config, children) => {
       !refs.virtual ? willMount([configuration]) : willBuild([configuration])
@@ -81,18 +86,17 @@ const brick = (name, c) => (() => {
       refs.virtual = renderVirtual({
         ...configuration,
         ...config,
-        append: children
+        append: children,
       })
 
-      //todo delete
+      // todo delete
       refs.actual = null
       if (!refs.actual) {
         refs.actual = refs.virtual
         didMount([configuration])
         return refs.virtual
       }
-      else
-        return transact(compare())
+      return transact(compare())
     }
 
     /**

@@ -1,10 +1,10 @@
 const mediator = (() => {
 
   const channels = {},
-    subscribe = function(channel, fn, isSingle) {
+    subscribe = function (channel, fn, isSingle) {
       const subscription = {
-        context: this,
-        callback: fn,
+        context  : this,
+        callback : fn,
       }
       if (!isSingle) {
         if (!channels[channel]) channels[channel] = []
@@ -20,7 +20,7 @@ const mediator = (() => {
       return this
     },
 
-    publish = function(channel) {
+    publish = function (channel) {
       const args = Array.prototype.slice.call(arguments, 1)
       if (!channels[channel]) return false
       if (channels[channel].constructor !== Array) {
@@ -37,12 +37,12 @@ const mediator = (() => {
       return this
     },
 
-    installMultiple = function(arr) {
+    installMultiple = function (arr) {
       for (const k in arr)
         installSingle(arr[k])
     },
 
-    installSingle = function(module) {
+    installSingle = function (module) {
       module.subscribe = subscribe
       module.publish = publish
     }
@@ -51,7 +51,7 @@ const mediator = (() => {
     channels,
     subscribe,
     publish,
-    installTo(module) {
+    installTo (module) {
       if (arguments.length > 1)
         installMultiple(Array.prototype.slice.call(arguments))
       installSingle(module)

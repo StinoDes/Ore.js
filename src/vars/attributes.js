@@ -1,5 +1,5 @@
+/* eslint key-spacing: 0 */
 const attributes = (() => {
-
   const attrs = {
     'accept': null,
     'accept-charset': null,

@@ -20,7 +20,7 @@ const connector = (element = false) => (customHooks = {}) => {
         else if (typeof b === 'object')
           return a === null ?
             b :
-            {...a, ...b}
+            { ...a, ...b }
 
         return a
       },
@@ -40,7 +40,7 @@ const connector = (element = false) => (customHooks = {}) => {
         return c
       },
 
-      ...customHooks
+      ...customHooks,
 
     },
 
@@ -62,11 +62,11 @@ const connector = (element = false) => (customHooks = {}) => {
       return connectorApi
     }
 
-    let [clean, dirty] = hooks.init()
+  let [clean, dirty] = hooks.init()
 
-    connectorApi.isConnector  = () => true
+  connectorApi.isConnector  = () => true
 
-    return connectorApi
+  return connectorApi
 }
 
 export default connector

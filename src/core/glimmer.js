@@ -3,20 +3,22 @@ if (!window.requestAnimFrame)
     window.requestAnimationFrame       ||
     window.webkitRequestAnimationFrame ||
     window.mozRequestAnimationFrame    ||
-    function(callback) {
+    function (callback) {
       window.setTimeout(callback, 1000 / 60)
     }
   )()
 
 const glimmer = (initConfig = {}) => (() => {
 
-  let delay = 0,
-    progress = 0,
+  let delay           = 0,
+    progress          = 0,
     previousTimestamp = null,
-    configuration = {}
+    configuration     = {}
   const delta = () => configuration.to - configuration.from,
-    value = () => configuration.from + glimmerApi.publish('ease', progress, configuration.easing ? configuration.easing : 'LINEAR') * delta(),
-    onEnd = () => {
+    value     = () => configuration.from + glimmerApi.publish('ease', progress,
+      configuration.easing ?
+        configuration.easing : 'LINEAR') * delta(),
+    onEnd     = () => {
       if (configuration.onEnd)
         configuration.onEnd.call(glimmerApi, configuration.to)
     },
@@ -24,7 +26,7 @@ const glimmer = (initConfig = {}) => (() => {
      * The animation loop. Keeps going as long as play is truthy.
      * @returns {undefined}
      */
-    loop = () => {
+    loop      = () => {
       calculate()
       if (progress < 1) {
         if (configuration.set)
@@ -39,17 +41,17 @@ const glimmer = (initConfig = {}) => (() => {
       if (configuration.play)
         window.requestAnimFrame(loop)
     },
-    reverse = () => {
+    reverse   = () => {
       const reversed = {
-        to: configuration.from,
-        from: configuration.to,
+        to   : configuration.from,
+        from : configuration.to,
       }
       configuration = {
         ...configuration,
         ...reversed,
       }
     },
-    reset = () => {
+    reset     = () => {
       progress = 0
       delay = 0
       previousTimestamp = 0
@@ -75,13 +77,9 @@ const glimmer = (initConfig = {}) => (() => {
      * @param {object} config - Config to be passed
      * @return {glimmer} - Returns itself for chaining purposes.
      */
-    labor = function(config = {}) {
+    labor = function (config = {}) {
       const playAfter = !configuration.play && config.play,
         mappedConfig = glimmerApi.publish('doMap', 'glimmer', config)
-      // if (!mappedConfig.set && !configuration.set) {
-      //   console.warn('No set-function was passed. Reverting to default.')
-      //   mappedConfig.set = this.publish('doMap', 'glimmer', {set: v => v}).set
-      // }
       if (mappedConfig.reverse)
         reverse()
       if (mappedConfig.reset)
@@ -98,7 +96,7 @@ const glimmer = (initConfig = {}) => (() => {
       return labor(config)
     }
 
-    glimmerApi.isGlimmer = () => true
+  glimmerApi.isGlimmer = () => true
 
   if (configuration.play)
     loop()

@@ -1,7 +1,7 @@
+/* eslint key-spacing: 0 */
 import { COLOR, LENGTH } from './constants'
 
 const cssprops = (() => {
-
   const props = {
     'background': null,
     'backgroundAttachment': null,

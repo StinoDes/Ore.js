@@ -2,7 +2,7 @@ import mediator from './core/mediator'
 import quarry from './core/quarry'
 import torch from './core/torch'
 import ease from './core/easings'
-import oven, { recipes } from './core/oven'
+import oven from './core/oven'
 import mapper from './mapping'
 import depot from './depot'
 import util from './util'
@@ -28,10 +28,9 @@ const api = {
   util,
   vars,
   oven,
-  bake: oven.bake,
-  depot: depot(mediator.publish),
-  mine: mine(mediator.publish),
+  bake  : oven.bake,
+  depot : depot(mediator.publish),
+  mine  : mine(mediator.publish),
 }
-
 
 module.exports = api

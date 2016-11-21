@@ -1,3 +1,4 @@
+/* eslint key-spacing: 0 */
 const events = (() => {
   const es = {
     'abort': null,
@@ -8,7 +9,7 @@ const events = (() => {
     'audioprocess': null,
     'audioend': null,
     'audiostart': null,
-    'beforeprint ': null,
+    'beforeprint': null,
     'beforeunload': null,
     'beginEvent': null,
     'blocked': null,

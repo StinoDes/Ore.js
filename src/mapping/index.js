@@ -26,7 +26,7 @@ const mapper = (() => {
       registerMap,
       removeMap,
       setDefault,
-      doMap(name) {
+      doMap (name) {
         const arg = Array.prototype.slice.call(arguments, 1)
         if (!maps[name]) {
           console.error(`There is no mapping with name "${name}" to execute`)

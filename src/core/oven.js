@@ -3,7 +3,7 @@ import brick from './brick'
 const COMPONENT_REGEX = /(^[A-Z\_\$])/,
   oven = (() => {
     const virtual = document.implementation.createHTMLDocument(),
-      bricks = {},
+      bricks      = {},
       make = () => {
 
       },
@@ -12,25 +12,26 @@ const COMPONENT_REGEX = /(^[A-Z\_\$])/,
        *
        * @param {string} tag - The name of the element or component you wish to create a brick for.
        * A name starting with a capital will return a brick, otherwise an element-helper will be returned.
-       * @param config - The configuration applied to the eventually returned object. This config has a low priority.
-       * @returns {brick}
+       * @param {object} config - The configuration applied to the eventually returned object.
+       * This config has a low priority.
+       * @returns {brick} - Is chainable
        */
       bake = (tag, config = {}) => {
         return COMPONENT_REGEX.test(tag) ?
           installMediatorOnBrick(
             brick(tag, config)
-          ):
+          ) :
           elementBrick(tag, config)
       },
 
       elementBrick = (tag, config) =>
         (_config = {}, children = []) =>
           api.publish('mineMineral', document.createElement(tag))({
-              ...config,
-              ..._config,
-              append: children,
-            }),
-      installMediatorOnBrick = function(target) {
+            ...config,
+            ..._config,
+            append: children,
+          }),
+      installMediatorOnBrick = function (target) {
         target.publish = api.publish
         return target
       },

@@ -6,11 +6,11 @@ const quarry = (() => {
 
   const cache = {},
 
-    load = function() {
+    load = function () {
       const self = this
       if (!window.Element.prototype.hasOwnProperty('mine')) {
         Object.defineProperty(window.Element.prototype, 'mine', {
-          get() {
+          get () {
             return self.mineMineral(this)
           },
         })
@@ -18,19 +18,19 @@ const quarry = (() => {
       }
     },
 
-    genMineId = function() {
+    genMineId = function () {
       const str = quarry.publish('util', 'randomString', 8, 'aA')
       if (cache[str])
         return genMineId()
       return str
     },
 
-    installMediatorOnMineral = function(target) {
+    installMediatorOnMineral = function (target) {
       target.publish = api.publish
       return target
     },
 
-    mineMineral = function(element) {
+    mineMineral = function (element) {
       if (element._mineid)
         return cache[element._mineid]
       element._mineid = genMineId()

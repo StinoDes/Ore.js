@@ -1,6 +1,6 @@
 const util = (() => {
 
-  const randomString = function(length, chars) {
+  const randomString = function (length, chars) {
       let mask = '',
         result = ''
       if (chars.indexOf('a') > -1)
@@ -29,7 +29,7 @@ const util = (() => {
       randomString,
       clone,
       capitalizeFirstLetter,
-      useTool(name) {
+      useTool (name) {
         const args = Array.prototype.slice.call(arguments, 1)
         return api[name](...args)
       },
