@@ -194,11 +194,11 @@ describe('Minerals', () => {
                     height: '20px'
                 }),
               retrieval = mineral()
-            expect(retrieval.get(['styles', 'height']))
+            expect(retrieval.styles.height)
               .to.equal('20px')
-            expect(retrieval.get('styles').background)
+            expect(retrieval.styles.background)
               .to.equal('red')
-            expect(retrieval.styles())
+            expect(retrieval.styles)
               .to.eql({'background': 'red', 'height': '20px'})
         })
         it('Should return the set attributes', () => {
@@ -206,11 +206,11 @@ describe('Minerals', () => {
                     id: 'element_id',
                 }),
               retrieval = mineral()
-            expect(retrieval.get(['attr', 'id']))
+            expect(retrieval.attr.id)
               .to.equal('element_id')
-            expect(retrieval.get('attr').id)
+            expect(retrieval.attr.id)
               .to.equal('element_id')
-            expect(retrieval.attr())
+            expect(retrieval.attr)
               .to.eql({'id': 'element_id'})
         })
         it('Should return the mineral\'s children', () => {

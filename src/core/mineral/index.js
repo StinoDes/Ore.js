@@ -1,4 +1,5 @@
 // todo: Make styles object for faster retrieving. Add style parsing.
+import connector from './connector'
 const mineral = element => (() => {
 
   /**
@@ -39,81 +40,19 @@ const mineral = element => (() => {
      * @returns {retrieval} - An instance of a retrieval object, offering an api to get the contained data.
      */
     retrieval = function(config = {}) {
-        // styles
-      const s = () => {
-          if (element.currentStyle)
-            return element.currentStyle
-          else if (window.getComputedStyle)
-            return document.defaultView.getComputedStyle(element,null)
-          return null
-        },
-        // attributes
-        a = () => {
-          const obj = {}
-          Array.prototype.slice.call(element.attributes).map(entry => obj[entry.name] = entry.value)
-          return obj
-        },
-        // classes
-        c = () => Array.prototype.slice.call(element.classList),
-        returnStyles = prop => {
-          if (!prop) {
-            const obj = Object.assign({}, styles)
-            delete obj.dirty
-            return obj
-          }
-          return s().getPropertyValue(prop)
-        },
-        returnAttr = name => {
-          if (!name)
-            return a()
-          return element.getAttribute(name)
-        },
-        returnClasses = () => {
-          return c()
-        },
-        returnChildren = () => Array.prototype
-          .map.call(element.children, function (child) { return child.mine }),
-        /**
-         * @param {string|array} path - The key or path to the value you want returned.
-         * @param {string} prop - The nested property you want returned.
-         *                         Should only be used when not using a path array.
-         * @return {var} - Returns the requested property
-         */
-        get = (path, prop) => {
-          path = (path.constructor === Array) ? path : [path, prop]
-          switch (path[0]) {
-            case 'children':
-              return returnChildren()
-            case 'styles':
-              return returnStyles(path[1])
-            case 'attr':
-              return returnAttr(path[1])
-            case 'class':
-              return returnClasses()
-            default:
-              return null
-          }
-        },
-        api = {
-          styles: returnStyles,
-          attr: returnAttr,
-          classes: returnClasses,
-          children: returnChildren,
-          get,
+      const attr   = attrConnector(),
+        styles     = stylesConnector(),
+        classes    = classConnector(),
+        obj        = {
+          attr,
+          styles,
+          classes
         }
-      return api
+
+      return obj
     },
     routines = {},
     events = {},
-    styles = {
-      dirty: {}
-    },
-    /**
-     * @returns {HTMLElement} - returns the enclosed element.
-     */
-    getElement = function() {
-      return element
-    },
     /**
      *
      * @param {object} config - A key-value map of routines and their callbacks.
@@ -130,7 +69,7 @@ const mineral = element => (() => {
             console.error('Routine should be a function.')
       return mineralApi
     },
-    laborRoutines = function(config = {}) {
+    execRoutines = function(config = {}) {
       for (const k in config)
         if (routines[k]) {
           if (config[k].constructor === Array)
@@ -140,54 +79,114 @@ const mineral = element => (() => {
           delete config[k]
         }
     },
-    laborAttributes = function(config = {}) {
-      for (const k in config)
-        element.setAttribute(k, config[k])
-    },
-    laborStyles = function(config = {}) {
-      Object.assign(styles.dirty, config)
-      flushStyles()
-    },
-    flushStyles = function() {
-      if (styles.dirty) {
-        Object.keys(styles.dirty).map(key => {
-          element.style[key] = styles.dirty[key]
-        })
-        Object.assign(styles, styles.dirty)
-        styles.dirty = {}
+    attrConnector     = connector(element)(
+      {
+        flush (el, dirty) {
+          if (dirty)
+            Object.keys(dirty).forEach( k => el.setAttribute(k, dirty[k]))
+          return true
+        }
       }
+    ),
+    stylesConnector   = connector(element)(
+      {
+        flush (el, dirty) {
+          if (dirty)
+            Object.keys(dirty).forEach( k => el.style[k] = dirty[k])
+          return true
+        }
+      }
+    ),
+    eventConnector    = connector(element)(
+      {
+        flush(el, dirty) { return true },
+        clean(clean, dirty) {
+          if (dirty)
+            Object.keys(dirty).forEach( k =>
+              clean[k] ?
+                clean[k].addHandlers(dirty[k]) :
+                clean[k] = eventWrapper(k, dirty[k])
+            )
+          return clean
+        }
+      }
+    ),
+    textConnector     = connector(element)(
+      {
+        init () {
+          return ['', '']
+        },
+        flush(el, dirty) {
+          if (typeof dirty !== 'string')
+            return false
+          el.textContent = dirty
+          return true
+        }
+      }
+    ),
+    classConnector    = connector(element)(
+      {
+        init () {
+          return [[], {}]
+        },
+        flush (el, dirty) {
+          if (!dirty)
+            return true
+          if (typeof dirty === 'string')
+            el.classList.add(dirty)
+          else if (dirty.constructor === Array)
+            el.classList.add.apply(el, dirty)
+          else if (typeof dirty === 'object') {
+            if (dirty.add)
+              dirty.add.forEach(c =>
+                !el.classList.contains(c) ?
+                  el.classList.add(c) :
+                  null
+              )
+            if (dirty.remove)
+              dirty.remove.forEach(c =>
+                el.classList.contains(c) ?
+                  el.classList.remove(c) :
+                  null
+              )
+            if (dirty.toggle)
+              dirty.toggle.forEach(c =>
+                el.classList.contains(c) ?
+                  el.classList.remove(c) :
+                  el.classList.add(c)
+              )
+          }
+          return true
+        },
+        clean (c, d) {
+          if (!d)
+            return c
 
-    },
-    laborEvents = function(config = {}) {
-      for (const k in config)
-        if (events[k])
-          events[k].addHandlers(config[k])
-        else
-          events[k] = eventWrapper(k, config[k])
-    },
-    laborText = function(config = null) {
-      if (typeof config === 'string')
-        element.textContent = config
-    },
-    laborClasses = function(config = {}) {
-      if (config.add)
-        config.add.map(c => {
-          if (!element.classList.contains(c))
-            element.classList.add(c)
-        })
-      if (config.remove)
-        config.remove.map(c => {
-          if (element.classList.contains(c))
-            element.classList.remove(c)
-        })
-      if (config.toggle)
-        config.toggle.map(c => {
-          if (element.classList.contains(c))
-            element.classList.remove(c)
-          else
-            element.classList.add(c)
-        })
-    },
+          if (c === null || c.constructor !== Array)
+            c = []
+
+          if (d.toggle)
+            d.toggle.forEach( v =>
+              c.indexOf(v) === -1 ?
+                c.push(v):
+                c.splice(c.indexOf(v), 1)
+            )
+          if (d.remove)
+            d.remove.forEach( v =>
+              c.indexOf(v) === -1 ?
+                null:
+                c.splice(c.indexOf(v), 1)
+            )
+          if (d.add)
+            d.add.forEach( v =>
+              c.indexOf(v) === -1 ?
+                c.push(v):
+                null
+            )
+          return d
+        }
+      }
+    ),
     laborDom = function(config = {}) {
       if (config.empty)
         while (element.firstChild) {
@@ -212,12 +211,12 @@ const mineral = element => (() => {
      */
     labor = function(config = {}) {
       const mappedConfig = mineralApi.publish('doMap', 'labor', config)
-      laborRoutines(mappedConfig)
-      laborAttributes(mappedConfig.attr)
-      laborStyles(mappedConfig.styles)
-      laborEvents(mappedConfig.events)
-      laborClasses(mappedConfig.class)
-      laborText(mappedConfig.text)
+      execRoutines(mappedConfig)
+      attrConnector(mappedConfig.attr)
+      stylesConnector(mappedConfig.styles)
+      eventConnector(mappedConfig.events)
+      classConnector(mappedConfig.class)
+      textConnector(mappedConfig.text)
       laborDom(mappedConfig.dom)
       return mineralApi
     },
@@ -252,8 +251,8 @@ const mineral = element => (() => {
 
   mineralApi.add        = routine
   mineralApi.isMinreral = () => true
-  mineralApi.element    = getElement
-  mineralApi.get        = getElement
+  mineralApi.element    = () => element
+  mineralApi.get        = () => element
 
   return mineralApi
 })()
