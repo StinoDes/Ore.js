@@ -1,3 +1,4 @@
+import 'babel-polyfill'
 import mediator from './core/mediator'
 import quarry from './core/quarry'
 import torch from './core/torch'

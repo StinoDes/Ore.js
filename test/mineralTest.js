@@ -43,6 +43,17 @@ describe('Minerals', () => {
                 .to.equal(mineral)
         })
 
+        it('Should return a batch from quarry', () => {
+            const elements = [
+                document.createElement('div'),
+                document.createElement('div'),
+                document.createElement('div')
+              ],
+              batch = api.mine(elements)
+
+            expect(batch).to.be.a('function')
+        })
+
     })
 
     describe('On labor', () => {
@@ -186,6 +197,24 @@ describe('Minerals', () => {
                 .element().textContent
             ).to.equal('This is new text')
         })
+
+        it('should work the same for batches', () => {
+            const batch = api.mine([
+                document.createElement('div'),
+                document.createElement('div'),
+                document.createElement('div')
+              ])(
+                {
+                  styles: {
+                      color: 'red'
+                  }
+                }
+              ),
+              [m0, m1, m2] = batch
+            expect(m0.element().style.color).to.equal('red')
+            expect(m1.element().style.color).to.equal('red')
+            expect(m2.element().style.color).to.equal('red')
+        })
     })
     describe('On retrieve', () => {
         it('Should return the set properties', () => {
@@ -213,12 +242,41 @@ describe('Minerals', () => {
             expect(retrieval.attr)
               .to.eql({'id': 'element_id'})
         })
+        it('Should return the set classes', () => {
+            const mineral = api.mine('newdiv')({
+                  class: 'testclass',
+              }),
+              retrieval = mineral()
+            expect(retrieval.classes).to.eql(['testclass'])
+        })
         it('Should return the mineral\'s children', () => {
             const mineral = api.mine('newdiv', {
                 append: [
                   api.mine('newdiv'), api.mine('newp')
                 ]})
             // todo
+        })
+        it('should do the same for batches', () => {
+            const batch = api.mine([
+                document.createElement('div'),
+                document.createElement('div'),
+                document.createElement('div'),
+              ])
+
+            expect(batch()).to.eql([
+                {attr:{},styles:{},classes:[]},
+                {attr:{},styles:{},classes:[]},
+                {attr:{},styles:{},classes:[]},
+            ])
+
+            batch({
+                class: 'test'
+            })
+            expect(batch()).to.eql([
+                {attr:{},styles:{},classes:['test']},
+                {attr:{},styles:{},classes:['test']},
+                {attr:{},styles:{},classes:['test']},
+            ])
         })
     })
     describe('On routine', () => {

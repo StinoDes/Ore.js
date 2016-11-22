@@ -182,7 +182,7 @@ const mineral = element => (() => {
                 c.push(v) :
                 null
             })
-          return d
+          return c
         },
       }
     ),
@@ -236,7 +236,7 @@ const mineral = element => (() => {
     }
 
   mineralApi.add        = routine
-  mineralApi.isMinreral = () => true
+  mineralApi.isMineral = () => true
   mineralApi.element    = () => element
   mineralApi.get        = () => element
 

@@ -1,4 +1,5 @@
-import mineral from './mineral'
+import mineral from './mineral/mineral'
+import batch from './mineral/batch'
 
 const quarry = (() => {
 
@@ -31,11 +32,16 @@ const quarry = (() => {
     },
 
     mineMineral = function (element) {
-      if (element._mineid)
+      if (element.length)
+        return batch(element)
+      else
+      {
+        if (element._mineid)
+          return cache[element._mineid]
+        element._mineid = genMineId()
+        cache[element._mineid] = installMediatorOnMineral(mineral(element))
         return cache[element._mineid]
-      element._mineid = genMineId()
-      cache[element._mineid] = installMediatorOnMineral(mineral(element))
-      return cache[element._mineid]
+      }
     },
 
     api = {

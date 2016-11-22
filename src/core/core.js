@@ -8,7 +8,7 @@ export const mine = publish =>
    * @returns {*}
    */
   (selector, config = {}) => {
-    if (selector.nodeType)
+    if (selector.tagName || (selector.length && typeof selector !== 'string'))
       return publish('mineMineral', selector)
     else if (typeof selector === 'string') {
       if (/(new[a-zA-Z]+)/.test(selector)) {
@@ -16,7 +16,7 @@ export const mine = publish =>
         return publish('mineMineral', element)(config)
       }
       const elements = document.querySelectorAll(selector)
-      return publish('mineMineral', elements[0])(config)
+      return publish('mineMineral', elements.length === 1 ? elements[0] : elements)(config)
     }
     return false
   }
