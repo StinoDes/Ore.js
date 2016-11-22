@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Ore.Js | Basic example</title>
+</head>
+<style>
+  body {
+    background-color: #e9e9e9;
+    font-family: sans-serif;
+  }
+
+  nav {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 50px;
+    background-color: forestgreen;
+  }
+
+  nav > h1 {
+    color: white;
+    font-size: 30px;
+    margin: 0;
+    padding: 10px 20px;
+  }
+
+  div.list {
+    width: 600px;
+    margin: 100px auto;
+    background-color: white;
+    border-radius: 5px;
+    box-shadow: rgba(0, 0, 0, 0.2) 0 5px 8px;
+  }
+
+  div.list ul {
+    margin: 0;
+    padding: 0;
+  }
+
+  div.list li {
+    margin: 0;
+    padding: 15px 20px;
+    font-size: 15px;
+    color: #424242;
+    display: block;
+    list-style: none;
+    background-color: transparent;
+    -webkit-transition: background-color 0.2s;
+    -moz-transition: background-color 0.2s;
+    -ms-transition: background-color 0.2s;
+    -o-transition: background-color 0.2s;
+    transition: background-color 0.2s;
+  }
+
+  div.list li:hover {
+    background-color: #f5f5f5;
+  }
+</style>
+<body>
+<section class="home">
+</section>
+<script src="../../lib/ore.js"></script>
+<script>
+
+  var items = ['test', 'test2']
+
+  var root = Ore.mine('.home'),
+    div = Ore.bake('div'),
+    lc = Ore.bake('div', {'class': 'list'}),
+    list = Ore.bake('ul'),
+    item = Ore.bake('li'),
+    textinput = Ore.bake('input', {type: 'text'})
+
+  var onReturnPress = function (e) {
+      if (e.keyCode === 13) {
+        items.push(this.element().value)
+        root({
+          empty: true,
+          append: tree()
+        })
+      }
+    },
+    renderTree = function () {
+      return (
+        div({}, [
+          lc({}, [
+            list({}, items.map(function (i) {
+              return item({text: i})
+            }).concat([
+              item({}, [
+                textinput({
+                  placeholder: 'test...',
+                  onInput: function (e) {
+                    console.log(this.element().value)
+                  },
+                  onKeyPress: onReturnPress
+                })
+              ])
+            ]))
+          ])
+        ])
+      )
+    },
+    tree = Ore.bake('Tree', {
+      build: renderTree,
+      willBuild: function (conf) {
+        this.test(this._string)
+      },
+      test: function (s) {
+        console.log(s)
+      },
+      _string: 'test'
+    })
+  root({
+    append: tree()
+  })
+
+</script>
+</body>
+</html>
