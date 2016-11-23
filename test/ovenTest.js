@@ -61,7 +61,6 @@ describe('Oven', () => {
   })
   describe('bricks', () => {
     it('rerenders when needed', () => {
-
       const div = api.bake('div'),
         brick   = api.bake('Brick', {
           build (config) {
@@ -73,8 +72,34 @@ describe('Oven', () => {
 
       expect(firstbuild).to.equal(secondBuild)
       expect(secondBuild.style.color).to.equal('red')
+    })
+    it('changes child-elements on rerender', () => {
+      const div = api.bake('div'),
+        brick   = api.bake('Brick', {
+          build (config) {
+            return div({}, [
+              div(config.firstDiv, []),
+              div(config.secondDiv, []),
+              div(config.thirdDiv, []),
+            ])
+          }
+        }),
+        built   = brick({
+          firstDiv  : {},
+          secondDiv : {},
+          thirdDiv  : {},
+        })
+      expect([...built().dom].length).to.equal(3)
 
+      const secondBuilt = brick({
+        firstDiv  : {'class': 'first'},
+        secondDiv : {'class': 'second'},
+        thirdDiv  : {'class': 'third'},
+      })
 
+      secondBuilt().dom().forEach(v => {
+        expect(v.class.length).to.equal(1)
+      })
 
     })
   })

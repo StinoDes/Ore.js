@@ -16,7 +16,7 @@ describe('Glimmers:', () => {
       api.torch.catchGlimmer()({
           from: 0,
           to: 200,
-          duration: 200,
+          duration: 20,
           set: v => { expect(v).to.be.within(0, 200) },
           onEnd: v => { done() },
           play: true
@@ -29,7 +29,7 @@ describe('Glimmers:', () => {
           mineral,
           from: 0,
           to: 200,
-          duration: 200,
+          duration: 20,
           styles: {
             opacity: v => v / 200
           },
@@ -48,7 +48,7 @@ describe('Glimmers:', () => {
       const glimmer = api.torch.catchGlimmer()({
           from: 0,
           to: 200,
-          duration: 20,
+          duration: 10,
           onEnd: v1 => {
             expect(v1)
               .to.equal(200)

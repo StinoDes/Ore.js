@@ -65,33 +65,28 @@ const brick = (_name, c) => (() => {
     },
     renderVirtual = config => build([config]),
     compare = () => {
-      const virtual = refs.virtual(),
-        actual      = refs.actual(),
-        comparation = {},
-        diff        = (a, b) => {
-          if (typeof a === 'string')
-            return a === b ? null : b
-          else if (a.constructor === Array)
-            return b.every((v, i) => v === a[i]) ? [] : b
-          else if (typeof a === 'object') {
-            const c = {...a, ...b},
-              d     = {}
-            Object.keys(c).forEach(v => {
-              if(a[v] !== b[v])
-                d[v] = b[v]
-            })
-            return Object.keys(d).length ? d : null
-          }
-        }
-      Object.keys(virtual).forEach(v => {
-        const o = diff(actual[v], virtual[v])
+      const virtual = refs.virtual,
+        actual      = refs.actual,
+        comparation = {}
+
+      virtual._connected().forEach(v => {
+        const o = virtual._connector(v).diff(actual._connector(v)(), virtual._connector(v)())
         if (o)
           comparation[v] = o
       })
       return comparation
     },
     transact = comparation => {
-      const mineral = refs.actual(comparation)
+      const mineral = refs.actual,
+        domDiff = comparation.dom
+      comparation.dom = null
+      mineral(comparation)
+      if (domDiff.isBatch)
+        mineral({
+          empty: true, children: domDiff
+        })
+      else
+        mineral().dom(domDiff)
       didBuild([configuration])
       return mineral
     },

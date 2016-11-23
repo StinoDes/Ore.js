@@ -40,16 +40,10 @@ const mineral = element => (() => {
      * @returns {retrieval} - An instance of a retrieval object, offering an api to get the contained data.
      */
     retrieval = function (config = {}) {
-      const attr   = attrConnector(),
-        styles     = stylesConnector(),
-        classes    = classConnector(),
-        obj        = {
-          attr,
-          styles,
-          classes,
-        }
-
-      return obj
+      return Object.keys(connectors).reduce((o, key) => {
+        o[key] = connectors[key]()
+        return o
+      }, {})
     },
     routines = {},
     /**
@@ -78,27 +72,27 @@ const mineral = element => (() => {
           delete config[k]
         }
     },
-    attrConnector     = connector(element)(
-      {
+    connectors        = {
+      attr: connector(element)({
         flush (el, dirty) {
           if (dirty)
             Object.keys(dirty).forEach(k => el.setAttribute(k, dirty[k]))
           return true
         },
-      }
-    ),
-    stylesConnector   = connector(element)(
-      {
+      }),
+      styles: connector(element)({
         flush (el, dirty) {
           if (dirty)
-            Object.keys(dirty).forEach(k => { el.style[k] = dirty[k] })
+            Object.keys(dirty).forEach(k => {
+              el.style[k] = dirty[k]
+            })
           return true
         },
-      }
-    ),
-    eventConnector    = connector(element)(
-      {
-        flush (el, dirty) { return true },
+      }),
+      event: connector(element)({
+        flush (el, dirty) {
+          return true
+        },
         clean (clean, dirty) {
           if (dirty)
             Object.keys(dirty).forEach(k => {
@@ -108,10 +102,8 @@ const mineral = element => (() => {
             })
           return clean
         },
-      }
-    ),
-    textConnector     = connector(element)(
-      {
+      }),
+      text: connector(element)({
         init () {
           return ['', '']
         },
@@ -121,10 +113,8 @@ const mineral = element => (() => {
           el.textContent = dirty
           return true
         },
-      }
-    ),
-    classConnector    = connector(element)(
-      {
+      }),
+      class: connector(element)({
         init () {
           return [[], {}]
         },
@@ -172,9 +162,9 @@ const mineral = element => (() => {
             })
           if (d.remove)
             d.remove.forEach(v => {
-              c.indexOf(v) === -1 ?
-                null :
-                c.splice(c.indexOf(v), 1)
+              c.indexOf(v) !== -1 ?
+                c.splice(c.indexOf(v), 1) :
+                null
             })
           if (d.add)
             d.add.forEach(v => {
@@ -184,17 +174,53 @@ const mineral = element => (() => {
             })
           return c
         },
-      }
-    ),
-    laborDom = function (config = {}) {
-      if (config.empty)
-        while (element.firstChild)
-          element.removeChild(element.firstChild)
-
-      if (config.prepend)
-        config.prepend.forEach(child => element.insertBefore(child.element(), element.firstChild))
-      if (config.append)
-        config.append.forEach(child => element.appendChild(child.element()))
+      }),
+      dom: connector(element)({
+        init () {
+          return [[], {}]
+        },
+        dirty (d, config) {
+          if (config.empty)
+            return config
+          d.append = [].concat(
+            d.append ? d.append : [],
+            config.append ? config.append : []
+          )
+          d.prepend = [].concat(
+            d.prepend ? d.prepend : [],
+            config.prepend ? config.prepend : []
+          )
+          return d
+        },
+        flush(el, dirty) {
+          if (dirty.empty)
+            while (el.firstChild)
+              el.removeChild(el.firstChild)
+          if (dirty.prepend)
+            dirty.prepend.forEach(child => el.insertBefore(child.element(), el.firstChild))
+          if (dirty.append)
+            dirty.append.forEach(child => el.appendChild(child.element()))
+          return true
+        },
+        clean(c, d) {
+          if (d.empty)
+            c = []
+          let {
+            prepend,
+            append,
+          } = d
+          c = mineralApi.publish('mineMineral', [].concat(prepend || [], [...c], append || []))
+          return c
+        },
+        diff(a, b) {
+          const aArr  = [...a],
+            bArr      = [...b],
+            areSame   = aArr.every(
+              (v, i) => v.element().tagName === bArr[i].element().tagName
+            )
+          return areSame ? b() : b
+        }
+      }),
     },
 
     /**
@@ -210,12 +236,12 @@ const mineral = element => (() => {
     labor = function (config = {}) {
       const mappedConfig = mineralApi.publish('doMap', 'labor', config)
       execRoutines(mappedConfig)
-      attrConnector(mappedConfig.attr)
-      stylesConnector(mappedConfig.styles)
-      eventConnector(mappedConfig.events)
-      classConnector(mappedConfig.class)
-      textConnector(mappedConfig.text)
-      laborDom(mappedConfig.dom)
+      connectors.attr(mappedConfig.attr)
+      connectors.styles(mappedConfig.styles)
+      connectors.event(mappedConfig.events)
+      connectors.class(mappedConfig.class)
+      connectors.text(mappedConfig.text)
+      connectors.dom(mappedConfig.dom)
       return mineralApi
     },
     /**
@@ -235,8 +261,20 @@ const mineral = element => (() => {
       return mineralApi
     }
 
+  Object.defineProperty(mineralApi, '_connector', {
+    configurable  : false,
+    enumerable    : false,
+    writable      : false,
+    value         : name => connectors[name]
+  })
+  Object.defineProperty(mineralApi, '_connected', {
+    configurable  : false,
+    enumerable    : false,
+    writable      : false,
+    value         : () => Object.keys(connectors)
+  })
   mineralApi.add        = routine
-  mineralApi.isMineral = () => true
+  mineralApi.isMineral  = () => true
   mineralApi.element    = () => element
   mineralApi.get        = () => element
 

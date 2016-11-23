@@ -1,4 +1,4 @@
-import 'babel-polyfill'
+import 'regenerator-runtime/runtime'
 import mediator from './core/mediator'
 import quarry from './core/quarry'
 import torch from './core/torch'

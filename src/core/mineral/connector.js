@@ -2,9 +2,7 @@ const connector = (element = false) => (customHooks = {}) => {
 
   const hooks         = {
       init () {
-        const c = {},
-          d     = {}
-        return [c, d]
+        return [{}, {}]
       },
       _merge (a, b) {
         if (!b)
@@ -40,6 +38,26 @@ const connector = (element = false) => (customHooks = {}) => {
         return c
       },
 
+      diff (a, b) {
+        if (typeof a === 'string')
+          return a === b ? null : b
+        else if (a.constructor === Array)
+          return b.every((v, i) => v === a[i]) ? [] : b
+        else if (typeof a === 'object') {
+          const c = {...a, ...b},
+            d     = {}
+          Object.keys(c).forEach(v => {
+            if(a[v] !== b[v])
+              d[v] = b[v]
+          })
+          return Object.keys(d).length ? d : null
+        }
+      },
+
+      isEmpty (c) {
+        return Object.keys(c).length === 0
+      },
+
       ...customHooks,
 
     },
@@ -55,16 +73,22 @@ const connector = (element = false) => (customHooks = {}) => {
         console.warn('Connector\'s flush did not return true.')
 
     },
+    retrieve        = () => {
+      // return hooks.isEmpty(clean) ? null : clean
+      return clean
+    },
     connectorApi    = (config = false) => {
       if (!config)
-        return hooks.fetch(clean)
+        return retrieve()
       apply(config)
       return connectorApi
     }
 
+  connectorApi.isConnector  = () => true
+  connectorApi.diff         = hooks.diff
+
   let [clean, dirty] = hooks.init()
 
-  connectorApi.isConnector  = () => true
 
   return connectorApi
 }

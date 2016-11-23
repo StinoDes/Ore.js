@@ -8,15 +8,27 @@ export const mine = publish =>
    * @returns {*}
    */
   (selector, config = {}) => {
+
     if (selector.tagName || (selector.length && typeof selector !== 'string'))
       return publish('mineMineral', selector)
+
     else if (typeof selector === 'string') {
-      if (/(new[a-zA-Z]+)/.test(selector)) {
-        const element = document.createElement(selector.substr(3, selector.length - 1))
-        return publish('mineMineral', element)(config)
+
+      if (/^(new[a-zA-Z]+(?::\d+)?)$/.test(selector)) {
+        const tag = selector.match(/^new([a-zA-Z]+)(?::\d+)?$/)[1]
+        let element
+        if (/^new[a-zA-Z]+(:\d+)$/.test(selector)) {
+          const n = parseInt(selector.match(/^new[a-zA-Z]+:(\d+)$/)[1])
+          return publish('mineMineral',
+            Array.from(Array(n)).map(v => document.createElement(tag))
+          )(config)
+        }
+        return publish('mineMineral', document.createElement(tag))(config)
       }
+
       const elements = document.querySelectorAll(selector)
       return publish('mineMineral', elements.length === 1 ? elements[0] : elements)(config)
     }
+
     return false
   }

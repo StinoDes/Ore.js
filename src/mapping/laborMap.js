@@ -58,7 +58,7 @@ const laborMap = publish => {
           delete config[k]
         }
       })
-      if (typeof config.class === 'object')
+      if (typeof config.class === 'object' && config.class.constructor !== Array)
         Object.keys(config.class).map(k => {
           let valToAdd
           if (config.class[k])
@@ -89,13 +89,15 @@ const laborMap = publish => {
         addTo = (key, obj) => {
           let parsedObj
           if (obj) {
+            if (obj.isBatch)
+              parsedObj = Array.from(obj)
             if (obj.constructor === Array) {
               obj = obj.map(v => {
-                return v.hasOwnProperty('element') ? v : publish('mineMineral', v)
+                return v.isMineral ? v : publish('mineMineral', v)
               })
               parsedObj = obj
             }
-            else if (obj.hasOwnProperty('element'))
+            else if (obj.isMineral)
               parsedObj = [obj]
             else if (obj.nodeType)
               parsedObj = [publish('mineMineral', obj)]

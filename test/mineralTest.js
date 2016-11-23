@@ -16,7 +16,11 @@ describe('Minerals', () => {
                 class: 'test'
             })
             expect(mineral.element().classList.contains('test'))
-              .to.be.ok
+              .to.equal(true)
+        })
+        it('should create a batch from a new mineral query with amount modifier', () => {
+            const batch = api.mine('newdiv:5')
+            expect([...batch].length).to.equal(5)
         })
     })
     describe('From Quarry', () => {
@@ -247,7 +251,7 @@ describe('Minerals', () => {
                   class: 'testclass',
               }),
               retrieval = mineral()
-            expect(retrieval.classes).to.eql(['testclass'])
+            expect(retrieval.class).to.eql(['testclass'])
         })
         it('Should return the mineral\'s children', () => {
             const mineral = api.mine('newdiv', {
@@ -262,21 +266,18 @@ describe('Minerals', () => {
                 document.createElement('div'),
                 document.createElement('div'),
               ])
-
-            expect(batch()).to.eql([
-                {attr:{},styles:{},classes:[]},
-                {attr:{},styles:{},classes:[]},
-                {attr:{},styles:{},classes:[]},
-            ])
+            batch().forEach(data =>
+              expect(data.class)
+                .to.eql([])
+            )
 
             batch({
                 class: 'test'
             })
-            expect(batch()).to.eql([
-                {attr:{},styles:{},classes:['test']},
-                {attr:{},styles:{},classes:['test']},
-                {attr:{},styles:{},classes:['test']},
-            ])
+            batch().forEach(data =>
+              expect(data.class)
+                .to.eql(['test'])
+            )
         })
     })
     describe('On routine', () => {
