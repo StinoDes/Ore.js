@@ -2,3 +2,5 @@ examples/
 node_modules/
 .gitignore
 *.log
+.idea
+.DS_Store/
