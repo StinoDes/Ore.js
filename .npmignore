@@ -1,4 +1,4 @@
 examples/
-dist/
 node_modules/
 .gitignore
+*.log
